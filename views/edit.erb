@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Style-Type" content="text/css">
+        <link rel="stylesheet" type="text/css" href="/base.css"><!-- CSS参照 -->
+        <!-- ▼Googleフォント -->
+        <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
+        <script src="/form/jquery.validationEngine.js"></script>
+        <script src="/form/jquery.validationEngine-ja.js"></script>
+        <link rel="stylesheet" href="/form/validationEngine.jquery.css">
+        <script>
+            $(function(){
+                jQuery("#form_1").validationEngine();
+            });
+        </script>
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript">
+            $('form').on('submit',  function () {
+                    $(this).find('input:submit').attr('disabled',  'disabled').val('送信中...');
+                    });
+</script>
+<title>Edit</title>
+</head>
+<body class="main">
+
+
+    <!-- メニューバー -->
+<script type="text/javascript" src="/topbar.js"></script>
+        <div id="sse1">
+            <div id="sses1">
+                <ul>
+                    <li><a href="/friends">Friends</a></li>
+                    <li><a href="/room">Room</a></li>
+                    <li><a href="/tl">TimeLine</a></li>
+                    <ul>
+                    </div>
+                </div>
+
+    <br><br>
+
+    <center>
+        <div class="font" style="color: #7b7a65;">
+            <h1>EDIT</h1>
+        </div>
+        <h2>アカウント内容変更</h2>
+    </center>
+    <div class="box2">
+        <form id="form_1" action="/renew/<%= @users.id %>" method="post">
+            <form class="form-container">
+                <div>
+                    <label>名前:</label>
+                    <input type="text" name="name" value="<%= @users.name %>" class="input_text" style="background:#fff;"></p>
+                </div>
+                <div>
+                    <label>ユーザー名:</label>
+                    <input type="text" name="name" value="<%= @users.user_name %>" class="input_text" style="background:#fff;"></p>
+                </div>
+                <div>
+                    <label>メール:</label>
+                    <p><input type="text" name="mail" value="<%= @users.mail %>"class="input_text" style="background:#fff;"></p>
+                </div>
+                <div>
+                    <label>年齢:</label>
+                    <p><input type="text" name="age" value="<%= @users.age %>"class="input_text" style="background:#fff;"></p>
+                </div>
+                <div>
+                    <label>自己紹介:</label>
+                    <textarea name="age" rows="4" cols="40" value="<%= @users.introduction%>"class="input_text" style="background:#fff;"></textarea>
+                </div>
+
+                <br><br>
+
+                <div>
+                    <div class="validate[minCheckbox]">
+                        <label><a href="https://www.google.co.jp/search?q=2段階認証&ie=utf-8&oe=utf-8&gws_rd=cr&ei=wwKjVsSIMaLmmAXc-qvYCw#q=2段階認証とは">二段階認証:</a></label>
+                    <input type="checkbox" name="tow_stage_authentication[]" id="1" class="input_checkbox" value="true" <%= @checked.to_s %> >
+                        <label for="1">有効にする</label>
+                    </div>
+                </div>
+                <br><br>
+                <div>
+                    <label>変更を完了するにはパスワードを入力してください:</label>
+                    <p><input type="password" name="password" class="input_text" style="background:#fff;"></p>
+                </div>
+                <p><input type="submit" value="編集完了" class="submit-button"></p>
+            </form>
+            <form action="/password_change_send" method="POST">
+                <input type="submit" value="パスワードを忘れた方" style="text-align:right;background:transparent;text-decoration:underline;margin:0px;padding: 0px;">
+                <input type="hidden" name="email" value="<%= User.find(session[:user]).mail %>" class="validate[required,custom[email]]" style="background:#fff;">
+            </form>
+        </div>
+
+    </body>
+</html>

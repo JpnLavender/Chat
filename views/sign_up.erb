@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="../../base.css">
+        <!-- CSS参照 -->
+        <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
+        <!-- ▼jQuery本体 -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <!-- ▼バリデーション -->
+        <script src="/form/jquery.validationEngine.js"></script>
+        <script src="/form/jquery.validationEngine-ja.js"></script>
+        <link rel="stylesheet" href="/form/validationEngine.jquery.css">
+        <script>
+            $(function() {
+                jQuery("#form_1").validationEngine();
+            });
+        </script>
+        <script type="text/javascript">
+            function DisableButton(pObj) {
+                　pObj.disabled = true;
+                　pObj.value = '送信中';
+                　pObj.form.submit();
+            }
+</script>
+
+    </head>
+
+    <body class="main">
+
+        <!-- メニューバー -->
+
+        <script type="text/javascript" src="/topbar.js"></script>
+        <div id="sse1">
+            <div id="sses1">
+                <ul>
+                    <li><a href="#">TopPage</a></li>
+                    <li><a href="#">Horizontal Menus</a></li>
+                    <li><a href="#">Web Menus</a></li>
+
+                    <script type='text/javascript' charset='utf-8' src='/popup/popbox.js'></script>
+                    <link rel='stylesheet' href='/popup/popbox.css' type='text/css'>
+
+                    <li class='popbox'>
+                    <a href="#" class="open" style="text-align:center;">アカウントをお持ちの場合はログイン▼</a>
+                    <div class='collapse_pop'>
+                        <div class="box" style="width:200px;padding:10px 15px 10px;margin:3em 0 0 0">
+                            <div class="arrow"></div>
+                            <div class="arrow-border"></div>
+                            <span id="red">
+                                <h3 style="color:#a25768;font-size:5px;text-shadow: 0 0 5px;">
+                                    <%= @error.to_s %>
+                                </h3>
+                            </span>
+                            <div class="input">
+                                <form action="/signin" method="POST" id="form_1">
+                                    <form class="form-container">
+                                        <div class="form-title font">E-MailAddress</div>
+                                        <input type="text" name="mail" placeholder="Eメール" class="validate[required,custom[email]]" style="background:#fff;">
+                                        <br>
+                                        <div class="form-title font">Password</div>
+                                        <input type="password" name="password" placeholder="パスワード" class="validate[required]" style="background:#fff;">
+                                        <br>
+                                        <br>
+                                        <div class="submit-container">
+                                            <input class="submit-button" type="submit" value="ログイン">
+                                        </div>
+                                    </form>
+                                </form>
+                                <form action="password_change_send" method="get">
+                                    <input type="submit" value="パスワードを忘れた方" style="text-align:right;background:transparent;text-decoration:underline;margin:0px;padding: 0px;">
+                                </form>
+                                <hr>
+                                <p style="font-size:1px;text-align: left;">ネット予約を始めませんか？</p>
+                                <div class="submit-container">
+                                    <form action="/send_mail" method="get">
+                                        <input class="submit-button" type="submit" value="新規登録">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- メニューバー終了 -->
+
+        <br>
+        <br>
+        <!-- ログインフォーム -->
+
+        <div class="form-title">
+            <center>
+                <h1>SIGNUP</h1>
+                <h2>LIFECHATを始めよう</h2>
+            </center>
+        </div>
+
+        <div class="box1">
+            <form id="form_1" action="/signup" method="POST">
+                <form class="form-container">
+                    <div class="form-title">氏名</div>
+                    <input type="text" name="name" placeholder="例)山田太郎" style="background:#fff;">
+                    <br>
+                    <div class="form-title">ユーザー名※</div>
+                    <input type="text" name="user_name" placeholder="例)山田太郎"  class="validate[required]" style="background:#fff;">
+                    <br>
+
+                    <input type="hidden" name="mail" value="<%= @mail.to_s %>" class="validate[required]" style="background:#fff;">
+                    <br>
+                    <div class="form-title">PassWord※</div>
+                    <input class="validate[required,minSize[8]]] text-input" type="password" name="password" id="password" placeholder="パスワード" style="background:#fff;">
+                    <br>
+                    <br>
+                    <div class="form-title">PassWord※</div>
+                    <input type="password" name="password_confirmation" placeholder="パスワード(再確認)" class="validate[required,equals[password]]" style="background:#fff;">
+                    <br>
+                    <br>
+                    <div class="submit-container">
+                        <input class="submit-button" type="submit" value="ログイン" onclick="DisableButton(this);">
+                        <!--<font size="1px"><a href="/signin">既にアカウントをお持ちの方はこちらから</a></font>-->
+                     </div>
+                </form>
+            </div>
+        </div>
+        <br>
+        <br>
+        <!-- //////////////////////////
+        ポップアップメニュー
+        ////////////////////////////// -->
+        <script type='text/javascript'>
+            $(document).ready(function() {
+                    $('.popbox').popbox({
+                        'open': '.open',
+                        'box': '.box',
+                        'arrow': '.arrow',
+                        'arrow-border': '.arrow-border',
+                        'close': '.close'
+                        });
+                    });
+                </script>
+
+            </body>
+
+        </html>

@@ -1,0 +1,77 @@
+<html lang="ja">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+        <meta http-equiv="Content-Style-Type" content="text/css">
+        <link rel="stylesheet" type="text/css" href="/base.css">
+        <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <title>error</title>
+    </head>
+    <body>
+        <script type="text/javascript" src="../topbar.js"></script>
+        <div id="sse1">
+            <div id="sses1">
+                <ul>
+                    <li><a href="#">TopPage</a></li>
+                    <li><a href="#">Horizontal Menus</a></li>
+                    <li><a href="#">Web Menus</a></li>
+
+                    <script type='text/javascript' charset='utf-8' src='../popup/popbox.js'></script>
+                    <link rel='stylesheet' href='../popup/popbox.css' type='text/css'>
+
+                    <li class='popbox'>
+                    <a href="#" class="open" style="text-align:center;">ログイン</a>
+                    <div class='collapse_pop'>
+                        <div class="box" style="width:200px;padding:10px 15px 10px;margin:3em 0 0 0">
+                            <div class="arrow"></div>
+                            <div class="arrow-border"></div>
+                            <span id="red">
+                                <h3 style="color:#a25768;font-size:5px;text-shadow: 0 0 5px;">
+                                    <%= @error.to_s %>
+                                </h3>
+                            </span>
+                            <div class="input">
+                                <form action="/signin" method="POST" id="form_1">
+                                    <form class="form-container">
+                                        <div class="form-title font">E-MailAddress</div>
+                                        <input type="text" name="mail" placeholder="Eメール" class="validate[required,custom[email]]" style="background:#fff;">
+                                        <br>
+                                        <div class="form-title font">Password</div>
+                                        <input type="password" name="password" placeholder="パスワード" class="validate[required]" style="background:#fff;">
+                                        <br>
+                                        <div class="submit-container">
+                                            <input class="submit-button" type="submit" value="ログイン">
+                                        </div>
+                                    </form>
+                                </form>
+                                <form action="password_change_send" method="get">
+                                    <input type="submit" value="パスワードを忘れた方" style="text-align:right;background:transparent;text-decoration:underline;margin:0px;padding: 0px;">
+                                </form>
+                                <hr>
+                                <p style="font-size:1px;text-align: left;">ネット予約を始めませんか？</p>
+                                <div class="submit-container">
+                                    <form action="/send_mail" method="get">
+                                        <input class="submit-button" type="submit" value="新規登録">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- メニューバー終了 -->
+        <div  class="box3">
+            <p>
+            <%= @message.to_s %>
+            </p>
+            <p>
+            <a href="/">
+                トップページに戻る
+            </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,194 @@
+@charset "UTF-8";
+body{
+    background-image: url(img/background.png);
+    background-attachmet: fixed;
+  }
+
+  /*--------------------------------------------------*/
+  #sse1
+  {
+      margin: 0;
+      background-color: #222;
+      height: 38px;
+      padding: 15px;
+      box-sizing: content-box;
+  }
+  #sses1
+  {
+      margin:0 auto;
+  }
+  #sses1 ul
+  {
+      position: relative;
+      list-style-type: none;
+      float:left;
+      padding:0;margin:0;
+      border-bottom:solid 1px #6C0000;
+  }
+  #sses1 li
+  {
+      float:left;
+      list-style-type: none;
+      padding:0;margin:0;background-image:none;
+  }
+  #sses1 li.highlight
+  {
+      background-color:#800;
+      top:36px;
+      height:2px;
+      border-bottom:solid 1px #C00;
+      z-index: 1;
+      position: absolute;
+      overflow:hidden;
+  }
+  #sses1 li a
+  {
+      box-sizing: content-box;
+      height:30px;
+      padding-top: 8px;
+      margin: 0 20px;
+      color: #fff;
+      font: normal 12px arial;
+      text-align: center;
+      text-decoration: none;
+      float: left;
+      display: block;
+      position: relative;
+      z-index: 2;
+  }
+
+    /*=======================================
+      Box
+    ========================================*/
+  .box1 {
+    /*大きさ*/
+    padding: 30px;
+    width: 500px;
+    /*色*/
+    color: #7b7a65;
+    background-color: toransprent;
+    /*配置*/
+    text-align: auto;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .box2 {
+    /*大きさ*/
+    padding: 30px;
+    width: 500px;
+    /*色*/
+    color: black;
+    /* フォームの背景グラデーション */
+    background: #fffff1;
+    /* Old browsers */
+    background: -webkit-linear-gradient(-45deg, #fffff1 0%, #fffff9 100%);
+    background: -moz-linear-gradient(-45deg, #fffff1 0%, #fffff9 100%);
+    background: -o-linear-gradient(-45deg, #fffff1 0%, #fffff9 100%);
+    background: linear-gradient(-45deg, #fffff1 0%, #fffff9 100%);
+    /* FF3.6+ */
+    /* Chrome,Safari4+ */
+    /* Chrome10+,Safari5.1+ */
+    /* Opera 11.10+ */
+    /* IE10+ */
+    /* W3C */
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#fffff2', endColorstr='#fffff9', GradientType=1);
+    /* IE6-9 fallback on horizontal gradient */
+    /*配置*/
+    text-align: auto;
+    margin-right: auto;
+    margin-left: auto;
+    /*角丸*/
+    border-radius: 10px;
+    /* CSS3草案 */
+    -webkit-border-radius: 10px;
+    /* Safari,Google Chrome用 */
+    -moz-border-radius: 10px;
+    /* Firefox用 */
+  }
+  .box3 {
+    padding: 30px;
+    width: 500px;
+    /*色*/
+    color: #7b7a65;
+    background-color: transparent;
+    /*配置*/
+    text-align: auto;
+    margin-right: auto;
+    margin-left: auto;
+    top: 50%;
+    left: 50%;
+  }
+  .left {
+    float: left;
+  }
+
+  /*=======================================
+    フォーム入力
+  ========================================*/
+
+  input, textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 3px;
+    -webkit-appearance: none;
+    appearance: none;
+    opacity: 0.8;
+  }
+  input:focus, textarea:focus {
+    outline: none;
+  }
+  input[type=radio], input[type=checkbox] {
+    display: none;
+  }
+  .input_text {
+    border-bottom: 1px solid #ccc;
+    box-shadow: -999px 5px 0px #ccc;
+    -webkit-transition: all 500ms;
+    transition: all 500ms;
+  }
+  .input_text:focus {
+    border-bottom: 1px solid #fff;
+    box-shadow: 0px 5px 0px #61c5bb;
+    -webkit-transition: all 500ms;
+    transition: all 500ms;
+  }
+  .input_radio + label:before {
+    display: inline-block;
+    content: "";
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+    border: 1px solid #ccc;
+    border-radius: 100px;
+    box-shadow: 5px 0px 0px #ccc;
+    -webkit-transition: all 500ms;
+    transition: all 500ms;
+  }
+  .input_radio:checked + label:before {
+    border-radius: 100px;
+    box-shadow: -5px 0px 0px #61c5bb;
+    -webkit-transform: translateX(10px);
+    -ms-transform: translateX(10px);
+    transform: translateX(10px);
+    -webkit-transition: all 500ms;
+    transition: all 500ms;
+  }
+  .input_checkbox + label {
+    font-size: 0.8rem;
+    margin-right: 15px;
+    padding: 5px;
+    border-radius: 0px;
+    border: 1px solid #ccc;
+    -webkit-transition: all 500ms;
+    transition: all 500ms;
+  }
+  .input_checkbox:checked + label {
+    color: #fff;
+    border-radius: 15px;
+    border: 1px solid #61c5bb;
+    background-color: #61c5bb;
+    -webkit-transition: all 500ms;
+    transition: all 500ms;
+  }

@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="/base.css"><!-- CSS参照 -->
+        <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
+        <title>Hairsalon.MaitoriKaruna</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    </head>
+    <body class="main">
+
+        <script type="text/javascript" src="topbar.js"></script>
+        <div id="sse1">
+            <div id="sses1">
+                <ul>
+                    <li><a href="/friends">Friends</a></li>
+                    <li><a href="/room">Room</a></li>
+                    <li><a href="/tl">TimeLine</a></li>
+                    <!-- //////////////////////////
+                    ポップアップ
+                    ////////////////////////////// -->
+                    <script type='text/javascript' charset='utf-8' src='/popup/popbox.js'></script>
+                    <link rel='stylesheet' href='/popup/popbox.css' type='text/css'>
+
+                    <li class='popbox' style="z-index:100000;">
+                    <a href="#" class="open" style="text-align:center;">
+                        <%= User.find(session[:user]).user_name %></a>
+                    <div class='collapse_pop'>
+                        <div class="box" style="width:200px;padding:10px 15px 10px;margin:3em 0 0 0">
+                            <div class="arrow"></div>
+                            <div class="arrow-border"></div>
+                            <p>設定</p>
+
+                            <div class="input">
+                                <form action="/edit/<%= User.find(session[:user]).id %>" method="post">
+                                    <input type="submit" value="アカウント情報を変更" style="background:transparent;text-decoration:underline;">
+                                </form>
+                            </div>
+                            <div class="input">
+                                <form action="/logout" method="get">
+                                    <input type="submit" value="ログアウト" style="background:transparent;text-decoration:underline;">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <br><br>
+        <center>
+            <form action="/chat" method="POST">
+                <table style="width:50%">
+                    <tr>
+                        <td>
+                            <input type="text" name="chat" placeholder="とーきんぐ！">
+                        </td>
+                        <td>
+                            <input class="submit-button" type="submit" value="送信">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <%= @talk.to_s %>
+                        </td>
+                    </tr>
+                </table>
+            </center>
+            <!-- //////////////////////////
+            ポップアップメニュー
+            ////////////////////////////// -->
+            <script type='text/javascript'>
+                $(document).ready(function() {
+                        $('.popbox').popbox({
+                            'open': '.open',
+                            'box': '.box',
+                            'arrow': '.arrow',
+                            'arrow-border': '.arrow-border',
+                            'close': '.close'
+                            });
+                        });
+</script>
+
+            </body>
+        </html>
