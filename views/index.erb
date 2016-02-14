@@ -2,62 +2,193 @@
     <head>
         <link rel="stylesheet" type="text/css" href="base.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+        <!-- colorbox -->
+        <link rel="stylesheet" href="colorbox/example4/colorbox.css" />
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="colorbox/jquery.colorbox-min.js"></script>
+
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Poiret One',  cursive;
+                color:black;
+            }
+            .scroll-area {
+                height: 100vh;
+                overflow: auto;
+                -webkit-scroll-behavior: smooth;
+                scroll-behavior: smooth;
+                -webkit-scroll-snap-type: mandatory;
+                scroll-snap-type: mandatory;
+                -webkit-scroll-snap-points-y: repeat(100vh);
+                scroll-snap-points-y: repeat(100vh);
+            }
+            .box {
+                width: 100vw;
+                height: 100vh;
+                color: black;
+                font-size: 50px;
+                display: flex;
+                align-items: center; /* 縦方向中央揃え */
+                justify-content: center; /* 横方向中央揃え */
+                flex-direction: column;
+            }
+            .box__bg_black {
+                background-color: #333;
+            }
+            .box__bg_gray {
+                background-color: #ccc;
+            }
+            .box__bg_photo {
+                background-image: url(./img/backimg.jpg);
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+            p {
+                margin: 0;
+                padding: 0;
+                line-height: 1;
+                }</style>
+        </head>
+
+        <body>
+            <div class="topbar">
+                <header class="navbar navbar-default">
+                <div class="container">
+                    <div class="navbar-header">
+                        <a href="/" class="navbar-brand">LifeChat</a>
+                    </div>
+                    <nav class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+
+                        <li>
+                        <a class="inline" href="#inline-content">
+                            <span class="glyphicon glyphicon-log-in"></span>
+                            Sign_in
+                        </a>
+                        <div style="display: none;">
+                            <section id="inline-content">
+
+                            <div class="box1">
+                            <div class="input">
+                                <form action="/signin" method="POST" id="form_1">
+                                    <div class="form-title font">E-MailAddress</div>
+                                    <input type="text" name="mail" placeholder="Eメール" class="validate[required,custom[email]]" style="background:#fff;">
+                                    <br>
+                                    <div class="form-title font">Password</div>
+                                    <input type="password" name="password" placeholder="パスワード" class="validate[required]" style="background:#fff;">
+                                    <br>
+                                    <br>
+                                    <div class="submit-container">
+                                        <input class="submit-button" type="submit" value="ログイン">
+                                    </div>
+                                </form>
+                                <form action="password_change_send" method="get">
+                                    <input type="submit" value="パスワードを忘れた方" style="text-align:right;background:transparent;text-decoration:underline;margin:0px;padding: 0px;">
+                                </form>
+                                <hr>
+                                <p style="font-size:1px;text-align: left;">LifeChatを始めませんか？</p>
+                                <div class="submit-container">
+                                    <form action="/send_mail" method="get">
+                                        <input class="submit-button" type="submit" value="新規登録">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                            </section>
+                        </div>
+                        </li>
+                        <li>
+                        <a href="#content" class="lightbox2">
+                            <span class="glyphicon glyphicon-new-window"></span>
+                            Sign_up
+                        </a>
+                    </div>
+                    <div style="display:none">
+                        <div id="content">
+                            <div class="form-title">
+                                <div class="box1">
+                                    <center>
+                                        <h1 stule="border-top:1px solid;padding:auto;margin:auto;">SIGNUP</h1>
+                                        <span id="red">
+                                            <h3 style="color:#a25768;font-size:11pt;text-shadow: 0 0 5px;">
+                                                <%= @message.to_s %>
+                                            </h3>
+                                        </span>
+                                    </center>
+                                </div>
+                                    <form action="/send_mail" method="POST" id="form_1">
+                                        <form class="form-container">
+                                            <div class="form-title">E-MailAddress</div>
+                                            <input type="text" name="email" placeholder="例)LifeChat@sample.com" class="validate[required,custom[email]]" style="background:#f5f5f5;"><br>
+                                            <br>
+                                            <div class="submit-container">
+                                                <input class="submit-button" type="submit" value="仮登録をする" onclick="DisableButton(this);"><br>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                </ul>
+                </nav>
+            </div>
+            </header>
+
+        </div>
+        <div class="box__area">
+            <div class="box box__bg_photo">
+                <table>
+                    <tr>
+                        <td><h1 style="font-size:180px;color:#fff;">LifeC</h1>
+                        </td>
+                        <td>
+                            <h1 style="font-size:180px;color:black;">hat</h1>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="box">
+                <p>個人運営だからできる。みんなで作れる</p>
+                <br>
+                <p>SocialNetWorkService</p>
+            </div>
+            <div class="box">
+                <p>まずはアカウント作成から！</p>
+                <a href="/signup">LettsLifeChat!</a>
+            </div>
+        </div>
+
         <script>
-            function appendCount (count) {
-                $("#count").text(count);
-            }
-            function appendMessage (name,  text) {
-                $("#chat").append('<span class="label label-default">' + name + "</span>" + text + "<br/>");
-            }
-            function sendMessage() {
-                var name = $('#username').val();
-                var text = $('#msgbody').val();
-                if(name && text) {
-                    var data = JSON.stringify({ name: name,  body: text });
-                    ws.send(data);
-                    $('#msgbody').val('');
-                }
-            }
-
-            $('#msgbody').keypress(function (e) {
-                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-                    sendMessage();
-                }
+            $(function() {
+                $(".inline").colorbox({
+                    inline:true,
+                    opacity: 0.7
+                });
             });
-
-            $("#send").click(function(event) {
-                sendMessage();
+            $(function() {
+                $('.lightbox').colorbox();
+                $('.lightbox2').colorbox({
+                    inline: true,
+                    opacity: 0.7
+                });
+                $('.lightbox3').colorbox();
             });
-
-            var ws = new WebSocket(location.origin.replace(/^http/,  'ws'));
-
-            ws.onmessage = function(msg) {
-                var data = JSON.parse(msg.data);
-                if (data.body) {
-                    appendMessage(data.name,  data.body);
-                    } else if (data.count) {
-                    appendCount(data.count);
-                }
-            }
         </script>
-    </head>
 
-    <body>
-
-        <h1>LIFECHAT,</h1>
-        <!-- //////////////////////////
-        ポップアップメニュー
-        ////////////////////////////// -->
-        <script type='text/javascript'>
-            $(document).ready(function() {
-                    $('.popbox').popbox({
-                        'open': '.open',
-                        'box': '.box',
-                        'arrow': '.arrow',
-                        'arrow-border': '.arrow-border',
-                        'close': '.close'
-                        });
-                    });
-                </script>
-            </body>
-        </html>
+    </body>
+</html>

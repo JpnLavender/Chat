@@ -33,7 +33,6 @@ end
 
 get '/room' do
   if User.find_by id: session[:user]
-    @talk = Talk.all
     erb :room
   else
     erb :account
@@ -46,7 +45,7 @@ def friends
   p user = User.find_by_id(session[:user])
   @my_user = user
  # @my_friends = user.friends
-  erb :friends
+  erb :room
 end
 get '/friends' do
   friends

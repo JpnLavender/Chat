@@ -2,6 +2,7 @@
 body{
     background-image: url(img/background.png);
     background-attachmet: fixed;
+    font-family: 'Poiret One',  cursive;
   }
 
   /*--------------------------------------------------*/
@@ -192,3 +193,10 @@ body{
     -webkit-transition: all 500ms;
     transition: all 500ms;
   }
+  .topbar{
+    position:fixed;
+    z-index:100px;
+    background-color:#fff;
+    width:100%;
+    height:3em;
+}
