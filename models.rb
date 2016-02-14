@@ -14,30 +14,31 @@ class User < ActiveRecord::Base
   has_many :talks
   has_many :chats
   has_many :userrooms,  through: :appointments
- has_secure_password
+  has_many :friends
+  has_secure_password
   validates :mail,
-  presence: true,
+    presence: true,
     format: {with:/.+@.+/}
-    validates :password, confirmation: true,
+  validates :password, confirmation: true,
     unless: Proc.new { |a| a.password.blank? }
 end
 
-class Chat < ActiveRecord::Base
-  belongs_to :user
-end
+  class Chat < ActiveRecord::Base
+    belongs_to :user
+  end
 
-class Token < ActiveRecord::Base
-  belongs_to :user
-  # uuid: string, expire_at: datetime
-end
+  class Token < ActiveRecord::Base
+    belongs_to :user
+    # uuid: string, expire_at: datetime
+  end
 
-class Talk < ActiveRecord::Base
-  belongs_to :user
-end
+  class Talk < ActiveRecord::Base
+    belongs_to :user
+  end
 
-class Users < ActiveRecord::Base
-end
+  class Users < ActiveRecord::Base
+  end
 
-class Userroom < ActiveRecord::Base
+  class Userroom < ActiveRecord::Base
     has_many :user,  through: :appointments
-end
+  end

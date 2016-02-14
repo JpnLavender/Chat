@@ -32,15 +32,23 @@ get '/' do
 end
 
 get '/room' do
-  @talk = Talk.all
-  erb :room
+  if User.find_by id: session[:user]
+    @talk = Talk.all
+    erb :room
+  else
+    erb :account
+    #erb :sign_in
+  end
 end
 
-get '/friends' do
-  user = sessin[:user]
+def friends
+  user = User.find_by id: session[:use]
   @my_user = user
   @my_friends = user.friends
   erb :friends
+end
+get '/friends' do
+  friends
 end
 
 get '/chat' do
@@ -66,10 +74,9 @@ end
 # ////////////////////////////////サインイン////////////////////////////////
 get '/signin' do
   if User.find_by id: session[:user]
-    erb :yoyaku
-  else
-    erb :index
+    erb :room
   end
+  erb :account #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
 end
 
 post '/signin' do
@@ -77,14 +84,20 @@ post '/signin' do
     if user && user.authenticate(params[:password])#メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id #セッションにユーザーデータを保存する
       @user = user.user_name
-      erb :friends
+      friends
     else#もし合っていなかったら以下実行
       @error = 'パスワード又はメールアドレスが異なります'
       erb :index
     end
   elsif user = User.find_by_user_name(params[:mail])
-    session[:user] = user.id
-    redirect '/room'
+    if user && user.authenticate(params[:password])#メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
+      session[:user] = user.id #セッションにユーザーデータを保存する
+      @user = user.user_name
+      friends
+    else#もし合っていなかったら以下実行
+      @error = 'パスワード又はメールアドレスが異なります'
+      erb :index
+    end
   else
     @error = 'パスワード又はメールアドレスが異なります'
     erb :index
