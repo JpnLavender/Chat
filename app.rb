@@ -42,9 +42,10 @@ get '/room' do
 end
 
 def friends
-  user = User.find_by id: session[:use]
+  p "user = User.find_by :session[:user]"
+  p user = User.find_by_id(session[:user])
   @my_user = user
-  @my_friends = user.friends
+ # @my_friends = user.friends
   erb :friends
 end
 get '/friends' do

@@ -11,19 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160131061605) do
+ActiveRecord::Schema.define(version: 20160214055756) do
 
   create_table "chats", force: :cascade do |t|
-    t.string "title"
-    t.string "member"
-    t.string "body"
+    t.string "text"
+    t.string "room_id"
   end
 
-  create_table "talks", force: :cascade do |t|
-    t.string   "talk"
-    t.integer  "user_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "rooms", force: :cascade do |t|
+    t.string "name"
   end
 
   create_table "tokens", force: :cascade do |t|
