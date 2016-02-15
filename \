@@ -39,27 +39,24 @@
                 <li>
                 <div class="dropdown">
                     <button class="btn btn-default" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        <%= User.find(session[:user]).user_name %>
-                        <span class="glyphicon glyphicon-user"></span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li>
-                        <form action="/edit/<%= User.find(session[:user]).id %>" method="post">
-                            <input type="submit" value="アカウント情報を変更" style="background:transparent;text-decoration:underline;">
-                        </form>
-                        </li>
-                        <li>
-                            <form action="/logout" method="get">
-                                <input type="submit" value="ログアウト" style="background:transparent;text-decoration:underline;">
-                            </form>
-                        </li>
-                    </div>
+                        <%= User.find(session[:user]).user_name %></a>
+                    <span class="glyphicon glyphicon-user"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li>
+                    <form action="/edit/<%= User.find(session[:user]).id %>" method="post">
+                        <input type="submit" value="アカウント情報を変更" style="background:transparent;text-decoration:underline;">
+                    </form>
+                    </li>
+                    <li>
+                    <form action="/logout" method="get">
+                        <input type="submit" value="ログアウト" style="background:transparent;text-decoration:underline;">
+                    </form>
                     </li>
                 </ul>
             </div>
-        </div>
-        <!-- ユーザー名のポップアップend -->
-        </nav>
+            <!-- ユーザー名のポップアップend -->
+            </nav>
             </header>
             <!-- Header終了 -->
             <div class="dropdown">
@@ -74,5 +71,5 @@
                     <li><a href="#">Separated link</a></li>
                 </ul>
             </div>
-        </body>
-    </html>
+                            </body>
+            </html>
