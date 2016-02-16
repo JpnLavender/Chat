@@ -8,60 +8,52 @@
         <title>error</title>
     </head>
     <body>
-        <script type="text/javascript" src="../topbar.js"></script>
-        <div id="sse1">
-            <div id="sses1">
-                <ul>
-                    <li><a href="#">TopPage</a></li>
-                    <li><a href="#">Horizontal Menus</a></li>
-                    <li><a href="#">Web Menus</a></li>
+       <!-- Header -->
+        <header class="navbar navbar-default" style="margin-bottom:0;">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/friends" class="navbar-brand">Friends・</a>
+                <a href="/room" class="navbar-brand">Room・</a>
+                <a href="/tl" class="navbar-brand">TimeLine</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                <!-- 検索バー -->
+                <form class="navbar-form navbar-left" role="search" action="/search" method="POST">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                    </div>
+                    <button type="submit" class="glyphicon glyphicon-search btn btn-default"></button>
+                </form>
+                </li>
+                <!-- 検索バーend -->
 
-                    <script type='text/javascript' charset='utf-8' src='../popup/popbox.js'></script>
-                    <link rel='stylesheet' href='../popup/popbox.css' type='text/css'>
-
-                    <li class='popbox'>
-                    <a href="#" class="open" style="text-align:center;">ログイン</a>
-                    <div class='collapse_pop'>
-                        <div class="box" style="width:200px;padding:10px 15px 10px;margin:3em 0 0 0">
-                            <div class="arrow"></div>
-                            <div class="arrow-border"></div>
-                            <span id="red">
-                                <h3 style="color:#a25768;font-size:5px;text-shadow: 0 0 5px;">
-                                    <%= @error.to_s %>
-                                </h3>
-                            </span>
-                            <div class="input">
-                                <form action="/signin" method="POST" id="form_1">
-                                    <form class="form-container">
-                                        <div class="form-title font">E-MailAddress</div>
-                                        <input type="text" name="mail" placeholder="Eメール" class="validate[required,custom[email]]" style="background:#fff;">
-                                        <br>
-                                        <div class="form-title font">Password</div>
-                                        <input type="password" name="password" placeholder="パスワード" class="validate[required]" style="background:#fff;">
-                                        <br>
-                                        <div class="submit-container">
-                                            <input class="submit-button" type="submit" value="ログイン">
-                                        </div>
-                                    </form>
-                                </form>
-                                <form action="password_change_send" method="get">
-                                    <input type="submit" value="パスワードを忘れた方" style="text-align:right;background:transparent;text-decoration:underline;margin:0px;padding: 0px;">
-                                </form>
-                                <hr>
-                                <p style="font-size:1px;text-align: left;">ネット予約を始めませんか？</p>
-                                <div class="submit-container">
-                                    <form action="/send_mail" method="get">
-                                        <input class="submit-button" type="submit" value="新規登録">
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                <!-- ユーザー名のポップアップ -->
+                <li>
+                <div class="dropdown">
+                    <button class="btn btn-default" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <%= User.find(session[:user]).user_name %>
+                        <span class="glyphicon glyphicon-user"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                        <form action="/edit/<%= User.find(session[:user]).id %>" method="post">
+                            <input type="submit" value="アカウント情報を変更" style="background:transparent;text-decoration:underline;">
+                        </form>
+                        </li>
+                        <li>
+                        <form action="/logout" method="get">
+                            <input type="submit" value="ログアウト" style="background:transparent;text-decoration:underline;">
+                        </form>
+                        </li>
                     </div>
                     </li>
                 </ul>
             </div>
-        </div>
-        <!-- メニューバー終了 -->
+            <!-- ユーザー名のポップアップend -->
+            </nav>
+            </header>
+            <!-- Header終了 -->
         <div  class="box3">
             <p>
             <%= @message.to_s %>

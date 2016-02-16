@@ -35,8 +35,7 @@ get '/room' do
   if User.find_by id: session[:user]
     erb :room
   else
-    erb :account
-    #erb :sign_in
+    erb :index
   end
 end
 
@@ -45,10 +44,16 @@ def friends
   p user = User.find_by_id(session[:user])
   @my_user = user
  # @my_friends = user.friends
-  erb :room
+  erb :friends
 end
+
 get '/friends' do
-  friends
+  if User.find_by id: session[:user]
+    erb :friends
+    friends
+  else
+    erb :index
+  end
 end
 
 get '/chat' do
@@ -76,7 +81,7 @@ get '/signin' do
   if User.find_by id: session[:user]
     erb :room
   end
-  erb :account #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
+  erb :sign_in #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
 end
 
 post '/signin' do
