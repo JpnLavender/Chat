@@ -21,7 +21,7 @@ enable :sessions
 # ////////////////////////////////////////////////////////////////
 module Websockettest2
   class App < Sinatra::Base
-    get "/" do
+    get '/' do
       erb :index
     end
   end
@@ -48,20 +48,22 @@ get '/create_room' do
 end
 
 post '/create_room' do
+  range = if range = params[:range]
+            true
+          else
+            false
+  end
 
-  range = params[:public]
-  if range == "true" || "false"
-    range.each do |p|
-      range = p
-    end
-  else
-    range= false
+  admin = if admin = params[:admin]
+            true
+          else
+            false
   end
 
   room = Room.new(
-  name: params[:title],
-  range: range,
-  room_admin: admin
+    name: params[:title],
+    range: range,
+    room_admin: admin
   )
 
   if room.save
@@ -74,6 +76,7 @@ end
 
 get '/my_room_list' do
   if User.find_by id: session[:user]
+    @list_all = Room.where(range: true)
     erb :my_room_list
   else
     erb :index
@@ -89,10 +92,10 @@ get '/public_room' do
 end
 
 def friends
-  p "user = User.find_by :session[:user]"
+  p 'user = User.find_by :session[:user]'
   p user = User.find_by_id(session[:user])
   @my_user = user
- # @my_friends = user.friends
+  # @my_friends = user.friends
   erb :friends
 end
 
@@ -115,7 +118,7 @@ end
 
 # ////////////////////////////////チャット送信////////////////////////////////
 post '/chat' do
- p talk = Talk.new(
+  p talk = Talk.new(
     talk: params[:chat],
     user_name: session[:user]
   )
@@ -127,28 +130,26 @@ post '/chat' do
 end
 # ////////////////////////////////サインイン////////////////////////////////
 get '/signin' do
-  if User.find_by id: session[:user]
-    erb :room
-  end
+  erb :room if User.find_by id: session[:user]
   erb :index #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
 end
 
 post '/signin' do
-  if user = User.find_by_mail(params[:mail])#メールアドレスが存在するか確認する
-    if user && user.authenticate(params[:password])#メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
-      session[:user] = user.id #セッションにユーザーデータを保存する
+  if user = User.find_by_mail(params[:mail]) # メールアドレスが存在するか確認する
+    if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
+      session[:user] = user.id # セッションにユーザーデータを保存する
       @user = user.user_name
       erb :room
-    else#もし合っていなかったら以下実行
+    else # もし合っていなかったら以下実行
       @t = true
       erb :index
     end
   elsif user = User.find_by_user_name(params[:mail])
-    if user && user.authenticate(params[:password])#メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
-      session[:user] = user.id #セッションにユーザーデータを保存する
+    if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
+      session[:user] = user.id # セッションにユーザーデータを保存する
       @user = user.user_name
       erb :room
-    else#もし合っていなかったら以下実行
+    else # もし合っていなかったら以下実行
       @t = true
       erb :index
     end
@@ -184,7 +185,7 @@ post '/renew/:id' do
                 mail:    params[:mail],
                 age: params[:age],
                 introduction: params[:introduction]
-                )
+               )
     redirect '/room'
   else
     @message = 'パスワードが異なります'
@@ -198,79 +199,85 @@ end
 
 post '/send_mail' do
   email = params[:email]
-  mail_check = User.where(mail: email).exists?#入力したメールアドレスがあるか確認
-  if mail_check#入力したメールアドレスがあれば@messageを表示
+  mail_check = User.where(mail: email).exists? # 入力したメールアドレスがあるか確認
+  if mail_check # 入力したメールアドレスがあれば@messageを表示
     @message = "入力されたメールアドレスは登録済みです。"
     erb :index
-  else#入力したメールアドレスがなければ↓を実行
-    random = SecureRandom.uuid#乱数で暗号を作成
-    token = Token.new(#暗号とメールアドレスをDBに作成
-                      token: random,
-                      address: params[:email],
-                      expired_at: 24.hours.since
-                     )
-   if token.save#暗号とメールアドレスをDBに作成できれば↓を実行
-   p email_secret = Base64.encode64(random)#暗号を暗号化する
+  else # 入力したメールアドレスがなければ↓を実行
+    random = SecureRandom.uuid # 乱数で暗号を作成
+    token = Token.new( # 暗号とメールアドレスをDBに作成
+      token: random,
+      address: params[:email],
+      expired_at: 24.hours.since
+    )
+    if token.save # 暗号とメールアドレスをDBに作成できれば↓を実行
+      p email_secret = Base64.encode64(random) # 暗号を暗号化する
 
-   xyz = 'localhost:4567'
+      xyz = 'localhost:4567'
 
-   Pony.mail(
-     to: email,
-            body: "
-            アカウントに登録していただきありがとうございます。まだ、
-            アカウント登録は完了していませんので、
-            http://#{xyz}/signup/#{email_secret}
-            にアクセスして、本登録を行って下さい",
-              subject: "仮登録が完了しました",
-              via: :smtp,
-              via_options: {
-              enable_starttls_auto: true,
-              address: 'smtp.gmail.com',
-              port: '587',
-              user_name: 'nagisa20000014',
-              password: 'yriqalcacichqxir',
-              authentication: :plain,
-              domain: 'gmail.com'
-            }
-   )
+      Pony.mail(
+        to: email,
+        body: "
+               アカウントに登録していただきありがとうございます。まだ、
+               アカウント登録は完了していませんので、
+               http://#{xyz}/signup/#{email_secret}
+               にアクセスして、本登録を行って下さい",
+        subject: "仮登録が完了しました",
+        via: :smtp,
+        via_options: {
+          enable_starttls_auto: true,
+          address: 'smtp.gmail.com',
+          port: '587',
+          user_name: 'nagisa20000014',
+          password: 'yriqalcacichqxir',
+          authentication: :plain,
+          domain: 'gmail.com'
+        }
+      )
 
-   redirect '/account'
-   else#保存に失敗したら↓を実行
-   @message = '不明なエラーが発生しました'
-   erb :message
-   end
+      redirect '/account'
+    else # 保存に失敗したら↓を実行
+      @message = '不明なエラーが発生しました'
+      erb :message
+    end
   end
 end
 
 get '/signup/:email_secret' do
-  secret = params[:email_secret]#URLの暗号の暗号を取得
-  secret_mail = Base64.decode64(secret)#暗号の暗号を解読
-  @mail = Token.find_by_token(secret_mail).address#暗号からメールアドレスを取得
-  token = Token.find_by_token(secret_mail)#暗号がDBにあるか確認
+  secret = params[:email_secret] # URLの暗号の暗号を取得
+  secret_mail = Base64.decode64(secret) # 暗号の暗号を解読
+  @mail = Token.find_by_token(secret_mail).address # 暗号からメールアドレスを取得
+  token = Token.find_by_token(secret_mail) # 暗号がDBにあるか確認
 
-  if token && token.expired_at > Time.now#暗号がDBにあれば時間外か確認
-    token.update(expired_at: Time.now)#DBが時間内であれば時間外にして
-    erb :sign_up#フォームを表示する
-  else#DBが時間外なら↓を実行
+  if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
+    token[:expired_at] = Time.now # DBが時間内であれば時間外にして
+    erb :sign_up # フォームを表示する
+  else # DBが時間外なら↓を実行
     @message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
     erb :message
   end
 end
 # ////////////////////////////////アカウント作成////////////////////////////////
 post '/signup' do
-  @user = User.new(
-    name: params[:name],
-    user_name: params[:user_name],
-    mail: params[:mail],
-    password: params[:password],
-    password_confirmation: params[:password_confirmation]
-  )
-  if @user.save
-    session[:user] = @user.id unless @user.nil?
-    redirect '/room'
+  user_name = User.where(user_name: params[:user_name])
+  if user_name
+    @user = User.new(
+      name: params[:name],
+      user_name: params[:user_name],
+      mail: params[:mail],
+      password: params[:password],
+      password_confirmation: params[:password_confirmation]
+    )
+    if @user.save
+      session[:user] = @user.id unless @user.nil?
+      redirect '/room'
+    else
+      @message = '不明なエラーが発生しました'
+      erb :message
+    end
   else
-    @message = '不明なエラーが発生しました'
-    erb :message
+    @meeage = 'すでに使われているUserNameです'
+    erb :messeage
   end
 end
 
