@@ -64,16 +64,18 @@
         </head>
 
         <body>
-            <div class="topbar">
                 <header class="navbar navbar-default">
                 <div class="container">
                     <div class="navbar-header">
-                        <a href="/" class="navbar-brand">LifeChat</a>
+                        <img src="/img/LifeChatIcon.gif" class="navbar-brand">
+                        <a href="/" class="navbar-brand">
+                            LifeChat
+                        </a>
                     </div>
                     <nav class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav navbar-nav navbar-right">
 
-                        <li>
+                            <li>
                         <a class="inline" href="#inline-content">
                             <span class="glyphicon glyphicon-log-in"></span>
                             Sign_in
@@ -83,16 +85,19 @@
 
                             <div class="box1">
                             <div class="input">
+                                <% if @t %>
+                                    <span class="list-group-item list-group-item-danger">パスワードまたはユーザー名が違うます</span>
+                                <% end %>
                                 <form action="/signin" method="POST" id="form_1">
                                     <div class="form-title font">E-MailAddress</div>
-                                    <input type="text" name="mail" placeholder="Eメール" class="validate[required,custom[email]]" style="background:#fff;">
+                                    <input type="text" name="name" class="form-control" placeholder="山田太郎" aria-describedby="sizing-addon2">
                                     <br>
                                     <div class="form-title font">Password</div>
-                                    <input type="password" name="password" placeholder="パスワード" class="validate[required]" style="background:#fff;">
+                                    <input type="password" name="password" placeholder="パスワード" class="form-control validate[required]" style="background:#fff;">
                                     <br>
                                     <br>
                                     <div class="submit-container">
-                                        <input class="submit-button" type="submit" value="ログイン">
+                                        <input class="form-control submit-button" type="submit" value="ログイン">
                                     </div>
                                 </form>
                                 <form action="password_change_send" method="get">
@@ -102,7 +107,7 @@
                                 <p style="font-size:1px;text-align: left;">LifeChatを始めませんか？</p>
                                 <div class="submit-container">
                                     <form action="/send_mail" method="get">
-                                        <input class="submit-button" type="submit" value="新規登録">
+                                        <input class="form-control submit-button" type="submit" value="新規登録">
                                     </form>
                                 </div>
                             </div>
@@ -123,19 +128,19 @@
                                     <center>
                                         <h1 stule="border-top:1px solid;padding:auto;margin:auto;">SIGNUP</h1>
                                         <span id="red">
-                                            <h3 style="color:#a25768;font-size:11pt;text-shadow: 0 0 5px;">
-                                                <%= @message.to_s %>
-                                            </h3>
+                                            <% if @t %>
+                                                <span class="list-group-item list-group-item-danger">このメールアドレスはすでに使われています</span>
+                                            <% end %>
                                         </span>
                                     </center>
                                 </div>
                                     <form action="/send_mail" method="POST" id="form_1">
                                         <form class="form-container">
                                             <div class="form-title">E-MailAddress</div>
-                                            <input type="text" name="email" placeholder="例)LifeChat@sample.com" class="validate[required,custom[email]]" style="background:#f5f5f5;"><br>
+                                            <input type="text" name="email" placeholder="例)LifeChat@sample.com" class="form-control validate[required,custom[email]]" style="background:#f5f5f5;"><br>
                                             <br>
                                             <div class="submit-container">
-                                                <input class="submit-button" type="submit" value="仮登録をする" onclick="DisableButton(this);"><br>
+                                                <input class="form-control submit-button" type="submit" value="仮登録をする" onclick="DisableButton(this);"><br>
                                             </div>
                                         </form>
                                     </div>
@@ -146,7 +151,6 @@
                     </li>
                 </ul>
                 </nav>
-            </div>
             </header>
 
         </div>
@@ -169,7 +173,7 @@
             </div>
             <div class="box">
                 <p>まずはアカウント作成から！</p>
-                <a href="/signup">LettsLifeChat!</a>
+                        <a href="#content" class="lightbox2"> Let's!LifeChat!</a>
             </div>
         </div>
 

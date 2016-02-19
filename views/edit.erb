@@ -36,6 +36,7 @@ $('form').on('submit',  function () {
         <header class="navbar navbar-default" style="margin-bottom:0;">
             <div class="container">
                 <div class="navbar-header">
+                <img src="/img/LifeChatIcon.gif" class="navbar-brand">
                     <a href="/friends" class="navbar-brand">Friends・</a>
                     <a href="/room" class="navbar-brand">Room・</a>
                     <a href="/tl" class="navbar-brand">TimeLine</a>
@@ -56,7 +57,7 @@ $('form').on('submit',  function () {
                     <li>
                         <div class="dropdown">
                             <button class="btn btn-default" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                <%= User.find(session[:user]).user_name %>
+                                @<%= User.find(session[:user]).user_name %>
                                 <span class="glyphicon glyphicon-user"></span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -92,23 +93,26 @@ $('form').on('submit',  function () {
                 <form class="form-container">
                     <div>
                         <label>名前:</label>
-                        <input type="text" name="name" value="<%= @users.name %>" class="input_text" style="background:#fff;"></p>
+                        <input type="text" name="name" value="<%= @users.name %>" class="form-control" placeholder="山田太郎" aria-describedby="sizing-addon2">
                     </div>
                     <div>
                         <label>ユーザー名:</label>
-                        <input type="text" name="name" value="<%= @users.user_name %>" class="input_text" style="background:#fff;"></p>
+                        <div class="input-group">
+                            <span class="input-group-addon" id="sizing-addon2">@</span>
+                            <input type="text" name="user_name" class="form-control" value="<%= @users.user_name %>" placeholder="Username" aria-describedby="sizing-addon2">
+                        </div>
                     </div>
                     <div>
                         <label>メール:</label>
-                        <p><input type="text" name="mail" value="<%= @users.mail %>"class="input_text" style="background:#fff;"></p>
+                        <input type="text" name="mail" value="<%= @users.mail %>" class="form-control" placeholder="lifechat@sample.com" aria-describedby="sizing-addon2">
                     </div>
                     <div>
                         <label>年齢:</label>
-                        <p><input type="text" name="age" value="<%= @users.age %>"class="input_text" style="background:#fff;"></p>
+                        <input type="text" name="age" value="<%= @users.age %>" class="form-control" placeholder="18" aria-describedby="sizing-addon2">
                     </div>
                     <div>
                         <label>自己紹介:</label>
-                        <textarea name="age" rows="4" cols="40" value="<%= @users.introduction%>"class="input_text" style="background:#fff;"></textarea>
+                        <textarea name="introduction" class="form-control" value="<%= @users.introduction%>" rows="3"></textarea>
                     </div>
 
                     <br><br>
@@ -123,7 +127,7 @@ $('form').on('submit',  function () {
                     <br><br>
                     <div>
                         <label>変更を完了するにはパスワードを入力してください:</label>
-                        <p><input type="password" name="password" class="input_text" style="background:#fff;"></p>
+                        <input type="password" class="form-control" name="password" aria-describedby="sizing-addon2">
                     </div>
                     <p><input type="submit" value="編集完了" class="submit-button"></p>
                 </form>

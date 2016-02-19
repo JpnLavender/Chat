@@ -19,6 +19,7 @@
         <header class="navbar navbar-default" style="margin-bottom:0;">
         <div class="container">
             <div class="navbar-header">
+                <img src="/img/LifeChatIcon.gif" class="navbar-brand">
                 <a href="/friends" class="navbar-brand">Friends・</a>
                 <a href="/room" class="navbar-brand">Room・</a>
                 <a href="/tl" class="navbar-brand">TimeLine</a>
@@ -39,7 +40,7 @@
                 <li>
                 <div class="dropdown">
                     <button class="btn btn-default" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        <%= User.find(session[:user]).user_name %>
+                        @<%= User.find(session[:user]).user_name %>
                         <span class="glyphicon glyphicon-user"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -66,9 +67,9 @@
                     <span class="glyphicon glyphicon-align-justify"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a href="#">RoomCreate</a></li>
-                    <li><a href="#">RoomList</a></li>
-                    <li><a href="#">Room</a></li>
+                    <li><a href="/create_room">RoomCreate</a></li>
+                    <li><a href="/my_room_list">RoomLists</a></li>
+                    <li><a href="/public_room">PublicRooms</a></li>
                     <li role="separator" class="divider"></li>
                     <li><a href="#">Separated link</a></li>
                 </ul>

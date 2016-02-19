@@ -39,6 +39,55 @@ get '/room' do
   end
 end
 
+get '/create_room' do
+  if User.find_by id: session[:user]
+    erb :create_room
+  else
+    erb :index
+  end
+end
+
+post '/create_room' do
+
+  range = params[:public]
+  if range == "true" || "false"
+    range.each do |p|
+      range = p
+    end
+  else
+    range= false
+  end
+
+  room = Room.new(
+  name: params[:title],
+  range: range,
+  room_admin: admin
+  )
+
+  if room.save
+    erb :room
+  else
+    @message = "ルーム作成に失敗しました"
+    erb :message
+  end
+end
+
+get '/my_room_list' do
+  if User.find_by id: session[:user]
+    erb :my_room_list
+  else
+    erb :index
+  end
+end
+
+get '/public_room' do
+  if User.find_by id: session[:user]
+    erb :my_room_list
+  else
+    erb :index
+  end
+end
+
 def friends
   p "user = User.find_by :session[:user]"
   p user = User.find_by_id(session[:user])
@@ -81,7 +130,7 @@ get '/signin' do
   if User.find_by id: session[:user]
     erb :room
   end
-  erb :sign_in #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
+  erb :index #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
 end
 
 post '/signin' do
@@ -89,22 +138,22 @@ post '/signin' do
     if user && user.authenticate(params[:password])#メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id #セッションにユーザーデータを保存する
       @user = user.user_name
-      friends
+      erb :room
     else#もし合っていなかったら以下実行
-      @error = 'パスワード又はメールアドレスが異なります'
+      @t = true
       erb :index
     end
   elsif user = User.find_by_user_name(params[:mail])
     if user && user.authenticate(params[:password])#メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id #セッションにユーザーデータを保存する
       @user = user.user_name
-      friends
+      erb :room
     else#もし合っていなかったら以下実行
-      @error = 'パスワード又はメールアドレスが異なります'
+      @t = true
       erb :index
     end
   else
-    @error = 'パスワード又はメールアドレスが異なります'
+    @t = true
     erb :index
   end
 end
@@ -121,34 +170,22 @@ get '/edit/:id' do
 end
 post '/edit/:id' do
   @users = User.find(params[:id])
-#  if @users && @users.tow_stage_authentication
-#    @checked = 'checked'
-#    erb :edit
-#  else
-    erb :edit
-#  end
+  erb :edit
 end
 
 # ////////////////////////////////予約変更保存////////////////////////////////
 
 post '/renew/:id' do
   user = User.find(params[:id])
-  if  tow = params[:tow_stage_authentication]
-    tow.each do |i|
-      $answer = i
-    end
-  else
-    $answer = false
-  end
-
   if user && user.authenticate(params[:password])
     session[:user] = user.id
     user.update(name:   params[:name],
+                user_name:    params[:user_name],
                 mail:    params[:mail],
-                tel:    params[:tel],
-                street: params[:street],
-                tow_stage_authentication: $answer)
-    redirect '/yoyaku'
+                age: params[:age],
+                introduction: params[:introduction]
+                )
+    redirect '/room'
   else
     @message = 'パスワードが異なります'
     erb :message
@@ -164,7 +201,7 @@ post '/send_mail' do
   mail_check = User.where(mail: email).exists?#入力したメールアドレスがあるか確認
   if mail_check#入力したメールアドレスがあれば@messageを表示
     @message = "入力されたメールアドレスは登録済みです。"
-    erb :send_mail
+    erb :index
   else#入力したメールアドレスがなければ↓を実行
     random = SecureRandom.uuid#乱数で暗号を作成
     token = Token.new(#暗号とメールアドレスをDBに作成
