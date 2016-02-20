@@ -2,6 +2,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="/base.css"><!-- CSS参照 -->
+        <link rel="shortcut icon" href="./img/favicon.ico">
         <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
         <title>Hairsalon.MaitoriKaruna</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -41,7 +42,7 @@
                 <li>
                 <div class="dropdown">
                     <button class="btn btn-default" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        <%= User.find(session[:user]).user_name %>
+                        @<%= User.find(session[:user]).user_name %>
                         <span class="glyphicon glyphicon-user"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">

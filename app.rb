@@ -48,22 +48,25 @@ get '/create_room' do
 end
 
 post '/create_room' do
-  range = if range = params[:range]
-            true
-          else
-            false
+  if range = params[:range]
+    range.each do |i|#ここで"true"をtrueへ変換
+      range = i
+    end
+  else
+    false
   end
 
-  admin = if admin = params[:admin]
-            true
-          else
-            false
+  admin =
+  if admin = params[:admin]
+    true
+  else
+    false
   end
 
   room = Room.new(
-    name: params[:title],
-    range: range,
-    room_admin: admin
+  name: params[:title],
+  range: range,
+  room_admin: admin
   )
 
   if room.save
@@ -135,22 +138,22 @@ get '/signin' do
 end
 
 post '/signin' do
-  if user = User.find_by_mail(params[:mail]) # メールアドレスが存在するか確認する
+  if user = User.find_by_mail(params[:name]) # メールアドレスが存在するか確認する
     if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
       @user = user.user_name
       erb :room
     else # もし合っていなかったら以下実行
-      @t = true
+      @user_true = true
       erb :index
     end
-  elsif user = User.find_by_user_name(params[:mail])
+  elsif user = User.find_by_user_name(params[:name])
     if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
       @user = user.user_name
       erb :room
     else # もし合っていなかったら以下実行
-      @t = true
+      @user_name_true = true
       erb :index
     end
   else
@@ -159,9 +162,9 @@ post '/signin' do
   end
 end
 # ////////////////////////////////サインアウト////////////////////////////////
-get '/logout' do
+post '/logout' do
   session[:user] = nil
-  redirect '/signin'
+  redirect '/'
 end
 
 # ////////////////////////////////予約変更////////////////////////////////
@@ -259,7 +262,7 @@ get '/signup/:email_secret' do
 end
 # ////////////////////////////////アカウント作成////////////////////////////////
 post '/signup' do
-  user_name = User.where(user_name: params[:user_name])
+  user_name = User.where(user_name: params[:user_name]).exists?
   if user_name
     @user = User.new(
       name: params[:name],

@@ -2,6 +2,7 @@
     <head>
         <link rel="stylesheet" type="text/css" href="base.css"><!-- CSS参照 -->
         <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
+            <link rel="shortcut icon" href="./img/favicon.ico">
         <!-- ▼jQuery本体 -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <!-- ▼バリデーション -->
@@ -12,13 +13,13 @@
             $(function(){
                 jQuery("#form_1").validationEngine();
             });
-        </script>
-        <script type="text/javascript">
-            function DisableButton(pObj) {
-                　pObj.disabled = true;
-                　pObj.value = '送信中';
-                　pObj.form.submit();
-            }
+</script>
+<script type="text/javascript">
+function DisableButton(pObj) {
+  pObj.disabled = true;
+  pObj.value = '送信中';
+  pObj.form.submit();
+}
 </script>
     </head>
     <body class="main">

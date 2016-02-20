@@ -2,6 +2,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <link rel="stylesheet" type="text/css" href="/base.css"><!-- CSS参照 -->
+  <link rel="shortcut icon" href="./img/favicon.ico">
   <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
   <title>LifeChat.create_room</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -63,6 +64,24 @@
     </nav>
   </header>
   <!-- Header終了 -->
+  <!-- メニューボタン -->
+    <div class="dropdown">
+      <button aria-expanded="true" aria-haspopup="true" class="btn btn-default btn-lg" data-toggle="dropdown" id="dropdownMenu1" type="button">
+        <span class="glyphicon glyphicon-align-justify"></span>
+      </button>
+      <ul aria-labelledby="dropdownMenu1" class="dropdown-menu">
+        <li>
+          <a href="/room">TopRoom</a>
+        </li>
+        <li>
+          <a href="/create_room">RoomCreate</a>
+        </li>
+        <li>
+          <a href="/my_room_list">RoomLists</a>
+        </li>
+      </ul>
+    </div>
+    <!-- メニューボタン終了 -->
   <br><br>
   <div class="box2">
     <form class="form-horizontal" action="/create_room" method="POST">

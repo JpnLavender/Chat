@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="Content-Style-Type" content="text/css">
+        <link rel="shortcut icon" href="./img/favicon.ico">
         <link rel="stylesheet" type="text/css" href="/base.css"><!-- CSS参照 -->
         <!-- ▼Googleフォント -->
         <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
@@ -112,7 +113,7 @@ $('form').on('submit',  function () {
                     </div>
                     <div>
                         <label>自己紹介:</label>
-                        <textarea name="introduction" class="form-control" value="<%= @users.introduction%>" rows="3"></textarea>
+                        <textarea name="introduction" class="form-control" rows="3"><%= @users.introduction %></textarea>
                     </div>
 
                     <br><br>
