@@ -27,6 +27,22 @@ module Websockettest2
   end
 end
 # ////////////////////////////////デフォルト参照////////////////////////////////
+get '/chat' do
+  if User.find_by id: session[:user]
+    erb :chat
+  else
+    erb :index
+  end
+end
+
+get '/tl' do
+  if User.find_by id: session[:user]
+    erb :tl
+  else
+    erb :index
+  end
+end
+
 get '/' do
   erb :index
 end
@@ -86,6 +102,18 @@ get '/my_room_list' do
   end
 end
 
+# ////////////////////////////////ルームの削除////////////////////////////////
+get '/delete/:id' do
+  room = Room.delete(params[:id])
+  if room
+    redirect 'my_room_list'
+  else
+    @messeage = "内部サーバーエラー"
+    erb :messeage
+  end
+end
+
+# ////////////////////////////////パブリックルーム////////////////////////////////
 get '/public_room' do
   if User.find_by id: session[:user]
     erb :my_room_list
@@ -93,7 +121,7 @@ get '/public_room' do
     erb :index
   end
 end
-
+# ////////////////////////////////フレンド機能設定////////////////////////////////
 def friends
   p 'user = User.find_by :session[:user]'
   p user = User.find_by_id(session[:user])
@@ -110,15 +138,6 @@ get '/friends' do
     erb :index
   end
 end
-
-get '/chat' do
-  erb :chat
-end
-
-get '/tl' do
-  erb :tl
-end
-
 # ////////////////////////////////チャット送信////////////////////////////////
 post '/chat' do
   p talk = Talk.new(

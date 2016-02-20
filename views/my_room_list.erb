@@ -54,7 +54,7 @@
             <!-- 検索バー -->
             <form action="/search" class="navbar-form navbar-left" method="POST" role="search">
               <div class="form-group">
-                <input class="form-control" placeholder="Search" type="text">
+                <input class="form-control" name="search" placeholder="Search" type="text">
               </div>
               <button class="glyphicon glyphicon-search btn btn-default" type="submit"></button>
             </form>
@@ -114,11 +114,11 @@
           <div class="demo-content bg-alt">
             <!-- <img src="#" class="img-rounded"> -->
             <ul>
-              <a href="<%= room.name %>">
-                <li><%= room.name %></li>
-              </a>
-              <li>RoomID #=>
-                <%= room.id %></li>
+              <a href="<%= room.name %>"> <li><%= room.name %></li> </a>
+              <li>RoomID #=> <%= room.id %></li>
+              <% unless room.room_admin %>
+              <li><a href="/delete/<%= room.id %>"><span class="glyphicon glyphicon-trash"></span></a></li>
+              <% end %>
             </ul>
           </div>
         </div>
