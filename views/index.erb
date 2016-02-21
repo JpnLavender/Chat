@@ -19,9 +19,12 @@
     <script src="colorbox/jquery.colorbox-min.js"></script>
   </script>
   <script type="text/javascript">
-    $('form').on('submit', function () {
-      $(this).find('input:submit').attr('disabled', 'disabled').val('送信中...');
-    });
+            function DisableButton(pObj) {
+                　pObj.disabled = true;
+                　pObj.value = '送信中';
+                　pObj.form.submit();
+            }
+
   </script>
 
   <style type="text/css">
@@ -86,9 +89,44 @@
           LifeChat
         </a>
       </div>
+
       <nav class="collapse navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
+      <% if current_user %>
+	<li>
+            <!-- 検索バー -->
+            <form action="/search" class="navbar-form navbar-left" method="POST" role="search">
+              <div class="form-group">
+                <input class="form-control" name="search" placeholder="Search" type="text">
+              </div>
+              <button class="glyphicon glyphicon-search btn btn-default" type="submit"></button>
+            </form>
+          </li>
+          <!-- 検索バーend -->
 
+          <!-- ユーザー名のポップアップ -->
+          <li>
+            <div class="dropdown">
+              <button aria-expanded="true" aria-haspopup="true" class="btn btn-default" data-toggle="dropdown" id="dropdownMenu1" type="button">
+                @<%= User.find(session[:user]).user_name %>
+                <span class="glyphicon glyphicon-user"></span>
+              </button>
+              <ul aria-labelledby="dropdownMenu1" class="dropdown-menu">
+                <li>
+                  <form action="/edit/<%= User.find(session[:user]).id %>" method="post">
+                    <input style="background:transparent;text-decoration:underline;" type="submit" value="アカウント情報を変更">
+                  </form>
+                </li>
+                <li>
+                  <form action="/logout" method="get">
+                    <input style="background:transparent;text-decoration:underline;" type="submit" value="ログアウト">
+                  </form>
+                </li>
+              </div>
+            </li>
+          </ul>
+        </div>
+      <% else %>
           <li>
             <a class="inline" href="#inline-content">
               <span class="glyphicon glyphicon-log-in"></span>
@@ -104,7 +142,7 @@
                     <% end %>
                     <form action="/signin" id="form_1" method="POST">
                       <div class="form-title font">E-MailAddress or UserName</div>
-                      <input aria-describedby="sizing-addon2" class="form-control" name="name" placeholder="lifechat@sample.com" type="text">
+                      <input aria-describedby="sizing-addon2" class="form-control" name="name" placeholder="@lifechat" type="text">
                       <br>
                       <div class="form-title font">Password</div>
                       <input class="form-control validate[required]" name="password" placeholder="パスワード" style="background:#fff;" type="password">
@@ -165,6 +203,7 @@
       </li>
     </ul>
   </nav>
+  <% end %>
 </header>
 
 </div>

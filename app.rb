@@ -26,6 +26,14 @@ module Websockettest2
     end
   end
 end
+
+helpers do
+  def current_user
+    if session[:user]
+	User.find(session[:user])
+    end
+  end
+end
 # ////////////////////////////////デフォルト参照////////////////////////////////
 get '/chat' do
   if User.find_by id: session[:user]
@@ -55,6 +63,7 @@ get '/room' do
   end
 end
 
+# ////////////////////////////////ルーム作成////////////////////////////////
 get '/create_room' do
   if User.find_by id: session[:user]
     erb :create_room
@@ -69,14 +78,13 @@ post '/create_room' do
       range = i
     end
   else
-    false
+    range = false
   end
 
-  admin =
   if admin = params[:admin]
-    true
+    admin = true
   else
-    false
+    admin = false
   end
 
   room = Room.new(
@@ -93,6 +101,7 @@ post '/create_room' do
   end
 end
 
+# ////////////////////////////////ルームリスト表示////////////////////////////////
 get '/my_room_list' do
   if User.find_by id: session[:user]
     @list_all = Room.where(range: true)
@@ -102,6 +111,17 @@ get '/my_room_list' do
   end
 end
 
+# ////////////////////////////////user_search////////////////////////////////
+post '/search' do
+  if User.where("user_name like '%#{params[:search]}%'").exists?
+    @search_users = User.where("user_name like '%#{params[:search]}%'")
+    #@search_answers = @search_users.map(&:answers).flatten
+    erb :user_list
+  else
+    @message = "ユーザーが存在しません"
+    erb :user_list
+  end
+end
 # ////////////////////////////////ルームの削除////////////////////////////////
 get '/delete/:id' do
   room = Room.delete(params[:id])
@@ -181,7 +201,7 @@ post '/signin' do
   end
 end
 # ////////////////////////////////サインアウト////////////////////////////////
-post '/logout' do
+get '/logout' do
   session[:user] = nil
   redirect '/'
 end
@@ -272,7 +292,7 @@ get '/signup/:email_secret' do
   token = Token.find_by_token(secret_mail) # 暗号がDBにあるか確認
 
   if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
-    token[:expired_at] = Time.now # DBが時間内であれば時間外にして
+    token.update(expired_at: Time.now)# DBが時間内であれば時間外にして
     erb :sign_up # フォームを表示する
   else # DBが時間外なら↓を実行
     @message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
@@ -281,8 +301,7 @@ get '/signup/:email_secret' do
 end
 # ////////////////////////////////アカウント作成////////////////////////////////
 post '/signup' do
-  user_name = User.where(user_name: params[:user_name]).exists?
-  if user_name
+  unless User.where(user_name: params[:user_name]).exists?
     @user = User.new(
       name: params[:name],
       user_name: params[:user_name],
@@ -298,8 +317,8 @@ post '/signup' do
       erb :message
     end
   else
-    @meeage = 'すでに使われているUserNameです'
-    erb :messeage
+    @message = 'すでに使われているUserNameです'
+    erb :message
   end
 end
 

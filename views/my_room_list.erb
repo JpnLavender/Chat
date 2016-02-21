@@ -44,7 +44,7 @@
     <header class="navbar navbar-default" style="margin-bottom:0;">
       <div class="container">
         <div class="navbar-header">
-          <img class="navbar-brand" src="/img/LifeChatIcon.gif">
+			<a href="/"><img src="/img/LifeChatIcon.gif" class="navbar-brand"></a>
           <a class="navbar-brand" href="/friends">Friends・</a>
           <a class="navbar-brand" href="/room">Room・</a>
           <a class="navbar-brand" href="/tl">TimeLine</a>
@@ -65,7 +65,7 @@
           <li>
             <div class="dropdown">
               <button aria-expanded="true" aria-haspopup="true" class="btn btn-default" data-toggle="dropdown" id="dropdownMenu1" type="button">
-                <%= User.find(session[:user]).user_name %>
+                @<%= User.find(session[:user]).user_name %>
                 <span class="glyphicon glyphicon-user"></span>
               </button>
               <ul aria-labelledby="dropdownMenu1" class="dropdown-menu">

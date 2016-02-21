@@ -65,5 +65,24 @@
             </header>
             <!-- Header終了 -->
             <br><br>
-                   </body>
-        </html>
+  <table class="table">
+  <thead>
+    <tr>
+      <th>名前</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @search_users.each do |user| %>
+    <tr data-id="<%= user.id %>">
+      <td>
+        <%= user.user_name %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+<% @search_users.each do |user| %>
+
+<% end %>
+</body>
+</html>
