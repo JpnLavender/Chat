@@ -113,13 +113,26 @@ end
 
 # ////////////////////////////////user_search////////////////////////////////
 post '/search' do
+  p "ユーザーのあいまい検索"
   if User.where("user_name like '%#{params[:search]}%'").exists?
+    if Room.where("name like '%#{params[:search]}'").exists?
+      @search_users = User.where("user_name like '%#{params[:search]}%'")
+      @search_lists = Room.where("name like '%#{params[:search]}'")
+      erb :user_list
+    end
     @search_users = User.where("user_name like '%#{params[:search]}%'")
-    #@search_answers = @search_users.map(&:answers).flatten
+    erb :user_list
+  elsif Room.where("name like '%#{params[:search]}'").exists?
+    if User.where("user_name like '%#{params[:search]}%'").exists?
+      @search_users = User.where("user_name like '%#{params[:search]}%'")
+      @search_lists = Room.where("name like '%#{params[:search]}'")
+      erb :user_list
+    end
+    @search_lists = Room.where("name like '%#{params[:search]}'")
     erb :user_list
   else
-    @message = "ユーザーが存在しません"
-    erb :user_list
+    @message = "存在しません"
+    erb :message
   end
 end
 # ////////////////////////////////ルームの削除////////////////////////////////
@@ -221,14 +234,19 @@ end
 post '/renew/:id' do
   user = User.find(params[:id])
   if user && user.authenticate(params[:password])
-    session[:user] = user.id
-    user.update(name:   params[:name],
-                user_name:    params[:user_name],
-                mail:    params[:mail],
-                age: params[:age],
-                introduction: params[:introduction]
-               )
-    redirect '/room'
+    unless User.where(user_name: params[:user_name]).exists?
+      session[:user] = user.id
+      user.update(name:   params[:name],
+                  user_name:    params[:user_name],
+                  mail:    params[:mail],
+                  age: params[:age],
+                  introduction: params[:introduction]
+                 )
+      redirect '/room'
+      else
+        @message = 'このユーザー名は使用できません'
+        erb :message
+    end
   else
     @message = 'パスワードが異なります'
     erb :message
