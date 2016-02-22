@@ -53,7 +53,7 @@
         <ul class="nav navbar-nav navbar-right">
           <li>
             <!-- 検索バー -->
-            <form class="navbar-form navbar-left" role="search" action="/search" method="POST">
+            <form class="navbar-form navbar-left" role="search" action="/search" method="get">
               <div class="form-group">
                 <input type="text" name="search" class="form-control" placeholder="Search">
               </div>
@@ -89,6 +89,7 @@
     </header>
     <!-- Header終了 -->
     <br><br>
+    <% if @search_users %>
     <!-- Bootstrapグリッド・システム -->
     <div class="container">
       <div class="row">
@@ -126,8 +127,10 @@
           </div>
         <% end %>
       </div>
+    <% end %>
       <!-- Bootstrapグリッド・システム end -->
     <!-- Bootstrapグリッド・システム -->
+    <% if @search_lists %>
     <div class="container">
       <div class="row">
         <% @search_lists.each do |room| %>
@@ -145,6 +148,7 @@
         </div>
         <% end %>
       </div>
+    <% end %>
       <!-- Bootstrapグリッド・システム end -->
   </body>
 </html>
