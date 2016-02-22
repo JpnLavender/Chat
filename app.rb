@@ -114,27 +114,33 @@ end
 # ////////////////////////////////user_search////////////////////////////////
 get '/search' do
   if User.where("user_name like '%#{params[:search]}%'").exists?
-    if Room.where("name like '%#{params[:search]}'").exists?
+    if Room.where("name like '%#{params[:search]}%'").exists?
       @search_users = User.where("user_name like '%#{params[:search]}%'")
-      @search_lists = Room.where("name like '%#{params[:search]}'")
+      @search_lists = Room.where("name like '%#{params[:search]}%'")
+      @true_lists = true
+      @true_users = true
       erb :user_list
     else 
       @search_users = User.where("user_name like '%#{params[:search]}%'")
-      @search_users = false
+      @true_users = true
+      @true_lists = false
       erb :user_list
     end
-  elsif Room.where("name like '%#{params[:search]}'").exists?
+  elsif Room.where("name like '%#{params[:search]}%'").exists?
     if User.where("user_name like '%#{params[:search]}%'").exists?
       @search_users = User.where("user_name like '%#{params[:search]}%'")
-      @search_lists = Room.where("name like '%#{params[:search]}'")
+      @search_lists = Room.where("name like '%#{params[:search]}%'")
+      @true_users = true
+      @true_lists = false
       erb :user_list
     else 
-      @search_lists = Room.where("name like '%#{params[:search]}'")
-      @search_lists = false
+      @search_lists = Room.where("name like '%#{params[:search]}%'")
+      @true_users = false
+      @true_lists = true
       erb :user_list
     end
   else
-    @message = "存在しません"
+    @message = "ユーザーとルームが存在しません"
     erb :message
   end
 end

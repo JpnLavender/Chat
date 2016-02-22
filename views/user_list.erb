@@ -89,7 +89,7 @@
     </header>
     <!-- Header終了 -->
     <br><br>
-    <% if @search_users %>
+    <% if @true_users %>
     <!-- Bootstrapグリッド・システム -->
     <div class="container">
       <div class="row">
@@ -130,7 +130,7 @@
     <% end %>
       <!-- Bootstrapグリッド・システム end -->
     <!-- Bootstrapグリッド・システム -->
-    <% if @search_lists %>
+    <% if @true_lists %>
     <div class="container">
       <div class="row">
         <% @search_lists.each do |room| %>
