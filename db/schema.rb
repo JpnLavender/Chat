@@ -20,8 +20,9 @@ ActiveRecord::Schema.define(version: 20160214055756) do
 
   create_table "rooms", force: :cascade do |t|
     t.string  "name"
-    t.boolean "range",      default: false, null: false
-    t.boolean "room_admin", default: false, null: false
+    t.string  "room_admin_name"
+    t.boolean "range",           default: false, null: false
+    t.boolean "room_admin",      default: false, null: false
   end
 
   create_table "tokens", force: :cascade do |t|

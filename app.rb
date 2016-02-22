@@ -30,7 +30,7 @@ end
 helpers do
   def current_user
     if session[:user]
-	User.find(session[:user])
+	    User.find(session[:user])
     end
   end
 end
@@ -87,12 +87,14 @@ post '/create_room' do
     admin = false
   end
 
+  admin_name = User.find(params[:admin_name]).user_name
+
   room = Room.new(
   name: params[:title],
+  room_admin_name: admin_name,
   range: range,
   room_admin: admin
   )
-
   if room.save
     erb :room
   else

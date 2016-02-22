@@ -1,1 +1,3 @@
 db/*.db
+*.wsp
+.DS_Store

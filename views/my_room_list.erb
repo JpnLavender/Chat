@@ -17,15 +17,15 @@
     <script crossorigin="anonymous" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
     <style type="text/css">
-      /* グリッドを分かり易くするためのカラム背景色等レイアウト */
-      .demo-content {
-        padding: 15px;
-        font-size: 18px;
-        min-height: 200px;
-        main-width: 200px;
-        background: #dbdfe5;
-        margin-bottom: 10px;
-      }
+/* グリッドを分かり易くするためのカラム背景色等レイアウト */
+.demo-content {
+  padding: 15px;
+  font-size: 18px;
+  min-height: 200px;
+  main-width: 200px;
+  background: #dbdfe5;
+  margin-bottom: 10px;
+}
       .demo-content.bg-alt {
         background: #abb1b8;
       }
@@ -44,7 +44,7 @@
     <header class="navbar navbar-default" style="margin-bottom:0;">
       <div class="container">
         <div class="navbar-header">
-			<a href="/"><img src="/img/LifeChatIcon.gif" class="navbar-brand"></a>
+          <a href="/"><img src="/img/LifeChatIcon.gif" class="navbar-brand"></a>
           <a class="navbar-brand" href="/friends">Friends・</a>
           <a class="navbar-brand" href="/room">Room・</a>
           <a class="navbar-brand" href="/tl">TimeLine</a>
@@ -66,7 +66,7 @@
             <div class="dropdown">
               <button aria-expanded="true" aria-haspopup="true" class="btn btn-default" style="margin-top:9;" data-toggle="dropdown" id="dropdownMenu1" type="button">
                 @<%= User.find(session[:user]).user_name %>
-                <span class="glyphicon glyphicon-user"></span>
+              <span class="glyphicon glyphicon-user"></span>
               </button>
               <ul aria-labelledby="dropdownMenu1" class="dropdown-menu">
                 <li>
@@ -79,11 +79,11 @@
                     <input style="background:transparent;text-decoration:underline;" type="submit" value="ログアウト">
                   </form>
                 </li>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <!-- ユーザー名のポップアップend -->
+            </div>
+          </li>
+              </ul>
+      </div>
+      <!-- ユーザー名のポップアップend -->
       </nav>
     </header>
     <!-- Header終了 -->
@@ -110,19 +110,26 @@
     <div class="container">
       <div class="row">
         <% @list_all.each do |room| %>
-        <div class="col-md-4">
-          <div class="demo-content bg-alt">
-            <!-- <img src="#" class="img-rounded"> -->
-            <ul>
-              <a href="<%= room.name %>"> <li><%= room.name %></li> </a>
-              <li>RoomID #=> <%= room.id %></li>
-              <% unless room.room_admin %>
-              <li><a href="/delete/<%= room.id %>"><span class="glyphicon glyphicon-trash"></span></a></li>
-              <% end %>
-            </ul>
+          <div class="col-md-4">
+            <div class="demo-content bg-alt">
+              <!-- <img src="#" class="img-rounded"> -->
+              <ul>
+                <a href="<%= room.name %>"> <li><%= room.name %></li> </a>
+                <li>RoomID=<%= room.id %></li>
+                <% unless room.room_admin %>
+                  <form action="/delete/<%= room.id %>" method="post">
+                    <button type="submit" class="glyphicon glyphicon-trash"></button>
+                  </form>
+                <% end %>
+                <% if Room.where(room_admin_name: session[:user]) %>
+                  <form action="/delete/<%= room.id %>" method="post">
+                    <button type="submit" class="glyphicon glyphicon-trash"></button>
+                  </form>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
           </div>
-        </div>
-        <% end %>
       </div>
       <!-- Bootstrapグリッド・システム end -->
     </div>
