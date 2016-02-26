@@ -216,18 +216,35 @@ post '/signin' do
       @user = user.user_name
       erb :room
     else # もし合っていなかったら以下実行
-      @user_name_true = true
+      @user_true = true
       erb :index
     end
+  elsif cut = params[:name]
+    if cut.slice!("@")
+      p cut
+      if user = User.find_by_user_name(cut)
+        if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
+          session[:user] = user.id # セッションにユーザーデータを保存する
+          @user = user.user_name
+          erb :room
+        else # もし合っていなかったら以下実行
+          @user_true = true
+          erb :index
+        end
+      else
+        @user_true = true
+        erb :message
+      end
+    end
   else
-    @t = true
-    erb :index
+    @message = "erraaaaaaaa"
+    erb :message
   end
 end
-# ////////////////////////////////サインアウト////////////////////////////////
-get '/logout' do
-  session[:user] = nil
-  redirect '/'
+  # ////////////////////////////////サインアウト////////////////////////////////
+  get '/logout' do
+    session[:user] = nil
+    redirect '/'
 end
 
 # ////////////////////////////////予約変更////////////////////////////////
