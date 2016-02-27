@@ -140,9 +140,6 @@
             <ul>
               <a href="<%= room.name %>"> <li><%= room.name %></li> </a>
               <li>RoomID<%= room.id %></li>
-              <% unless room.room_admin %>
-              <li><a href="/delete/<%= room.id %>"><span class="glyphicon glyphicon-trash"></span></a></li>
-              <% end %>
             </ul>
           </div>
         </div>

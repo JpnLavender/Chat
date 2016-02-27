@@ -204,6 +204,7 @@ post '/signin' do
   if user = User.find_by_mail(params[:name]) # メールアドレスが存在するか確認する
     if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
+      session[:user_name] = user.user_name
       @user = user.user_name
       erb :room
     else # もし合っていなかったら以下実行
@@ -213,6 +214,7 @@ post '/signin' do
   elsif user = User.find_by_user_name(params[:name])
     if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
+      session[:user_name] = user.user_name
       @user = user.user_name
       erb :room
     else # もし合っていなかったら以下実行
@@ -221,10 +223,10 @@ post '/signin' do
     end
   elsif cut = params[:name]
     if cut.slice!("@")
-      p cut
       if user = User.find_by_user_name(cut)
         if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
           session[:user] = user.id # セッションにユーザーデータを保存する
+          session[:user_name] = user.user_name
           @user = user.user_name
           erb :room
         else # もし合っていなかったら以下実行

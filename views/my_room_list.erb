@@ -105,34 +105,24 @@
       </ul>
     </div>
     <!-- メニューボタン終了 -->
-    <br><br>
-    <!-- Bootstrapグリッド・システム -->
+    <br><br><%= session[:user_name] %>
+  <!-- Bootstrapグリッド・システム -->
+  <% @list_all.each do |room| %>
     <div class="container">
       <div class="row">
-        <% @list_all.each do |room| %>
-          <div class="col-md-4">
-            <div class="demo-content bg-alt">
-              <!-- <img src="#" class="img-rounded"> -->
-              <ul>
-                <a href="<%= room.name %>"> <li><%= room.name %></li> </a>
-                <li>RoomID=<%= room.id %></li>
-                <% unless room.room_admin %>
-                  <form action="/delete/<%= room.id %>" method="post">
-                    <button type="submit" class="glyphicon glyphicon-trash"></button>
-                  </form>
-                <% end %>
-                <% if Room.where(room_admin_name: session[:user]) %>
-                  <form action="/delete/<%= room.id %>" method="post">
-                    <button type="submit" class="glyphicon glyphicon-trash"></button>
-                  </form>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
+        <div class="col-md-4">
+          <div class="demo-content bg-alt">
+            <!-- <img src="#" class="img-rounded"> -->
+            <ul>
+              <a href="<%= room.name %>"> <li><%= room.name %></li> </a>
+              <li>RoomID=<%= room.id %></li>
+            </ul>
           </div>
+        </div>
       </div>
-      <!-- Bootstrapグリッド・システム end -->
     </div>
+  <% end %>
+  <!-- Bootstrapグリッド・システム end -->
 
   </body>
 </html>
