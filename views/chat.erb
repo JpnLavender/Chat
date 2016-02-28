@@ -1,99 +1,36 @@
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" type="text/css" href="/base.css"><!-- CSS参照 -->
-        <link rel="shortcut icon" href="./img/favicon.ico">
-        <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
-        <title>LifeChan.Chat</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<!-- ユーザー名のポップアップ -->
+  <div class="dropdown">
+    <button aria-expanded="true" aria-haspopup="true" class="btn btn-default" data-toggle="dropdown" style="margin-top:9;" id="dropdownMenu1" type="button">
+      @<%= User.find(session[:user]).user_name %>
+    <span class="glyphicon glyphicon-user"></span>
+    </button>
+    <ul aria-labelledby="dropdownMenu1" class="dropdown-menu">
+      <li>
+        <form action="/edit/<%= User.find(session[:user]).id %>" method="post">
+          <input style="background:transparent;text-decoration:underline;" type="submit" value="アカウント情報を変更">
+        </form>
+      </li>
+      <li>
+        <form action="/logout" method="get">
+          <input style="background:transparent;text-decoration:underline;" type="submit" value="ログアウト">
+        </form>
+      </li>
+  </div>
+    </ul>
+    </div>
 
-        <!-- Optional theme -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
-
-        <!-- Latest compiled and minified JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-
-    </head>
-    <body class="main">
-       <!-- Header -->
-        <header class="navbar navbar-default" style="margin-bottom:0;">
-        <div class="container">
-            <div class="navbar-header">
-        <a href="/"><img class="navbar-brand" src="/img/LifeChatIcon.gif"></a>
-                <a href="/friends" class="navbar-brand">Friends・</a>
-                <a href="/room" class="navbar-brand">Room・</a>
-                <a href="/tl" class="navbar-brand">TimeLine</a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                <!-- 検索バー -->
-                <form class="navbar-form navbar-left" role="search" action="/search" method="get">
-                    <div class="form-group">
-                        <input type="text" name="search" class="form-control" placeholder="Search">
-                    </div>
-                    <button type="submit" class="glyphicon glyphicon-search btn btn-default"></button>
-                </form>
-                </li>
-                <!-- 検索バーend -->
-
-                <!-- ユーザー名のポップアップ -->
-                <li>
-                <div class="dropdown">
-                    <button class="btn btn-default" type="button" id="dropdownMenu1" style="margin-top:9;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        <%= User.find(session[:user]).user_name %>
-                        <span class="glyphicon glyphicon-user"></span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li>
-                        <form action="/edit/<%= User.find(session[:user]).id %>" method="post">
-                            <input type="submit" value="アカウント情報を変更" style="background:transparent;text-decoration:underline;">
-                        </form>
-                        </li>
-                        <li>
-                        <form action="/logout" method="get">
-                            <input type="submit" value="ログアウト" style="background:transparent;text-decoration:underline;">
-                        </form>
-                        </li>
-                    </div>
-                    </li>
-                </ul>
-            </div>
-            <!-- ユーザー名のポップアップend -->
-            </nav>
-            </header>
-            <!-- Header終了 -->
-            <br><br>
-            <center>
-                <form action"/chat" method="POST">
-                    <table style="width:50%">
-                        <tr>
-                            <td>
-                                <input type="text" name="chat" placeholder="とーきんぐ！">
-                            </td>
-                            <td>
-                                <input class="submit-button" type="submit" value="送信">
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                    </table>
-                </center>
-        <!-- //////////////////////////
-        ポップアップメニュー
-        ////////////////////////////// -->
-        <script type='text/javascript'>
-            $(document).ready(function() {
-                    $('.popbox').popbox({
-                        'open': '.open',
-                        'box': '.box',
-                        'arrow': '.arrow',
-                        'arrow-border': '.arrow-border',
-                        'close': '.close'
-                        });
-                    });
-                </script>
-
-            </body>
-        </html>
+    <center>
+      <form action"/chat" method="POST">
+        <table style="width:50%">
+          <tr>
+            <td>
+              <input type="text" name="chat" placeholder="とーきんぐ！">
+            </td>
+            <td>
+              <input class="submit-button" type="submit" value="送信">
+            </td>
+            <td>
+            </td>
+          </tr>
+        </table>
+    </center>

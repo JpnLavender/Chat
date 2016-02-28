@@ -4,6 +4,7 @@ class CreateTokens < ActiveRecord::Migration
       t.string :token
       t.string :address
       t.string :expired_at
+      t.timestamps null: false
     end
   end
 end

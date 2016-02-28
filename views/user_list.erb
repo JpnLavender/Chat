@@ -1,94 +1,5 @@
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" type="text/css" href="/base.css"><!-- CSS参照 -->
-    <link rel="shortcut icon" href="./img/favicon.ico">
-    <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css' href="base.css">
-    <title></title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <style type="text/css">
-/* グリッドを分かり易くするためのカラム背景色等レイアウト */
-.demo-content {
-  padding: 15px;
-  font-size: 18px;
-  min-height: 200px;
-  margin-width: 200px;
-  background: #dbdfe5;
-  margin-bottom: 10px;
-}
-      .demo-content.bg-alt {
-        background: #abb1b8;
-      }
-      li {
-        list-style-type: none;
-      }
-      ul {
-        list-style-type: none;
-      }
-      p{
-        font-size:26px;
-      }
-    </style>
-
-
-  </head>
-  <body class="main">
-    <!-- Header -->
-    <header class="navbar navbar-default" style="margin-bottom:0;">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="/"><img src="/img/LifeChatIcon.gif" class="navbar-brand"></a>
-          <a href="/friends" class="navbar-brand">Friends・</a>
-          <a href="/room" class="navbar-brand">Room・</a>
-          <a href="/tl" class="navbar-brand">TimeLine</a>
-        </div>
-        <ul class="nav navbar-nav navbar-right">
-          <li>
-            <!-- 検索バー -->
-            <form class="navbar-form navbar-left" role="search" action="/search" method="get">
-              <div class="form-group">
-                <input type="text" name="search" class="form-control" placeholder="Search">
-              </div>
-              <button type="submit" class="glyphicon glyphicon-search btn btn-default"></button>
-            </form>
-          </li>
-          <!-- 検索バーend -->
-
-          <!-- ユーザー名のポップアップ -->
-          <li>
-            <div class="dropdown">
-              <button class="btn btn-default" type="button" id="dropdownMenu1" style="margin-top:9;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                @<%= User.find(session[:user]).user_name %>
-              <span class="glyphicon glyphicon-user"></span>
-              </button>
-              <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li>
-                  <form action="/edit/<%= User.find(session[:user]).id %>" method="post">
-                    <input type="submit" value="アカウント情報を変更" style="background:transparent;text-decoration:underline;">
-                  </form>
-                </li>
-                <li>
-                  <form action="/logout" method="get">
-                    <input type="submit" value="ログアウト" style="background:transparent;text-decoration:underline;">
-                  </form>
-                </li>
-            </div>
-          </li>
-              </ul>
-      </div>
-      <!-- ユーザー名のポップアップend -->
-      </nav>
-    </header>
-    <!-- Header終了 -->
-    <br><br>
+<br>
+<br>
     <% if @true_users %>
     <!-- Bootstrapグリッド・システム -->
     <div class="container">
@@ -138,8 +49,7 @@
           <div class="demo-content bg-alt">
             <!-- <img src="#" class="img-rounded"> -->
             <ul>
-              <a href="<%= room.name %>"> <li><%= room.name %></li> </a>
-              <li>RoomID<%= room.id %></li>
+              <a href="<%= room.name %>" title="RoomID=><%= room.id %>"> <li><%= room.name %></li> </a>
             </ul>
           </div>
         </div>
@@ -147,5 +57,3 @@
       </div>
     <% end %>
       <!-- Bootstrapグリッド・システム end -->
-  </body>
-</html>

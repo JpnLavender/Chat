@@ -56,7 +56,8 @@ get '/' do
 end
 
 get '/room' do
-  if User.find_by id: session[:user]
+  if session[:user]
+    @list_all = User.find(session[:user]).rooms
     erb :room
   else
     erb :index
@@ -65,7 +66,7 @@ end
 
 # ////////////////////////////////ルーム作成////////////////////////////////
 get '/create_room' do
-  if User.find_by id: session[:user]
+  if session[:user]
     erb :create_room
   else
     erb :index
@@ -87,16 +88,12 @@ post '/create_room' do
     admin = false
   end
 
-  admin_name = User.find(params[:admin_name]).user_name
-
   room = Room.new(
   name: params[:title],
-  room_admin_name: admin_name,
   range: range,
-  room_admin: admin
   )
   if room.save
-    erb :room
+    redirect "/Join_Room/#{}"
   else
     @message = "ルーム作成に失敗しました"
     erb :message
@@ -105,12 +102,31 @@ end
 
 # ////////////////////////////////ルームリスト表示////////////////////////////////
 get '/my_room_list' do
-  if User.find_by id: session[:user]
+  if session[:user]
     @list_all = Room.where(range: true)
     erb :my_room_list
   else
     erb :index
   end
+end
+
+# ////////////////////////////////Join_Room////////////////////////////////
+get '/join_room/:id' do
+  # @chat = Chat.find_by_id(params[:id])
+  @room = Room.find(params[:id])
+  Userroom.create(
+  room: @room,
+  user_id: session[:user]
+  )
+  erb :talk_room
+end
+# ////////////////////////////////Create_chat////////////////////////////////
+post '/chat' do
+  chat = params[:chat]
+  p user = User.find(session[:user])
+  id = params[:room_id]
+  Room.find(id).chats.create(user: user, text: chat)
+  redirect "/join_room/#{id}"
 end
 
 # ////////////////////////////////user_search////////////////////////////////

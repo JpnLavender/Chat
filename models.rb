@@ -10,7 +10,9 @@ end
 #end
 class User < ActiveRecord::Base
   has_many :tokens
+  has_many :chats
   has_many :rooms,  through: :userrooms
+  has_many :userrooms
   has_secure_password
   validates :mail,
     presence: true,
@@ -21,14 +23,18 @@ end
 
   class Chat < ActiveRecord::Base
     belongs_to :room
+    belongs_to :user
   end
 
   class Room < ActiveRecord::Base
     has_many :users,  through: :userrooms
     has_many :chats
+    has_many :userrooms
   end
 
-  class UserRoom < ActiveRecord::Base
+  class Userroom < ActiveRecord::Base
+    enum status: {normal: 0, admin: 1, watch: 2}
+    validates :user_id, uniqueness: { scope: [:room_id]} 
     belongs_to :room
     belongs_to :user
   end
@@ -36,3 +42,4 @@ end
   class Token < ActiveRecord::Base
     belongs_to :user
   end
+
