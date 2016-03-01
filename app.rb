@@ -30,7 +30,7 @@ end
 helpers do
   def current_user
     if session[:user]
-	    User.find(session[:user])
+      User.find(session[:user])
     end
   end
 end
@@ -89,8 +89,8 @@ post '/create_room' do
   end
 
   room = Room.new(
-  name: params[:title],
-  range: range,
+    name: params[:title],
+    range: range,
   )
   if room.save
     redirect "/Join_Room/#{}"
@@ -103,6 +103,7 @@ end
 # ////////////////////////////////ルームリスト表示////////////////////////////////
 get '/my_room_list' do
   if session[:user]
+    Room.find(Room.pluck(:id).shuffle[0..4])
     @list_all = Room.where(range: true)
     erb :my_room_list
   else
@@ -112,13 +113,39 @@ end
 
 # ////////////////////////////////Join_Room////////////////////////////////
 get '/join_room/:id' do
-  # @chat = Chat.find_by_id(params[:id])
   @room = Room.find(params[:id])
-  Userroom.create(
-  room: @room,
-  user_id: session[:user]
-  )
+  Userroom.create(room: @room, user_id: session[:user])
   erb :talk_room
+end
+
+# ////////////////////////////////Logout_Room////////////////////////////////
+post '/room_logout/:id' do
+  room = Userroom.find(params[:id])
+  room.update(user_id: nil)
+
+  @list_all = Room.where(range: true)
+  redirect'/my_room_list'
+end
+# ////////////////////////////////edit_Room////////////////////////////////
+post '/room_edit/:id' do
+  if
+    @room = Room.find(params[:id])
+    #@user_room = Userroom.find(params[:id])
+    erb :room_edit
+  else
+    @message = "設定をいじる権限がありません"
+    erb :message
+  end
+end
+
+post '/room_renew/:id' do
+  Room.update(
+   name: params[:name],
+  )
+end
+post '/room_delete/:id' do
+  Room.destroy(params[:id])
+  redirect'/room'
 end
 # ////////////////////////////////Create_chat////////////////////////////////
 post '/chat' do
@@ -212,31 +239,39 @@ post '/chat' do
 end
 # ////////////////////////////////サインイン////////////////////////////////
 get '/signin' do
-  erb :room if User.find_by id: session[:user]
-  erb :index #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
+  if session[:user]
+    erb :room 
+  else
+    erb :index #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
+  end
 end
 
 post '/signin' do
   if user = User.find_by_mail(params[:name]) # メールアドレスが存在するか確認する
+    #MailAddress
     if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
       session[:user_name] = user.user_name
       @user = user.user_name
+      @list_all = User.find(session[:user]).rooms
       erb :room
     else # もし合っていなかったら以下実行
       @user_true = true
       erb :index
     end
+    #普通のUser_name
   elsif user = User.find_by_user_name(params[:name])
     if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
       session[:user_name] = user.user_name
       @user = user.user_name
+      @list_all = User.find(session[:user]).rooms
       erb :room
     else # もし合っていなかったら以下実行
       @user_true = true
       erb :index
     end
+    #@のついたUser_name
   elsif cut = params[:name]
     if cut.slice!("@")
       if user = User.find_by_user_name(cut)
@@ -244,6 +279,7 @@ post '/signin' do
           session[:user] = user.id # セッションにユーザーデータを保存する
           session[:user_name] = user.user_name
           @user = user.user_name
+          @list_all = User.find(session[:user]).rooms
           erb :room
         else # もし合っていなかったら以下実行
           @user_true = true
@@ -259,10 +295,10 @@ post '/signin' do
     erb :message
   end
 end
-  # ////////////////////////////////サインアウト////////////////////////////////
-  get '/logout' do
-    session[:user] = nil
-    redirect '/'
+# ////////////////////////////////サインアウト////////////////////////////////
+get '/logout' do
+  session[:user] = nil
+  redirect '/'
 end
 
 # ////////////////////////////////予約変更////////////////////////////////
@@ -289,9 +325,9 @@ post '/renew/:id' do
                   introduction: params[:introduction]
                  )
       redirect '/room'
-      else
-        @message = 'このユーザー名は使用できません'
-        erb :message
+    else
+      @message = 'このユーザー名は使用できません'
+      erb :message
     end
   else
     @message = 'パスワードが異なります'
@@ -307,15 +343,15 @@ post '/send_mail' do
   email = params[:email]
   mail_check = User.where(mail: email).exists? # 入力したメールアドレスがあるか確認
   if mail_check # 入力したメールアドレスがあれば@messageを表示
-    @message = "入力されたメールアドレスは登録済みです。"
+    @user_name_true= "入力されたメールアドレスは登録済みです。"
     erb :index
   else # 入力したメールアドレスがなければ↓を実行
     random = SecureRandom.uuid # 乱数で暗号を作成
     token = Token.new( # 暗号とメールアドレスをDBに作成
-      token: random,
-      address: params[:email],
-      expired_at: 24.hours.since
-    )
+                      token: random,
+                      address: params[:email],
+                      expired_at: 24.hours.since
+                     )
     if token.save # 暗号とメールアドレスをDBに作成できれば↓を実行
       p email_secret = Base64.encode64(random) # 暗号を暗号化する
 
@@ -328,17 +364,17 @@ post '/send_mail' do
                アカウント登録は完了していませんので、
                http://#{xyz}/signup/#{email_secret}
                にアクセスして、本登録を行って下さい",
-        subject: "仮登録が完了しました",
-        via: :smtp,
-        via_options: {
-          enable_starttls_auto: true,
-          address: 'smtp.gmail.com',
-          port: '587',
-          user_name: 'nagisa20000014',
-          password: 'yriqalcacichqxir',
-          authentication: :plain,
-          domain: 'gmail.com'
-        }
+                 subject: "仮登録が完了しました",
+                 via: :smtp,
+                 via_options: {
+                   enable_starttls_auto: true,
+                   address: 'smtp.gmail.com',
+                   port: '587',
+                   user_name: 'nagisa20000014',
+                   password: 'yriqalcacichqxir',
+                   authentication: :plain,
+                   domain: 'gmail.com'
+                 }
       )
 
       redirect '/account'

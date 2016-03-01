@@ -1,0 +1,57 @@
+<center>
+  <div class="font" style="color: #7b7a65;">
+    <h1>EDIT</h1>
+  </div>
+  <h2>Room内容変更</h2>
+</center>
+<div class="box2">
+  <form id="form_1" action="/room_renew/<%= @room.id %>" method="post">
+
+    <label>Room名:</label>
+    <input type="text" name="name" value="<%= @room.name %>" class="form-control" placeholder="山田太郎" aria-describedby="sizing-addon2">
+
+    <label>ユーザー一覧:</label>
+    <div class="input-group">
+      <table style="width:100%;" class="table table-bordered">
+        <th>
+          名前
+        </th>
+        <th>
+          ユーザー名
+        </th>
+        <th>
+          自己紹介
+        </th>
+        <% @room.users.each do |user| %>
+          <tr>
+            <td>
+              <%= user.name %>
+            </td>
+            <td>
+              <p>@<%= user.user_name %></p>
+          </td>
+          <td>
+            <%= user.introduction %>
+          </td>
+          <td>
+            <form action="/join_member_delete/<%= user.id %>" method="post">
+              <input type="submit" class="btn btn-default btn-sm" value="退室させる">
+            </form>
+          </td>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+
+    <br>
+    <p><input type="submit" value="編集完了" class="btn btn-default"></p>
+  </form>
+
+  <br>
+
+  <form id="form_1" action="/room_delete/<%= @room.id %>" method="post">
+    <p><input type="submit" value="Room削除" class="btn btn-default"></p>
+  </form>
+
+</div>
+</center>
