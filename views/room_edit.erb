@@ -1,3 +1,9 @@
+<style type="text/css">
+table {
+    width: 100%;
+}
+</style>
+
 <center>
   <div class="font" style="color: #7b7a65;">
     <h1>EDIT</h1>
@@ -12,7 +18,7 @@
 
     <label>ユーザー一覧:</label>
     <div class="input-group">
-      <table style="width:100%;" class="table table-bordered">
+      <table width="100%" class="table table-bordered">
         <th>
           名前
         </th>
@@ -22,6 +28,9 @@
         <th>
           自己紹介
         </th>
+        <th>
+          状態
+        </th>
         <% @room.users.each do |user| %>
           <tr>
             <td>
@@ -29,28 +38,47 @@
             </td>
             <td>
               <p>@<%= user.user_name %></p>
-          </td>
-          <td>
-            <%= user.introduction %>
-          </td>
-          <td>
-            <form action="/join_member_delete/<%= user.id %>/<%= @room.id %>" method="post">
-              <input type="submit" class="btn btn-default btn-sm" value="退室させる">
-            </form>
-          </td>
+            </td>
+            <td>
+              <%= user.introduction %>
+            </td>
+            <td>
+              <% user.userrooms.each do |userroom| %>
+                <%= userroom.status %>
+              <% end %>
+            </td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  権限
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <form action="/join_member_delete/<%= user.id %>/<%= @room.id %>" method="post">
+                    <input type="submit" class="btn btn-default btn-sm" value="退室させる">
+                  </form>
+                  <form action="/join_member_admin/<%= user.id %>/<%= @room.id %>" method="post">
+                    <input type="submit" class="btn btn-default btn-sm" value="管理者にする">
+                  </form>
+                  <form action="/join_member_normal/<%= user.id %>/<%= @room.id %>" method="post">
+                    <input type="submit" class="btn btn-default btn-sm" value="権限をなしにする">
+                  </form>
+                </ul>
+              </div>
+            </td>
           </tr>
         <% end %>
       </table>
     </div>
 
     <br>
-    <p><input type="submit" value="編集完了" class="btn btn-default"></p>
+    <p><input type="submit" value="編集完了" class="btn btn-default btn-sm btn-block"></p>
   </form>
 
   <br>
 
   <form id="form_1" action="/room_delete/<%= @room.id %>" method="post">
-    <p><input type="submit" value="Room削除" class="btn btn-default"></p>
+    <p><input type="submit" value="Room削除" class="btn btn-danger btn-sm btn-block"></p>
   </form>
 
 </div>

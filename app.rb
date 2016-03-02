@@ -136,16 +136,27 @@ end
 
 # ////////////////////////////////Join_Room////////////////////////////////
 get '/join_room/:id' do
-  if Room.where(id: params[:id], range: true).exists?
-    @room = Room.find(params[:id])
-    Userroom.create(room: @room, user_id: session[:user])
-    erb :talk_room
-  elsif Userroom.where(user: session[:user]).exists?#一度は行ったルームにuuidなしで入れるようにする
-    @room = Room.find(params[:id])
-    Userroom.create(room: @room, user_id: session[:user])
-    erb :talk_room
+  user = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
+
+  user.each do |i|
+    user = i
+
+  end
+  unless user.block?
+    if Room.where(id: params[:id], range: true).exists?
+      @room = Room.find(params[:id])
+      Userroom.create(room: @room, user_id: session[:user])
+      erb :talk_room
+    elsif Userroom.where(user: session[:user]).exists?#一度は行ったルームにuuidなしで入れるようにする
+      @room = Room.find(params[:id])
+      Userroom.create(room: @room, user_id: session[:user])
+      erb :talk_room
+    else
+      @message = "このルームはプライベートルームなため閲覧できません"
+      erb :message
+    end
   else
-    @message = "このルームはプライベートルームなため閲覧できません"
+    @message = "このルームからはブロックされています"
     erb :message
   end
 end
@@ -187,7 +198,7 @@ end
 
 post '/room_renew/:id' do
   room = Room.find(params[:id])
-  room.update( name: params[:name])
+  room.update(name: params[:name])
   redirect"/room_edit/#{params[:id]}"
 end
 post '/room_delete/:id' do
@@ -195,9 +206,31 @@ post '/room_delete/:id' do
   redirect'/room'
 end
 post '/join_member_delete/:user_id/:room_id' do
-  Userroom.where(user: user_id,room_id: room_id).detele
-  redirect "room_edit/#{params[:room_id]}"
+  userroom = Userroom.where(user_id: params[:user_id],room_id: params[:room_id])
+  userroom.each do |i|
+    userroom = i
+  end
+  userroom.block!
+  redirect "join_room/#{params[:room_id]}"
 end
+
+post '/join_member_admin/:user_id/:room_id' do
+  userroom = Userroom.where(user_id: params[:user_id],room_id: params[:room_id])
+  userroom.each do |i|
+    userroom = i
+  end
+  userroom.admin!
+  redirect "join_room/#{params[:room_id]}"
+end
+post '/join_member_normal/:user_id/:room_id' do
+  userroom = Userroom.where(user_id: params[:user_id],room_id: params[:room_id])
+  userroom.each do |i|
+    userroom = i
+  end
+  userroom.normal!
+  redirect "join_room/#{params[:room_id]}"
+end
+
 # ////////////////////////////////Create_chat////////////////////////////////
 post '/chat' do
   chat = params[:chat]
