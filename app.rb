@@ -75,42 +75,51 @@ end
 
 post '/create_room' do
 
-  if p range = params[:range]
-    range.each do |i|#ここで"true"をtrueへ変換
-      range = i
+  unless Room.where(name: params[:title]).exists?
+    if p range = params[:range]
+      range.each do |i|#ここで"true"をtrueへ変換
+        range = i
+      end
     end
-  end
 
-  if admin = params[:admin]
-    admin = true
-  else
-    admin = false
-  end
+    if admin = params[:admin]
+      admin = true
+    else
+      admin = false
+    end
 
-  if range == "true"
-    room = Room.new(
-      name: params[:title],
-      range: range,
-    )
-    if room.save
-      redirect "/Join_Room/#{}"
+    if range == "true"
+      room = Room.new(
+        name: params[:title],
+        range: range,
+      )
+      if room.save
+        @room = Room.find_by_name(params[:title]).id
+        Userroom.create(room_id: @room, user_id: session[:user], status: 1)
+        redirect "/join_room/#{@room}"
+      else
+        @message = "ルーム作成に失敗しました"
+        erb :message
+      end
     else
-      @message = "ルーム作成に失敗しました"
-      erb :message
+      url = SecureRandom.uuid
+      room = Room.new(
+        name: params[:title],
+        range: range,
+        token: url
+      )
+      if room.save
+        @room = Room.find_by_name(params[:title]).id
+        Userroom.create(room_id: @room, user_id: session[:user], status: 1)
+        redirect "/join_private_room/#{url}"
+      else
+        @message = "ルーム作成に失敗しました"
+        erb :message
+      end
     end
   else
-    url = SecureRandom.uuid
-    room = Room.new(
-      name: params[:title],
-      range: range,
-      token: url
-    )
-    if room.save
-      redirect "/join_room/#{}"
-    else
-      @message = "ルーム作成に失敗しました"
-      erb :message
-    end
+    @true = true
+    erb :create_room
   end
 end
 
@@ -161,8 +170,12 @@ post '/room_logout/:id' do
 end
 # ////////////////////////////////edit_Room////////////////////////////////
 post '/room_edit/:id' do
-  #userroom = Userroom.where(user: User.find(user_id), room: Room.find(params[:id]))
-  if #userroom.admin?
+  userroom = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
+
+  userroom.each do |i|
+    userroom = i
+  end
+  if userroom.admin?
     @room = Room.find(params[:id])
     #@user_room = Userroom.find(params[:id])
     erb :room_edit

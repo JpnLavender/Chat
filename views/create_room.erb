@@ -19,10 +19,17 @@
 <!-- メニューボタン終了 -->
 
 <div class="box2">
+  <% if @true %>
+    <span class="alert alert-danger" role="alert">
+      "このルーム名はすでに存在しているため作成できませんでした"
+    </span>
+    <br>
+    <br>
+  <% end %>
   <form class="form-horizontal" action="/create_room" method="POST">
     <div class="form-group form-group-lg">
       <div class="col-sm-10">
-        <input class="form-control" name="title" type="text" id="formGroupInputLarge" placeholder="Room_Title">
+        <input class="form-control" name="title" type="text" id="formGroupInputLarge" placeholder="Room_Title" style="width:100%;"> 
       </div>
     </div>
     <label class="radio-inline">
