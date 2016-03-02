@@ -11,7 +11,7 @@ require 'pony'
 require 'sinatra'
 require 'sinatra/base'
 require 'base64'
-require 'securerandom'
+require 'SecureRandom'
 use Rack::Session::Cookie
 # ////////////////////////////////サイト内のタイムゾーンの指定////////////////////////////////
 Time.zone = 'Tokyo'
@@ -19,13 +19,13 @@ ActiveRecord::Base.default_timezone = :local
 enable :sessions
 
 # ////////////////////////////////////////////////////////////////
-module Websockettest2
-  class App < Sinatra::Base
-    get '/' do
-      erb :index
-    end
-  end
-end
+# module Websockettest2
+#   class App < Sinatra::Base
+#     get '/' do
+#       erb :index
+#     end
+#   end
+# end
 
 helpers do
   def current_user
@@ -74,12 +74,11 @@ get '/create_room' do
 end
 
 post '/create_room' do
-  if range = params[:range]
+
+  if p range = params[:range]
     range.each do |i|#ここで"true"をtrueへ変換
       range = i
     end
-  else
-    range = false
   end
 
   if admin = params[:admin]
@@ -88,15 +87,30 @@ post '/create_room' do
     admin = false
   end
 
-  room = Room.new(
-    name: params[:title],
-    range: range,
-  )
-  if room.save
-    redirect "/Join_Room/#{}"
+  if range == "true"
+    room = Room.new(
+      name: params[:title],
+      range: range,
+    )
+    if room.save
+      redirect "/Join_Room/#{}"
+    else
+      @message = "ルーム作成に失敗しました"
+      erb :message
+    end
   else
-    @message = "ルーム作成に失敗しました"
-    erb :message
+    url = SecureRandom.uuid
+    room = Room.new(
+      name: params[:title],
+      range: range,
+      token: url
+    )
+    if room.save
+      redirect "/join_room/#{}"
+    else
+      @message = "ルーム作成に失敗しました"
+      erb :message
+    end
   end
 end
 
@@ -113,11 +127,30 @@ end
 
 # ////////////////////////////////Join_Room////////////////////////////////
 get '/join_room/:id' do
-  @room = Room.find(params[:id])
-  Userroom.create(room: @room, user_id: session[:user])
-  erb :talk_room
+  if Room.where(id: params[:id], range: true).exists?
+    @room = Room.find(params[:id])
+    Userroom.create(room: @room, user_id: session[:user])
+    erb :talk_room
+  elsif Userroom.where(user: session[:user]).exists?#一度は行ったルームにuuidなしで入れるようにする
+    @room = Room.find(params[:id])
+    Userroom.create(room: @room, user_id: session[:user])
+    erb :talk_room
+  else
+    @message = "このルームはプライベートルームなため閲覧できません"
+    erb :message
+  end
 end
 
+get '/join_private_room/:id' do
+  if Room.where(token: params[:id]).exists?
+    @room = Room.find_by_token(params[:id])
+    Userroom.create(room: @room, user_id: session[:user])
+   erb :talk_room 
+  else
+    @message = "ルームを見つけることができませんでした"
+    erb :message
+  end
+end
 # ////////////////////////////////Logout_Room////////////////////////////////
 post '/room_logout/:id' do
   room = Userroom.find(params[:id])
@@ -128,7 +161,8 @@ post '/room_logout/:id' do
 end
 # ////////////////////////////////edit_Room////////////////////////////////
 post '/room_edit/:id' do
-  if
+  #userroom = Userroom.where(user: User.find(user_id), room: Room.find(params[:id]))
+  if #userroom.admin?
     @room = Room.find(params[:id])
     #@user_room = Userroom.find(params[:id])
     erb :room_edit
@@ -139,13 +173,17 @@ post '/room_edit/:id' do
 end
 
 post '/room_renew/:id' do
-  Room.update(
-   name: params[:name],
-  )
+  room = Room.find(params[:id])
+  room.update( name: params[:name])
+  redirect"/room_edit/#{params[:id]}"
 end
 post '/room_delete/:id' do
   Room.destroy(params[:id])
   redirect'/room'
+end
+post '/join_member_delete/:user_id/:room_id' do
+  Userroom.where(user: user_id,room_id: room_id).detele
+  redirect "room_edit/#{params[:room_id]}"
 end
 # ////////////////////////////////Create_chat////////////////////////////////
 post '/chat' do
@@ -287,6 +325,7 @@ post '/signin' do
         end
       else
         @user_true = true
+        @message = "意味ワカンねえええ"
         erb :message
       end
     end

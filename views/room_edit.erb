@@ -34,7 +34,7 @@
             <%= user.introduction %>
           </td>
           <td>
-            <form action="/join_member_delete/<%= user.id %>" method="post">
+            <form action="/join_member_delete/<%= user.id %>/<%= @room.id %>" method="post">
               <input type="submit" class="btn btn-default btn-sm" value="退室させる">
             </form>
           </td>

@@ -33,8 +33,8 @@ end
   end
 
   class Userroom < ActiveRecord::Base
-    enum authority: {normal: 0, admin: 1, watch: 2}
-    validates :user_id, uniqueness: { scope: [:room_id]} 
+    enum status: {normal: 0, admin: 1, watch: 2}
+    validates :user_id, uniqueness: { scope: [:room_id] } 
     belongs_to :room
     belongs_to :user
   end
