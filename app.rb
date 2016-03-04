@@ -137,27 +137,36 @@ end
 # ////////////////////////////////Join_Room////////////////////////////////
 get '/join_room/:id' do
   user = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
+  check = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists?
 
   user.each do |i|
     user = i
-
   end
-  unless user.block?
+
+  if check
+    unless user.block?
+      if Room.where(id: params[:id], range: true).exists?
+        @room = Room.find(params[:id])
+        Userroom.create(room: @room, user_id: session[:user])
+        erb :talk_room
+      elsif Userroom.where(user: session[:user]).exists?#一度は行ったルームにuuidなしで入れるようにする
+        @room = Room.find(params[:id])
+        Userroom.create(room: @room, user_id: session[:user])
+        erb :talk_room
+      else
+        @message = "このルームはプライベートルームなため閲覧できません"
+        erb :message
+      end
+    else
+      @message = "このルームからはブロックされています"
+      erb :message
+    end
+  else
     if Room.where(id: params[:id], range: true).exists?
       @room = Room.find(params[:id])
       Userroom.create(room: @room, user_id: session[:user])
       erb :talk_room
-    elsif Userroom.where(user: session[:user]).exists?#一度は行ったルームにuuidなしで入れるようにする
-      @room = Room.find(params[:id])
-      Userroom.create(room: @room, user_id: session[:user])
-      erb :talk_room
-    else
-      @message = "このルームはプライベートルームなため閲覧できません"
-      erb :message
     end
-  else
-    @message = "このルームからはブロックされています"
-    erb :message
   end
 end
 

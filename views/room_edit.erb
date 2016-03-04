@@ -14,7 +14,7 @@ table {
   <form id="form_1" action="/room_renew/<%= @room.id %>" method="post">
 
     <label>Room名:</label>
-    <input type="text" name="name" value="<%= @room.name %>" class="form-control" placeholder="山田太郎" aria-describedby="sizing-addon2">
+    <input type="text" name="name" value="<%= @room.name %>" class="form-control validate[required,maxSize[20]]" placeholder="山田太郎" aria-describedby="sizing-addon2">
 
     <label>ユーザー一覧:</label>
     <div class="input-group">
@@ -54,14 +54,14 @@ table {
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                  <form action="/join_member_delete/<%= user.id %>/<%= @room.id %>" method="post">
-                    <input type="submit" class="btn btn-default btn-sm" value="退室させる">
-                  </form>
+                  <form action="/join_member_normal/<%= user.id %>/<%= @room.id %>" method="post">
+                    <input type="submit" class="btn btn-default btn-sm" value="権限をなしにする">
+                  </form>    
                   <form action="/join_member_admin/<%= user.id %>/<%= @room.id %>" method="post">
                     <input type="submit" class="btn btn-default btn-sm" value="管理者にする">
                   </form>
-                  <form action="/join_member_normal/<%= user.id %>/<%= @room.id %>" method="post">
-                    <input type="submit" class="btn btn-default btn-sm" value="権限をなしにする">
+                  <form action="/join_member_delete/<%= user.id %>/<%= @room.id %>" method="post">
+                    <input type="submit" class="btn btn-default btn-sm" value="退室させる">
                   </form>
                 </ul>
               </div>

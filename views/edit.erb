@@ -9,26 +9,26 @@
         <form class="form-container">
           <div>
             <label>名前:</label>
-            <input type="text" name="name" value="<%= @users.name %>" class="form-control" placeholder="山田太郎" aria-describedby="sizing-addon2">
+            <input type="text" name="name" value="<%= @users.name %>" class="form-control validate[required]" placeholder="山田太郎" aria-describedby="sizing-addon2">
           </div>
           <div>
             <label>ユーザー名:</label>
             <div class="input-group">
               <span class="input-group-addon" id="sizing-addon2">@</span>
-              <input type="text" name="user_name" class="form-control" value="<%= @users.user_name %>" placeholder="Username" aria-describedby="sizing-addon2">
+              <input type="text" name="user_name" class="form-control validate[required,custom[onlyLetterNumber]]" value="<%= @users.user_name %>" placeholder="Username" aria-describedby="sizing-addon2">
             </div>
           </div>
           <div>
             <label>メール:</label>
-            <input type="text" name="mail" value="<%= @users.mail %>" class="form-control" placeholder="lifechat@sample.com" aria-describedby="sizing-addon2">
+            <input type="text" name="mail" value="<%= @users.mail %>" class="form-control validate[required,custom[email]]" placeholder="lifechat@sample.com" aria-describedby="sizing-addon2">
           </div>
           <div>
             <label>年齢:</label>
-            <input type="text" name="age" value="<%= @users.age %>" class="form-control" placeholder="18" aria-describedby="sizing-addon2">
+            <input type="text" name="age" value="<%= @users.age %>" class="form-control validate[custom[onlyNumberSp]]" placeholder="18" aria-describedby="sizing-addon2">
           </div>
           <div>
             <label>自己紹介:</label>
-            <textarea name="introduction" class="form-control" rows="3"><%= @users.introduction %></textarea>
+            <textarea name="introduction" class="form-control validate[maxSize[100]]" rows="3"><%= @users.introduction %></textarea>
           </div>
           <br>
           <div>

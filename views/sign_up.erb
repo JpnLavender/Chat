@@ -13,18 +13,18 @@
   <form id="form_1" action="/signup" method="POST">
     <form class="form-container">
       <div class="form-title">氏名</div>
-      <input type="text" name="name" class="form-control" placeholder="山田太郎" aria-describedby="sizing-addon2">
+      <input type="text" name="name" class="form-control validate[required]" placeholder="山田太郎" aria-describedby="sizing-addon2">
       <br>
       <div class="form-title">ユーザー名※</div>
       <div class="input-group">
         <span class="input-group-addon" id="sizing-addon2">@</span>
-        <input type="text" name="user_name" class="form-control" class="validate[required]" placeholder="lifechat" aria-describedby="sizing-addon2">
+        <input type="text" name="user_name" class="form-control validate[required,custom[onlyLetterNumber]]" placeholder="lifechat" aria-describedby="sizing-addon2">
       </div>
       <br>
-      <input type="hidden" name="mail" value="<%= @mail.to_s %>" class="validate[required]" style="background:#fff;">
+      <input type="hidden" name="mail" value="<%= @mail.to_s %>">
       <br>
       <div class="form-title">PassWord※</div>
-      <input class="form-control validate[required,minSize[8]]] text-input" type="password" aria-describedby="sizing-addon2" name="password" id="password" placeholder="パスワード" style="background:#fff;">
+      <input class="form-control validate[required,minSize[8]] text-input" type="password" aria-describedby="sizing-addon2" name="password" id="password" placeholder="パスワード" style="background:#fff;">
       <br>
       <br>
       <div class="form-title">PassWord※</div>
@@ -36,5 +36,5 @@
         <!--<font size="1px"><a href="/signin">既にアカウントをお持ちの方はこちらから</a></font>-->
       </div>
     </form>
-</div>
+    </form>
 </div>

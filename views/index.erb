@@ -1,3 +1,55 @@
+
+    <style type="text/css">
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poiret One', cursive;
+  color: black;
+}
+    .scroll-area {
+      height: 100vh;
+      overflow: auto;
+      -webkit-scroll-behavior: smooth;
+      scroll-behavior: smooth;
+      -webkit-scroll-snap-type: mandatory;
+      scroll-snap-type: mandatory;
+      -webkit-scroll-snap-points-y: repeat(100vh);
+      scroll-snap-points-y: repeat(100vh);
+    }
+    .box {
+      width: 100vw;
+      height: 100vh;
+      color: black;
+      font-size: 50px;
+      display: flex;
+      align-items: center;
+      /* 縦方向中央揃え */
+      justify-content: center;
+      /* 横方向中央揃え */
+      flex-direction: column;
+    }
+    .box__bg_black {
+      background-color: #333;
+    }
+    .box__bg_gray {
+      background-color: #ccc;
+    }
+    .box__bg_photo {
+      background-image: url(./img/backimg.jpg);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    p {
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+    }
+    .navbar{
+      margin:0;
+    }
+
+    </style>
 <div class="box__area">
 <div class="box box__bg_photo">
   <table>
