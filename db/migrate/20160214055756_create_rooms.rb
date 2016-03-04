@@ -3,6 +3,7 @@ class CreateRooms < ActiveRecord::Migration
     create_table :rooms do |t|
       t.string :name
       t.string :token
+      t.boolean :admin, default: true, nill: false
       t.boolean :range, default: false, null: false
       t.timestamps null: false
     end

@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20160214055756) do
   create_table "rooms", force: :cascade do |t|
     t.string   "name"
     t.string   "token"
+    t.boolean  "admin",      default: true
     t.boolean  "range",      default: false, null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false

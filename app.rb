@@ -75,21 +75,22 @@ end
 
 post '/create_room' do
 
-  unless Room.where(name: params[:title]).exists?
-    if p range = params[:range]
+  unless Room.where(name: params[:title]).exists?#作ろうとしたRoom_Nameがすでに存在するか？
+    if range = params[:range]
       range.each do |i|#ここで"true"をtrueへ変換
         range = i
       end
     end
 
-    if admin = params[:admin]
+    if params[:admin]#FormのAdminチェックボックスにチェックが付いていたら以下を実行
       admin = true
-    else
+    else#FormのAdminチェックボックスにチェックが付いていなかったら以下を実行
       admin = false
     end
 
-    if range == "true"
+    if range == "true"#公開範囲がパブリックだったら以下を実行
       room = Room.new(
+        admin: admin,
         name: params[:title],
         range: range,
       )
@@ -101,24 +102,25 @@ post '/create_room' do
         @message = "ルーム作成に失敗しました"
         erb :message
       end
-    else
-      url = SecureRandom.uuid
+    else#公開範囲がプライベートだったら以下を実行
+      url = SecureRandom.uuid#URLがRoomIDではない乱数URLを作成
       room = Room.new(
+        admin: admin,
         name: params[:title],
         range: range,
         token: url
       )
-      if room.save
-        @room = Room.find_by_name(params[:title]).id
+      if room.save#保存が成功したら以下を実行
+        @room = Room.find_by_name(params[:title]).id#Roomの名前からRoomIDを持ってくる
         Userroom.create(room_id: @room, user_id: session[:user], status: 1)
-        redirect "/join_private_room/#{url}"
-      else
+        redirect "/join_private_room/#{url}"#作成したRoomに飛ばす
+      else#Room作成が失敗した場合
         @message = "ルーム作成に失敗しました"
         erb :message
       end
     end
-  else
-    @true = true
+  else#もし存在したRoom_Nameを使おうとした場合errorを表示させる
+    @true = true #=>このルーム名はすでに存在しているため作成することができません 
     erb :create_room
   end
 end
@@ -143,15 +145,13 @@ get '/join_room/:id' do
     user = i
   end
 
-  if check
-    unless user.block?
-      if Room.where(id: params[:id], range: true).exists?
-        @room = Room.find(params[:id])
-        Userroom.create(room: @room, user_id: session[:user])
+  if check#選択したRoomに以前入ったことがあれば以下を実行
+    unless user.block?#選択したRoomからBlockされいなければ以下を実行
+      if Room.where(id: params[:id], range: true).exists?#選択したRoomがパブリックルームだったら以下を実行
+        @room = Room.find(params[:id])#idからRoomを探す
         erb :talk_room
-      elsif Userroom.where(user: session[:user]).exists?#一度は行ったルームにuuidなしで入れるようにする
+      elsif Userroom.where(user_id: session[:user],room_id: params[:id]).exists?#一度は行ったルームにuuidなしで入れるようにする
         @room = Room.find(params[:id])
-        Userroom.create(room: @room, user_id: session[:user])
         erb :talk_room
       else
         @message = "このルームはプライベートルームなため閲覧できません"
@@ -161,11 +161,18 @@ get '/join_room/:id' do
       @message = "このルームからはブロックされています"
       erb :message
     end
-  else
-    if Room.where(id: params[:id], range: true).exists?
+  else#選択したRoomに以前入ったことがなければ以下を実行
+    if Room.where(id: params[:id], admin: true, range: true).exists?
       @room = Room.find(params[:id])
       Userroom.create(room: @room, user_id: session[:user])
       erb :talk_room
+    elsif Room.where(id: params[:id], admin: false, range: true).exists?
+      @room = Room.find(params[:id])
+      Userroom.create(room: @room, user_id: session[:user], status: 1)
+      erb :talk_room
+    else
+        @message = "このルームはプライベートルームなため閲覧できません"
+        erb :message
     end
   end
 end
@@ -197,7 +204,9 @@ post '/room_edit/:id' do
   end
   if userroom.admin?
     @room = Room.find(params[:id])
-    #@user_room = Userroom.find(params[:id])
+    erb :room_edit
+  elsif Room.where(id: params[:id],admin: false).exists?
+    @room = Room.find(params[:id])
     erb :room_edit
   else
     @message = "設定をいじる権限がありません"
@@ -212,6 +221,16 @@ post '/room_renew/:id' do
 end
 post '/room_delete/:id' do
   Room.destroy(params[:id])
+
+  chat = Chat.where(room_id: params[:id])
+  chat.each do |chat|
+    chat.delete
+  end
+
+  room = Userroom.where(room_id: params[:id])
+  room.each do |room|
+    room.delete
+  end
   redirect'/room'
 end
 post '/join_member_delete/:user_id/:room_id' do
