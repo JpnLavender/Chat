@@ -42,7 +42,7 @@ $(function() {
         <header class="navbar navbar-default" style="margin-bottom:0;">
           <div class="container">
             <div class="navbar-header">
-              <a href="/"><img class="navbar-brand" src="/img/LifeChatIcon.gif"></a>
+              <img class="navbar-brand" src="/img/LifeChatIcon.gif">
               <a href="/friends" class="navbar-brand">Friends・</a>
               <a href="/room" class="navbar-brand">Room・</a>
               <a href="/tl" class="navbar-brand">TimeLine</a>
@@ -53,8 +53,8 @@ $(function() {
                 <form class="navbar-form navbar-left" role="search" action="/search" method="POST">
                   <div class="form-group">
                     <input type="text" name="search" class="form-control" placeholder="Search">
+                    <button type="submit" class="glyphicon glyphicon-search btn btn-default"></button>
                   </div>
-                  <button type="submit" class="glyphicon glyphicon-search btn btn-default"></button>
                 </form>
               </li>
               <!-- 検索バーend -->
@@ -68,21 +68,15 @@ $(function() {
                   </button>
                   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                     <li>
-                      <form action="/edit/<%= User.find(session[:user]).id %>" method="post">
-                        <input type="submit" value="アカウント情報を変更" style="background:transparent;text-decoration:underline;">
-                      </form>
+                      <a href="/edit/<%= User.find(session[:user]).id %>">アカウント情報を変更</a>
                     </li>
                     <li>
-                      <form action="/logout" method="get">
-                        <input type="submit" value="ログアウト" style="background:transparent;text-decoration:underline;">
-                      </form>
+                      <a href="logout">Logout</a>
                     </li>
                 </div>
               </li>
-                  </ul>
-          </div>
-          <!-- ユーザー名のポップアップend -->
-          </nav>
+              <!-- ユーザー名のポップアップend -->
+              </nav>
         </header>
 
       <% else %>

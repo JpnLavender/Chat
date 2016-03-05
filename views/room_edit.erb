@@ -15,7 +15,12 @@ table {
 
     <label>Room名:</label>
     <input type="text" name="name" value="<%= @room.name %>" class="form-control validate[required,maxSize[20]]" placeholder="山田太郎" aria-describedby="sizing-addon2">
-
+    <br>
+    <% if @room.token %>
+    <label>Room_URL:</label>
+    <input type="text" value="http://localhost:4567/join_private_room/<%= @room.token %>" class="form-control" >
+    <br>
+  <% end %>
     <label>ユーザー一覧:</label>
     <div class="input-group">
       <table width="100%" class="table table-bordered">
@@ -43,8 +48,8 @@ table {
               <%= user.introduction %>
             </td>
             <td>
-              <% user.userrooms.each do |userroom| %>
-                <%= userroom.status %>
+              <% @room.userrooms.each do |user| %>
+                <%= user.status %>
               <% end %>
             </td>
             <td>

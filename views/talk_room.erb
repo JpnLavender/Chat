@@ -22,14 +22,20 @@
   </button>
   <ul aria-labelledby="dropdownMenu1" class="dropdown-menu">
     <li>
-      <form action="/room_edit/<%= @room.id %>" method="post">
-        <input style="background:transparent;text-decoration:underline;" type="submit" value="RoomSetting">
-      </form>
+      <a href="/room">TopRoom</a>
     </li>
     <li>
-      <form action="/room_logout/<%= @room.id %>" method="POST">
-        <input style="background:transparent;text-decoration:underline;" type="submit" value="Logout">
-      </form>
+      <a href="/create_room">RoomCreate</a>
+    </li>
+    <li>
+      <a href="/my_room_list">RoomLists</a>
+    </li>
+    <li role="separator" class="divider"></li>
+    <li>
+      <a href="/room_edit/<%= @room.id %>">RoomEdit</a>
+    </li>
+    <li>
+      <a href="/room_logout/<%= @room.id %>">LogoutRoom</a>
     </li>
 </div>
   </ul>

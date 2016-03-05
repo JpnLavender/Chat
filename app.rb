@@ -36,7 +36,7 @@ helpers do
 end
 # ////////////////////////////////デフォルト参照////////////////////////////////
 get '/chat' do
-  if User.find_by id: session[:user]
+  if session[:user]
     erb :chat
   else
     erb :index
@@ -44,7 +44,7 @@ get '/chat' do
 end
 
 get '/tl' do
-  if User.find_by id: session[:user]
+  if session[:user]
     erb :tl
   else
     erb :index
@@ -92,7 +92,7 @@ post '/create_room' do
       room = Room.new(
         admin: admin,
         name: params[:title],
-        range: range,
+        range: range
       )
       if room.save
         @room = Room.find_by_name(params[:title]).id
@@ -128,7 +128,7 @@ end
 # ////////////////////////////////ルームリスト表示////////////////////////////////
 get '/my_room_list' do
   if session[:user]
-    Room.find(Room.pluck(:id).shuffle[0..4])
+    #Room.find(Room.pluck(:id).shuffle[0..4])
     @list_all = Room.where(range: true)
     erb :my_room_list
   else
@@ -138,6 +138,7 @@ end
 
 # ////////////////////////////////Join_Room////////////////////////////////
 get '/join_room/:id' do
+  if session[:user]
   user = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
   check = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists?
 
@@ -175,50 +176,63 @@ get '/join_room/:id' do
         erb :message
     end
   end
+  else
+    erb :index
+  end
 end
 
 get '/join_private_room/:id' do
-  if Room.where(token: params[:id]).exists?
-    @room = Room.find_by_token(params[:id])
-    Userroom.create(room: @room, user_id: session[:user])
-   erb :talk_room 
+  if session[:user]
+    if Room.where(token: params[:id]).exists?
+      @room = Room.find_by_token(params[:id])
+      Userroom.create(room: @room, user_id: session[:user])
+      erb :talk_room 
+    else
+      @message = "ルームを見つけることができませんでした"
+      erb :message
+    end
   else
-    @message = "ルームを見つけることができませんでした"
-    erb :message
+    erb :index
   end
 end
 # ////////////////////////////////Logout_Room////////////////////////////////
-post '/room_logout/:id' do
+get '/room_logout/:id' do
   room = Userroom.find(params[:id])
   room.update(user_id: nil)
-
   @list_all = Room.where(range: true)
   redirect'/my_room_list'
 end
 # ////////////////////////////////edit_Room////////////////////////////////
-post '/room_edit/:id' do
-  userroom = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
+get '/room_edit/:id' do
+  if session[:user]
+    userroom = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
 
-  userroom.each do |i|
-    userroom = i
-  end
-  if userroom.admin?
-    @room = Room.find(params[:id])
-    erb :room_edit
-  elsif Room.where(id: params[:id],admin: false).exists?
-    @room = Room.find(params[:id])
-    erb :room_edit
+    userroom.each do |i|
+      userroom = i
+    end
+
+    if userroom.admin?
+      @room = Room.find(params[:id])
+      erb :room_edit
+    elsif Room.where(id: params[:id],admin: false).exists?
+      @room = Room.find(params[:id])
+      erb :room_edit
+    else
+      @message = "設定をいじる権限がありません"
+      erb :message
+    end
   else
-    @message = "設定をいじる権限がありません"
-    erb :message
+    erb :index
   end
 end
 
 post '/room_renew/:id' do
   room = Room.find(params[:id])
   room.update(name: params[:name])
+  @save_true = true
   redirect"/room_edit/#{params[:id]}"
 end
+
 post '/room_delete/:id' do
   Room.destroy(params[:id])
 
@@ -231,6 +245,7 @@ post '/room_delete/:id' do
   room.each do |room|
     room.delete
   end
+
   redirect'/room'
 end
 post '/join_member_delete/:user_id/:room_id' do
@@ -415,39 +430,52 @@ get '/logout' do
 end
 
 # ////////////////////////////////予約変更////////////////////////////////
-get '/edit/:id' do
-  @message = 'このページは閲覧できません'
-  erb :message
-end
-post '/edit/:id' do
-  @users = User.find(params[:id])
-  erb :edit
+get '/edit/:id' do 
+  if "#{session[:user]}" == params[:id]
+    @users = User.find(params[:id])
+    erb :edit
+  else
+    @message = 'このページは閲覧できません'
+    erb :message
+  end
 end
 
-# ////////////////////////////////予約変更保存////////////////////////////////
+# ////////////////////////////////個人情報設定変更////////////////////////////////
 
 post '/renew/:id' do
   user = User.find(params[:id])
-  if user && user.authenticate(params[:password])
-    unless User.where(user_name: params[:user_name]).exists?
+  if user && user.authenticate(params[:password])#入力されたパスワードが合っていれば以下を実行
+    if p user.user_name == params[:user_name]#入力されたUsesr_nameが以前と同じものなら以下を実行
       session[:user] = user.id
-      user.update(name:   params[:name],
-                  user_name:    params[:user_name],
-                  mail:    params[:mail],
-                  age: params[:age],
-                  introduction: params[:introduction]
-                 )
+      user.update(#↓User_Nameを変更しないアップデート
+        name:   params[:name],
+        mail:    params[:mail],
+        age: params[:age],
+        introduction: params[:introduction]
+      )
       redirect '/room'
-    else
-      @message = 'このユーザー名は使用できません'
-      erb :message
+    else#入力されたUser_Nameが以前と違うものなら以下を実行
+      unless User.where(user_name: params[:user_name]).exists?#入力されたUser＿Nameがすでに存在していなければ以下を実行
+        session[:user] = user.id
+        user.update(#↓User_Nameを変更するアップデート
+          name:   params[:name],
+          user_name:    params[:user_name],
+          mail:    params[:mail],
+          age: params[:age],
+          introduction: params[:introduction]
+        )
+        redirect '/room'
+      else
+        @message = 'このユーザー名は使用できません'
+        erb :message
+      end
     end
   else
     @message = 'パスワードが異なります'
     erb :message
   end
 end
-# ////////////////////////////////ここからメール本確認////////////////////////////////
+  # ////////////////////////////////ここからメール本確認////////////////////////////////
 get '/send_mail' do
   erb :send_mail
 end
@@ -456,7 +484,7 @@ post '/send_mail' do
   email = params[:email]
   mail_check = User.where(mail: email).exists? # 入力したメールアドレスがあるか確認
   if mail_check # 入力したメールアドレスがあれば@messageを表示
-    @user_name_true= "入力されたメールアドレスは登録済みです。"
+    @user_name_true = "入力されたメールアドレスは登録済みです。"
     erb :index
   else # 入力したメールアドレスがなければ↓を実行
     random = SecureRandom.uuid # 乱数で暗号を作成
