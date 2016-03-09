@@ -30,9 +30,9 @@ function DisableButton(pObj) {
     <script src="../../form/jquery.validationEngine-ja.js"></script>
     <link rel="stylesheet" href="../../form/validationEngine.jquery.css">
     <script>
-$(function() {
-  jQuery("#form_1").validationEngine();
-});
+    $(function() {
+      jQuery("#form_1").validationEngine();
+    });
     </script>
 
 
@@ -48,21 +48,24 @@ $(function() {
               <a href="/tl" class="navbar-brand">TimeLine</a>
             </div>
             <ul class="nav navbar-nav navbar-right">
-              <li>
                 <!-- 検索バー -->
-                <form class="navbar-form navbar-left" role="search" action="/search" method="POST">
+                <form class="navbar-form navbar-left" role="search" action="/search" method="get" onsubmit = "if(this.search.value==''){return false}">
                   <div class="form-group">
-                    <input type="text" name="search" class="form-control" placeholder="Search">
-                    <button type="submit" class="glyphicon glyphicon-search btn btn-default"></button>
+                    <table>
+                      <tr>
+                        <td>
+                          <input type="text" name="search" class="form-control" placeholder="Search">
+                        </td>
+                        <td>
+                          <button type="submit" class="glyphicon glyphicon-search btn btn-default"></button>
+                        </td>
                   </div>
                 </form>
-              </li>
               <!-- 検索バーend -->
-
+              <td>
               <!-- ユーザー名のポップアップ -->
-              <li>
                 <div class="dropdown">
-                  <button class="btn btn-default" type="button" id="dropdownMenu1" style="margin-top:9;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                  <button class="btn btn-default" type="button" id="dropdownMenu1" style="margin-left:10;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     @<%= User.find(session[:user]).user_name %>
                   <span class="glyphicon glyphicon-user"></span>
                   </button>
@@ -74,7 +77,10 @@ $(function() {
                       <a href="logout">Logout</a>
                     </li>
                 </div>
-              </li>
+              </td>
+                      </tr>
+                    </table>
+
               <!-- ユーザー名のポップアップend -->
               </nav>
         </header>

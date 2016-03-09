@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 20160214055756) do
     t.string   "text"
     t.integer  "room_id"
     t.integer  "user_id"
+    t.integer  "form_user"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -52,6 +53,7 @@ ActiveRecord::Schema.define(version: 20160214055756) do
     t.string   "introduction"
     t.string   "mail"
     t.string   "age"
+    t.string   "color"
     t.string   "password_digest"
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false

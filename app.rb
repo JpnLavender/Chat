@@ -12,6 +12,12 @@ require 'sinatra'
 require 'sinatra/base'
 require 'base64'
 require 'SecureRandom'
+require 'padrino-helpers'
+require 'kaminari/sinatra'
+
+helpers Kaminari::Helpers::SinatraHelpers
+I18n.load_path = Dir[File.join(settings.root, 'locales', '*.yml')]
+
 use Rack::Session::Cookie
 # ////////////////////////////////サイト内のタイムゾーンの指定////////////////////////////////
 Time.zone = 'Tokyo'
@@ -29,7 +35,7 @@ enable :sessions
 
 helpers do
   def current_user
-    if session[:user]
+    if User.where(id: session[:user]).exists?
       User.find(session[:user])
     end
   end
@@ -44,7 +50,7 @@ get '/chat' do
 end
 
 get '/tl' do
-  if session[:user]
+  if User.where(id: session[:user]).exists?
     erb :tl
   else
     erb :index
@@ -56,7 +62,7 @@ get '/' do
 end
 
 get '/room' do
-  if session[:user]
+  if User.where(id: session[:user]).exists?
     @list_all = User.find(session[:user]).rooms
     erb :room
   else
@@ -66,7 +72,7 @@ end
 
 # ////////////////////////////////ルーム作成////////////////////////////////
 get '/create_room' do
-  if session[:user]
+  if User.where(id: session[:user]).exists?
     erb :create_room
   else
     erb :index
@@ -127,8 +133,7 @@ end
 
 # ////////////////////////////////ルームリスト表示////////////////////////////////
 get '/my_room_list' do
-  if session[:user]
-    #Room.find(Room.pluck(:id).shuffle[0..4])
+  if User.where(id: session[:user]).exists?
     @list_all = Room.where(range: true)
     erb :my_room_list
   else
@@ -138,51 +143,51 @@ end
 
 # ////////////////////////////////Join_Room////////////////////////////////
 get '/join_room/:id' do
-  if session[:user]
-  user = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
-  check = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists?
+  if User.where(id: session[:user]).exists?
+    user = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
+    check = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists?
 
-  user.each do |i|
-    user = i
-  end
+    user.each do |i|
+      user = i
+    end
 
-  if check#選択したRoomに以前入ったことがあれば以下を実行
-    unless user.block?#選択したRoomからBlockされいなければ以下を実行
-      if Room.where(id: params[:id], range: true).exists?#選択したRoomがパブリックルームだったら以下を実行
-        @room = Room.find(params[:id])#idからRoomを探す
-        erb :talk_room
-      elsif Userroom.where(user_id: session[:user],room_id: params[:id]).exists?#一度は行ったルームにuuidなしで入れるようにする
+    if check#選択したRoomに以前入ったことがあれば以下を実行
+      unless user.block?#選択したRoomからBlockされいなければ以下を実行
+        if Room.where(id: params[:id], range: true).exists?#選択したRoomがパブリックルームだったら以下を実行
+          @room = Room.find(params[:id])#idからRoomを探す
+          erb :talk_room
+        elsif Userroom.where(user_id: session[:user],room_id: params[:id]).exists?#一度は行ったルームにuuidなしで入れるようにする
+          @room = Room.find(params[:id])
+          erb :talk_room
+        else
+          @message = "このルームはプライベートルームなため閲覧できません"
+          erb :message
+        end
+      else
+        @message = "このルームからはブロックされています"
+        erb :message
+      end
+    else#選択したRoomに以前入ったことがなければ以下を実行
+      if Room.where(id: params[:id], admin: true, range: true).exists?
         @room = Room.find(params[:id])
+        Userroom.create(room: @room, user_id: session[:user])
+        erb :talk_room
+      elsif Room.where(id: params[:id], admin: false, range: true).exists?
+        @room = Room.find(params[:id])
+        Userroom.create(room: @room, user_id: session[:user], status: 1)
         erb :talk_room
       else
         @message = "このルームはプライベートルームなため閲覧できません"
         erb :message
       end
-    else
-      @message = "このルームからはブロックされています"
-      erb :message
     end
-  else#選択したRoomに以前入ったことがなければ以下を実行
-    if Room.where(id: params[:id], admin: true, range: true).exists?
-      @room = Room.find(params[:id])
-      Userroom.create(room: @room, user_id: session[:user])
-      erb :talk_room
-    elsif Room.where(id: params[:id], admin: false, range: true).exists?
-      @room = Room.find(params[:id])
-      Userroom.create(room: @room, user_id: session[:user], status: 1)
-      erb :talk_room
-    else
-        @message = "このルームはプライベートルームなため閲覧できません"
-        erb :message
-    end
-  end
   else
     erb :index
   end
 end
 
 get '/join_private_room/:id' do
-  if session[:user]
+  if User.where(id: session[:user]).exists?
     if Room.where(token: params[:id]).exists?
       @room = Room.find_by_token(params[:id])
       Userroom.create(room: @room, user_id: session[:user])
@@ -197,14 +202,18 @@ get '/join_private_room/:id' do
 end
 # ////////////////////////////////Logout_Room////////////////////////////////
 get '/room_logout/:id' do
-  room = Userroom.find(params[:id])
-  room.update(user_id: nil)
-  @list_all = Room.where(range: true)
-  redirect'/my_room_list'
+  if User.where(id:session[:user]).exists?
+    room = Userroom.find(params[:id])
+    room.update(user_id: nil)
+    @list_all = Room.where(range: true)
+    redirect'/my_room_list'
+  else
+    erb :index
+  end
 end
 # ////////////////////////////////edit_Room////////////////////////////////
 get '/room_edit/:id' do
-  if session[:user]
+  if User.where(id:session[:user]).exists?
     userroom = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
 
     userroom.each do |i|
@@ -276,11 +285,19 @@ end
 
 # ////////////////////////////////Create_chat////////////////////////////////
 post '/chat' do
-  chat = params[:chat]
-  p user = User.find(session[:user])
+  user = User.find(session[:user])
   id = params[:room_id]
-  Room.find(id).chats.create(user: user, text: chat)
+  Room.find(id).chats.create(user: user, text: params[:chat])
   redirect "/join_room/#{id}"
+end
+# ////////////////////////////////Ramdom_Send////////////////////////////////
+post '/random_send' do
+  room_id = Room.find(params[:room_id])
+  user = User.find(session[:user])
+  p "Randomテスト"
+  p random = room_id.users.sample.id
+  Room.find(room_id.id).chats.create(user: user, text: params[:chat],form_user: random)
+  redirect "/join_room/#{room_id.id}"
 end
 
 # ////////////////////////////////user_search////////////////////////////////
@@ -414,7 +431,7 @@ post '/signin' do
         end
       else
         @user_true = true
-        @message = "意味ワカンねえええ"
+        @message = "不明なエラーが発生しました"
         erb :message
       end
     end
@@ -448,22 +465,24 @@ post '/renew/:id' do
     if p user.user_name == params[:user_name]#入力されたUsesr_nameが以前と同じものなら以下を実行
       session[:user] = user.id
       user.update(#↓User_Nameを変更しないアップデート
-        name:   params[:name],
-        mail:    params[:mail],
-        age: params[:age],
-        introduction: params[:introduction]
-      )
+                  name:   params[:name],
+                  mail:    params[:mail],
+                  color: params[:color],
+                  age: params[:age],
+                  introduction: params[:introduction]
+                 )
       redirect '/room'
     else#入力されたUser_Nameが以前と違うものなら以下を実行
       unless User.where(user_name: params[:user_name]).exists?#入力されたUser＿Nameがすでに存在していなければ以下を実行
         session[:user] = user.id
         user.update(#↓User_Nameを変更するアップデート
-          name:   params[:name],
-          user_name:    params[:user_name],
-          mail:    params[:mail],
-          age: params[:age],
-          introduction: params[:introduction]
-        )
+                    name:   params[:name],
+                    user_name:    params[:user_name],
+                    mail:    params[:mail],
+                    age: params[:age],
+                    color: params[:color],
+                    introduction: params[:introduction]
+                   )
         redirect '/room'
       else
         @message = 'このユーザー名は使用できません'
@@ -475,7 +494,7 @@ post '/renew/:id' do
     erb :message
   end
 end
-  # ////////////////////////////////ここからメール本確認////////////////////////////////
+# ////////////////////////////////ここからメール本確認////////////////////////////////
 get '/send_mail' do
   erb :send_mail
 end

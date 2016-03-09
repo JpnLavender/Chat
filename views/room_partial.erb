@@ -65,3 +65,5 @@
 </div>
 <!-- Bootstrapグリッド・システム end -->
 
+<% scope = Room.where(range: true).page(params[:page]) %>
+<%= paginate(scope) %>

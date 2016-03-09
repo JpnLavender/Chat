@@ -12,6 +12,8 @@ gem 'cloudinary'
 gem 'bcrypt'
 gem 'dotenv'
 gem 'pony'
+gem 'kaminari', :require => 'kaminari/sinatra'
+gem 'padrino-helpers'
 
 group :development, :test do
   gem 'sqlite3'

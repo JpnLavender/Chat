@@ -1,20 +1,4 @@
-<script>
-(function(){
-  var $ = jQuery;
-  var authenticity_token = $('#doingForm [name=authenticity_token]').val();
-  $('#doingForm .update-button')
-    .attr('onclick','')
-    .bind('click',function(){
-      var status = $('#status').val();
-      $('#status').val('');
-      $.ajax({
-        type:'POST',
-        url:'http://twitter.com/status/update',
-        data:{status:status,authenticity_token:authenticity_token}
-      });
-    });
-})();
-</script>
+
 <!-- ユーザー名のポップアップ -->
 <div class="dropdown">
   <button aria-expanded="true" aria-haspopup="true" class="btn btn-default btn-lg" data-toggle="dropdown" id="dropdownMenu1" type="button">
@@ -43,28 +27,45 @@
 
 
   <center>
-    <form action="/chat" method="POST">
-      <table style="width:50%">
-        <tr>
-          <td>
-            <input type="text" class="form-control" name="chat" placeholder="とーきんぐ！" autocomplete="off">
-            <input type="hidden" name="room_id" value="<%= @room.id %>">
-          </td>
-          <td>
-            <input class="btn btn-default btn-sm" type="submit" value="送信">
-          </td>
-        </tr>
-      </table>
+    <form action="/chat" method="POST" onsubmit= "if(this.chat.value==''){return false}">
+      <class="row">
+      <div class="col-lg-6">
+        <div class="input-group">
+          <input type="text" name="chat" class="form-control" aria-label="..." >
+          <input type="hidden" name="room_id" value="<%= @room.id %>">
+          <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Send<span class="caret"></span></button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a href="#">Send</a></li>
+              <li><a href="javascript:document.ramdom_send.submit()">RandomSend</a></li>
+              <li><a href="#">Something else here</a></li>
+            </ul>
+          </div><!-- /btn-group -->
+        </div><!-- /input-group -->
+      </div><!-- /.col-lg-6 -->
+      </div><!-- /.row -->
     </form>
   </center>
-
   <table>
     <% @room.chats.each do |chat| %>
       <tr>
-        <td title="<%= chat.user.name %>">
+        <% if session[:user] == chat.user.id %>
+        <td title="<%= chat.created_at %>">
+          <font color="<%= chat.user.color %>"><%= chat.user.name %>→</font>
+          <%= chat.text %>
+        </td>
+      <% else %>
+        <td title="<%= chat.created_at %>">
           <%= chat.user.name %>→
           <%= chat.text %>
         </td>
+      <% end %>
       </tr>
     <% end %>
   </table>
+<!-- Ramdom_sendの隠しフォーム  -->
+    <form name="random_send" action="/random_send" method="POST">
+      <input type="hidden" name="chat" value="1">
+      <input type="hidden" name="room_id" value="<%= @room.id %>">
+    </form>
+<!-- Ramdom_sendの隠しフォーム  -->

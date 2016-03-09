@@ -1,3 +1,7 @@
+<!-- Color Picker -->
+<script src="/colorpicker/jscolor.min.js"></script>
+<!-- Color Picker -->
+<script src="jscolor.js"></script>
    <center>
       <div class="font" style="color: #7b7a65;">
         <h1>EDIT</h1>
@@ -26,6 +30,11 @@
             <label>年齢:</label>
             <input type="text" name="age" value="<%= @users.age %>" class="form-control validate[custom[onlyNumberSp]]" placeholder="18" aria-describedby="sizing-addon2">
           </div>
+          <div>
+            <label>テーマカラー:</label>
+            <input type="text" name="color" value="<%= @users.color %>" class="form-control jscolor" placeholder="#f0f0f0" aria-describedby="sizing-addon2">
+          </div>
+
           <div>
             <label>自己紹介:</label>
             <textarea name="introduction" class="form-control validate[maxSize[100]]" rows="3"><%= @users.introduction %></textarea>

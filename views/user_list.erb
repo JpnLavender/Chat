@@ -5,7 +5,6 @@
   font-size: 18px;
   min-height: 200px;
   main-width: 200px;
-  background: #dbdfe5;
   margin-bottom: 10px;
 }
       .demo-content.bg-alt {
@@ -22,60 +21,63 @@
 
 <br>
 <br>
-    <% if @true_users %>
-    <!-- Bootstrapグリッド・システム -->
-    <div class="container">
-      <div class="row">
-        <% @search_users.each do |user| %>
-          <div class="col-md-4">
-            <div class="demo-content bg-alt">
-              <!-- <img src="#" class="img-rounded"> -->
-              <ul>
-                <li>
-                  <table>
-                    <tr>
-                      <td>
-                        <p>
-                        <%= user.name %>
+<% if @true_users %>
+  <!-- Bootstrapグリッド・システム -->
+  <div class="container">
+    <div class="row">
+      <% @search_users.each do |user| %>
+        <div class="col-md-4">
+          <div class="demo-content bg-alt" >
+            <!-- <img src="#" class="img-rounded"> -->
+            <ul>
+              <li>
+                <table>
+                  <tr>
+                    <td>
+                      <p>
+                      <%= user.name %>
                       </p>
                     </td>
                     <td>
-                      <form action="/follow" method="POST">
+                      <form action="/follow/<% user.id %>" method="POST">
                         <button type="submit" class="btn btn-primary btn-sm glyphicon glyphicon-plus">
                           Friend
                         </button>
                       </form>
                     </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        @<%= user.user_name %>
-                      </td>
-                    </tr>
-                  </table>
-                </li>
-                <li><%= user.introduction %></li>
-              </ul>
-            </div>
+                  </tr>
+                  <tr>
+                    <td>
+                      @<%= user.user_name %>
+                  </td>
+                  </tr>
+                </table>
+              </li>
+              <li><%= user.introduction %></li>
+            </ul>
           </div>
-        <% end %>
-      </div>
-    <% end %>
-      <!-- Bootstrapグリッド・システム end -->
-    <!-- Bootstrapグリッド・システム -->
-    <% if @true_lists %>
-    <div class="container">
-      <div class="row">
-        <% @search_lists.each do |room| %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <!-- Bootstrapグリッド・システム end -->
+  <!-- Bootstrapグリッド・システム -->
+  <% if @true_lists %>
+    <div class="row">
+      <% @search_lists.each do |room| %>
         <div class="col-md-4">
           <div class="demo-content bg-alt">
             <!-- <img src="#" class="img-rounded"> -->
             <ul>
               <a href="<%= room.name %>" title="RoomID=><%= room.id %>"> <li><%= room.name %></li> </a>
             </ul>
+            <% room.users.each do |user| %>
+              <ul>
+                <%= user.name %>
+              </ul>
+            <% end %>
           </div>
         </div>
-        <% end %>
-      </div>
+      <% end %>
     <% end %>
-      <!-- Bootstrapグリッド・システム end -->
+    <!-- Bootstrapグリッド・システム end -->
