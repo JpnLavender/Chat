@@ -122,3 +122,22 @@ Box
 .left {
   float: left;
 }
+.demo-content {
+  padding: 15px;
+  font-size: 18px;
+  min-height: 200px;
+  main-width: 200px;
+  margin-bottom: 10px;
+}
+.demo-content.bg-alt {
+  background: #abb1b8;
+  border-radius: 10px;
+}
+li {
+  list-style-type: none;
+}
+ul {
+  list-style-type: none;
+}
+
+

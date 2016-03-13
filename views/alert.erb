@@ -1,0 +1,17 @@
+
+<br>
+<br>
+<div class="container">
+  <table class="table table-striped">
+    <% @alert.each do |alert| %>
+      <tr>
+        <td>
+          <%= alert.title %>
+        </td>
+        <td>
+          <a href="/alert_delete/<%= alert.id %>">x</a>
+        </td>
+        </th>
+      <% end %>
+  </table>
+</div>

@@ -40,6 +40,18 @@ helpers do
     end
   end
 end
+# not_found do
+#   @message = "ページが見つかりませんでした"
+#   erb :message
+# end
+error do
+  @message = "内部サーバーエラー"
+  erb :message
+end
+def error
+  @message = "内部サーバーエラー"
+  erb :message
+end
 # ////////////////////////////////デフォルト参照////////////////////////////////
 get '/chat' do
   if session[:user]
@@ -70,6 +82,16 @@ get '/room' do
   end
 end
 
+
+#////////////////////////////////お知らせ通知////////////////////////////////
+get '/alert/:id' do
+  if "#{session[:user]}" == params[:id]
+    @alert = User.find(session[:user]).alerts
+    erb :alert
+  else 
+    redirect '/room'
+  end
+end
 # ////////////////////////////////ルーム作成////////////////////////////////
 get '/create_room' do
   if User.where(id: session[:user]).exists?
@@ -95,11 +117,7 @@ post '/create_room' do
     end
 
     if range == "true"#公開範囲がパブリックだったら以下を実行
-      room = Room.new(
-        admin: admin,
-        name: params[:title],
-        range: range
-      )
+      room = Room.new( admin: admin, name: params[:title], range: range)
       if room.save
         @room = Room.find_by_name(params[:title]).id
         Userroom.create(room_id: @room, user_id: session[:user], status: 1)
@@ -308,12 +326,12 @@ get '/search' do
       @search_lists = Room.where("name like '%#{params[:search]}%'")
       @true_lists = true
       @true_users = true
-      erb :user_list
+      erb :search
     else 
       @search_users = User.where("user_name like '%#{params[:search]}%'")
       @true_users = true
       @true_lists = false
-      erb :user_list
+      erb :search
     end
   elsif Room.where("name like '%#{params[:search]}%'").exists?
     if User.where("user_name like '%#{params[:search]}%'").exists?
@@ -321,16 +339,25 @@ get '/search' do
       @search_lists = Room.where("name like '%#{params[:search]}%'")
       @true_users = true
       @true_lists = false
-      erb :user_list
+      erb :search
     else 
       @search_lists = Room.where("name like '%#{params[:search]}%'")
       @true_users = false
       @true_lists = true
-      erb :user_list
+      erb :search
     end
   else
     @message = "ユーザーとルームが存在しません"
     erb :message
+  end
+end
+
+post '/follow/:id' do
+  friend = Friend.new(user_id: session[:user],friend_id: params[:id])
+  if friend.save
+    redirect '/room'
+  else
+    error
   end
 end
 # ////////////////////////////////ルームの削除////////////////////////////////
@@ -353,29 +380,53 @@ get '/public_room' do
   end
 end
 # ////////////////////////////////フレンド機能設定////////////////////////////////
-def friends
-  p 'user = User.find_by :session[:user]'
-  p user = User.find_by_id(session[:user])
-  @my_user = user
-  # @my_friends = user.friends
-  erb :friends
-end
 
 get '/friends' do
   if User.find_by id: session[:user]
+    user = User.find_by_id(session[:user])
+    @my_friends = user.friends
     erb :friends
-    friends
   else
     erb :index
   end
 end
+
+get '/create_friend_room/:friend_id' do
+  #:friend_idはテーブルid
+  friend = Friend.find(params[:friend_id])
+  unless Userroom.where(user_id: [friend.user_id,friend.friend_id]).group(:room_id).having("count(*) = 2").exists?
+    friend = Friend.find(params[:friend_id])#Friendのテーブルを探す
+    user = User.find(friend.friend_id)#フレンドのテーブルの中に入っている友達のIDを持ってくる
+    name = "#{user.name}" + "&" + "#{friend.user.name}" #RoomNameを作る
+    #if Room.where(name: name).exists?
+    room = Room.new(admin: false, name: name, range: false)
+    if room.save
+      @room = Room.find_by_name(name)
+      Userroom.create(room: @room, user_id: user.id)
+      Userroom.create(room: @room, user_id: session[:user])
+      redirect "/join_room/#{@room.id}"
+    else 
+      error
+    end
+  else
+    friend_room = Userroom.where(user_id: [friend.user_id,friend.friend_id]).group(:room_id).having("count(*) = 2")
+    friend_room.each do |room|
+      @room = Room.where(id: room.room_id)
+        redirect "join_room/#{room.room_id}"
+    end
+  end
+end
+
+get '/alert_delete/:id' do
+  alert = Alert.find(params[:id])
+  alert_each = Alert.find(params[:id]).user
+  alert.delete
+  redirect "/alert/#{alert_each.id}"
+end
 # ////////////////////////////////チャット送信////////////////////////////////
 post '/chat' do
-  p talk = Talk.new(
-    talk: params[:chat],
-    user_name: session[:user]
-  )
-  if p talk.save
+  talk = Talk.new( talk: params[:chat], user_name: session[:user])
+  if talk.save
     redirect '/room'
   else
     redirect '/room'

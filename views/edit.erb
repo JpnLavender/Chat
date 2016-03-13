@@ -2,13 +2,15 @@
 <script src="/colorpicker/jscolor.min.js"></script>
 <!-- Color Picker -->
 <script src="jscolor.js"></script>
-   <center>
-      <div class="font" style="color: #7b7a65;">
-        <h1>EDIT</h1>
-      </div>
-      <h2>アカウント内容変更</h2>
-    </center>
-    <div class="box2">
+<center>
+  <div class="font" style="color: #7b7a65;">
+    <h1>EDIT</h1>
+  </div>
+  <h2>アカウント内容変更</h2>
+</center>
+<div class="container">
+  <div class="col-md-12">
+    <div class="demo-content bg-alt">
       <form id="form_1" action="/renew/<%= @users.id %>" method="post">
         <form class="form-container">
           <div>
@@ -52,3 +54,4 @@
           <input type="hidden" name="email" value="<%= User.find(session[:user]).mail %>" class="validate[required,custom[email]]" style="background:#fff;">
         </form>
     </div>
+  </div>

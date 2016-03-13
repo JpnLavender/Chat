@@ -1,22 +1,5 @@
 <style type="text/css">
 /* グリッドを分かり易くするためのカラム背景色等レイアウト */
-.demo-content {
-  padding: 15px;
-  font-size: 18px;
-  min-height: 200px;
-  main-width: 200px;
-  margin-bottom: 10px;
-}
-      .demo-content.bg-alt {
-        background: #abb1b8;
-      }
-      li {
-        list-style-type: none;
-      }
-      ul {
-        list-style-type: none;
-      }
-
 </style>
 
 <br>
@@ -39,8 +22,8 @@
                       </p>
                     </td>
                     <td>
-                      <form action="/follow/<% user.id %>" method="POST">
-                        <button type="submit" class="btn btn-primary btn-sm glyphicon glyphicon-plus">
+                      <form action="/follow/<%= user.id %>" method="POST">
+                        <button type="submit" style="margin-left:13;"class="btn btn-primary btn-sm glyphicon">
                           Friend
                         </button>
                       </form>
@@ -60,24 +43,27 @@
       <% end %>
     </div>
   <% end %>
+  </div>
   <!-- Bootstrapグリッド・システム end -->
   <!-- Bootstrapグリッド・システム -->
   <% if @true_lists %>
-    <div class="row">
-      <% @search_lists.each do |room| %>
-        <div class="col-md-4">
-          <div class="demo-content bg-alt">
-            <!-- <img src="#" class="img-rounded"> -->
-            <ul>
-              <a href="<%= room.name %>" title="RoomID=><%= room.id %>"> <li><%= room.name %></li> </a>
-            </ul>
-            <% room.users.each do |user| %>
+    <div class="container">
+      <div class="row">
+        <% @search_lists.each do |room| %>
+          <div class="col-md-4">
+            <div class="demo-content bg-alt">
+              <!-- <img src="#" class="img-rounded"> -->
               <ul>
-                <%= user.name %>
+                <a href="join_room/<%= room.id %>" title="RoomID=><%= room.id %>"> <li><%= room.name %></li> </a>
               </ul>
-            <% end %>
+              <% room.users.each do |user| %>
+                <ul>
+                  <%= user.name %>
+                </ul>
+              <% end %>
+            </div>
           </div>
-        </div>
-      <% end %>
+        <% end %>
+      </div>
     <% end %>
     <!-- Bootstrapグリッド・システム end -->
