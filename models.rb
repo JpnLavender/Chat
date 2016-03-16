@@ -27,13 +27,14 @@ end
 class Chat < ActiveRecord::Base
   belongs_to :room
   belongs_to :user
+  paginates_per 200
 end
 
 class Room < ActiveRecord::Base
   has_many :users,  through: :userrooms
   has_many :chats
   has_many :userrooms
-  paginates_per 1 # 1ページに5件表示する
+  paginates_per 24 
 end
 
 class Userroom < ActiveRecord::Base

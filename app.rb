@@ -14,9 +14,12 @@ require 'base64'
 require 'SecureRandom'
 require 'padrino-helpers'
 require 'kaminari/sinatra'
-
+set :erb ,layout_options: {layout: true}
+#set :layout, true
 helpers Kaminari::Helpers::SinatraHelpers
-I18n.load_path = Dir[File.join(settings.root, 'locales', '*.yml')]
+
+set :locales, Dir[ "locales/*.yml" ]
+I18n.config.available_locales = :en
 
 use Rack::Session::Cookie
 # ////////////////////////////////サイト内のタイムゾーンの指定////////////////////////////////
@@ -61,24 +64,25 @@ get '/chat' do
   end
 end
 
+
 get '/tl' do
   if User.where(id: session[:user]).exists?
-    erb :tl
+    erb :tl , :layout => :layout
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 
 get '/' do
-  erb :index
+  erb :index , :layout => :layout
 end
 
 get '/room' do
   if User.where(id: session[:user]).exists?
-    @list_all = User.find(session[:user]).rooms
-    erb :room
+    @list_all = User.find(session[:user]).rooms.page(params[:page])
+    erb :room , :layout => :layout
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 
@@ -87,7 +91,7 @@ end
 get '/alert/:id' do
   if "#{session[:user]}" == params[:id]
     @alert = User.find(session[:user]).alerts
-    erb :alert
+    erb :alert , :layout => :layout
   else 
     redirect '/room'
   end
@@ -95,9 +99,9 @@ end
 # ////////////////////////////////ルーム作成////////////////////////////////
 get '/create_room' do
   if User.where(id: session[:user]).exists?
-    erb :create_room
+    erb :create_room , :layout => :layout
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 
@@ -105,9 +109,7 @@ post '/create_room' do
 
   unless Room.where(name: params[:title]).exists?#作ろうとしたRoom_Nameがすでに存在するか？
     if range = params[:range]
-      range.each do |i|#ここで"true"をtrueへ変換
-        range = i
-      end
+      range = range[0]
     end
 
     if params[:admin]#FormのAdminチェックボックスにチェックが付いていたら以下を実行
@@ -119,12 +121,12 @@ post '/create_room' do
     if range == "true"#公開範囲がパブリックだったら以下を実行
       room = Room.new( admin: admin, name: params[:title], range: range)
       if room.save
-        @room = Room.find_by_name(params[:title]).id
-        Userroom.create(room_id: @room, user_id: session[:user], status: 1)
-        redirect "/join_room/#{@room}"
+        @room = Room.where(name: params[:title]).page(params[:page])
+        Userroom.create(room_id: @room[0].id, user_id: session[:user], status: 1)
+        redirect "/join_room/#{@room[0].id}"
       else
         @message = "ルーム作成に失敗しました"
-        erb :message
+        erb :message , :layout => :layout
       end
     else#公開範囲がプライベートだったら以下を実行
       url = SecureRandom.uuid#URLがRoomIDではない乱数URLを作成
@@ -135,87 +137,91 @@ post '/create_room' do
         token: url
       )
       if room.save#保存が成功したら以下を実行
-        @room = Room.find_by_name(params[:title]).id#Roomの名前からRoomIDを持ってくる
+        @room = Room.find_by_name(params[:title]).id.page(params[:page])#Roomの名前からRoomIDを持ってくる
         Userroom.create(room_id: @room, user_id: session[:user], status: 1)
         redirect "/join_private_room/#{url}"#作成したRoomに飛ばす
       else#Room作成が失敗した場合
         @message = "ルーム作成に失敗しました"
-        erb :message
+        erb :message , :layout => :layout
       end
     end
   else#もし存在したRoom_Nameを使おうとした場合errorを表示させる
     @true = true #=>このルーム名はすでに存在しているため作成することができません 
-    erb :create_room
+    erb :create_room , :layout => :layout
   end
 end
 
 # ////////////////////////////////ルームリスト表示////////////////////////////////
 get '/my_room_list' do
   if User.where(id: session[:user]).exists?
-    @list_all = Room.where(range: true)
-    erb :my_room_list
+    @list_all = Room.where(range: true).page(params[:page])
+    erb :my_room_list , :layout => :layout
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 
 # ////////////////////////////////Join_Room////////////////////////////////
 get '/join_room/:id' do
-  if User.where(id: session[:user]).exists?
+  if User.where(id: session[:user]).exists?#Userが存在するか
+    name = User.find(session[:user]).name#セッションからRoomに入ろうとしてるUser_nameを取得する
+    rooms = Room.where(id: params[:id])#URLからRoomを探す
+    room = rooms[0].userrooms#RoomからUserRoomを探す
     user = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
-    check = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists?
-
-    user.each do |i|
-      user = i
-    end
-
-    if check#選択したRoomに以前入ったことがあれば以下を実行
+    user = user[0]
+    if Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists?##選択したRoomに以前入ったことがあれば以下を実行
       unless user.block?#選択したRoomからBlockされいなければ以下を実行
         if Room.where(id: params[:id], range: true).exists?#選択したRoomがパブリックルームだったら以下を実行
-          @room = Room.find(params[:id])#idからRoomを探す
-          erb :talk_room
+          @room = Room.where(id: params[:id]).page(params[:page])#idからRoomを探す
+          erb :talk_room , :layout => :layout
         elsif Userroom.where(user_id: session[:user],room_id: params[:id]).exists?#一度は行ったルームにuuidなしで入れるようにする
-          @room = Room.find(params[:id])
-          erb :talk_room
+          @room = Room.where(id: params[:id]).page(params[:page])
+          erb :talk_room , :layout => :layout
         else
           @message = "このルームはプライベートルームなため閲覧できません"
-          erb :message
+          erb :message , :layout => :layout
         end
       else
         @message = "このルームからはブロックされています"
-        erb :message
+        erb :message , :layout => :layout
       end
     else#選択したRoomに以前入ったことがなければ以下を実行
-      if Room.where(id: params[:id], admin: true, range: true).exists?
-        @room = Room.find(params[:id])
-        Userroom.create(room: @room, user_id: session[:user])
-        erb :talk_room
-      elsif Room.where(id: params[:id], admin: false, range: true).exists?
-        @room = Room.find(params[:id])
+      if Room.where(id: params[:id], admin: true, range: true).exists?#AdminがONになってるRoom
+        @room = Room.where(id: params[:id]).page(params[:page])
+        rooms[0].users.each do |user|
+          @alert_count = Alert.create(title: "#{name} が#{rooms[0].name}に入室しました" , user_id: user.id)
+        end
+        Userroom.create(room_id: @room[0].id, user_id: session[:user])
+        erb :talk_room , :layout => :layout
+      elsif Room.where(id: params[:id], admin: false, range: true).exists?#AdminがOFFになってるRoom
+        @room = Room.where(id: params[:id]).page(params[:page])
+        rooms[0].users.each do |user|
+          @alert_count = Alert.create(title: "#{name} が#{room[0].name}に入室しました" , user_id: user.id)
+        end
         Userroom.create(room: @room, user_id: session[:user], status: 1)
-        erb :talk_room
+        erb :talk_room , :layout => :layout
       else
         @message = "このルームはプライベートルームなため閲覧できません"
-        erb :message
+        erb :message , :layout => :layout
       end
     end
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 
 get '/join_private_room/:id' do
   if User.where(id: session[:user]).exists?
     if Room.where(token: params[:id]).exists?
-      @room = Room.find_by_token(params[:id])
+      @room = Room.where(token: params[:id])
       Userroom.create(room: @room, user_id: session[:user])
-      erb :talk_room 
+      erb :talk_room , :layout => :layout
     else
       @message = "ルームを見つけることができませんでした"
-      erb :message
+      erb :message , :layout => :layout
     end
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 # ////////////////////////////////Logout_Room////////////////////////////////
@@ -223,10 +229,10 @@ get '/room_logout/:id' do
   if User.where(id:session[:user]).exists?
     room = Userroom.find(params[:id])
     room.update(user_id: nil)
-    @list_all = Room.where(range: true)
+    @list_all = Room.where(range: true).page(params[:page])
     redirect'/my_room_list'
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 # ////////////////////////////////edit_Room////////////////////////////////
@@ -234,22 +240,20 @@ get '/room_edit/:id' do
   if User.where(id:session[:user]).exists?
     userroom = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
 
-    userroom.each do |i|
-      userroom = i
-    end
+    userroom = userroom[0]
 
     if userroom.admin?
-      @room = Room.find(params[:id])
-      erb :room_edit
+      @room = Room.where(id: params[:id]).page(params[:page])
+      erb :room_edit , :layout => :layout
     elsif Room.where(id: params[:id],admin: false).exists?
-      @room = Room.find(params[:id])
-      erb :room_edit
+      @room = Room.where(id: params[:id]).page(params[:page])
+      erb :room_edit , :layout => :layout
     else
       @message = "設定をいじる権限がありません"
-      erb :message
+      erb :message , :layout => :layout
     end
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 
@@ -264,39 +268,31 @@ post '/room_delete/:id' do
   Room.destroy(params[:id])
 
   chat = Chat.where(room_id: params[:id])
-  chat.each do |chat|
+  chat = chat[0]
     chat.delete
-  end
 
   room = Userroom.where(room_id: params[:id])
-  room.each do |room|
+  room = room[0]
     room.delete
-  end
 
   redirect'/room'
 end
 post '/join_member_delete/:user_id/:room_id' do
   userroom = Userroom.where(user_id: params[:user_id],room_id: params[:room_id])
-  userroom.each do |i|
-    userroom = i
-  end
+  userroom = userroom[0]
   userroom.block!
   redirect "join_room/#{params[:room_id]}"
 end
 
 post '/join_member_admin/:user_id/:room_id' do
   userroom = Userroom.where(user_id: params[:user_id],room_id: params[:room_id])
-  userroom.each do |i|
-    userroom = i
-  end
+  userroom = userroom[0]
   userroom.admin!
   redirect "join_room/#{params[:room_id]}"
 end
 post '/join_member_normal/:user_id/:room_id' do
   userroom = Userroom.where(user_id: params[:user_id],room_id: params[:room_id])
-  userroom.each do |i|
-    userroom = i
-  end
+  userroom = userroom[0]
   userroom.normal!
   redirect "join_room/#{params[:room_id]}"
 end
@@ -326,12 +322,12 @@ get '/search' do
       @search_lists = Room.where("name like '%#{params[:search]}%'")
       @true_lists = true
       @true_users = true
-      erb :search
+      erb :search , :layout => :layout
     else 
       @search_users = User.where("user_name like '%#{params[:search]}%'")
       @true_users = true
       @true_lists = false
-      erb :search
+      erb :search , :layout => :layout
     end
   elsif Room.where("name like '%#{params[:search]}%'").exists?
     if User.where("user_name like '%#{params[:search]}%'").exists?
@@ -339,16 +335,16 @@ get '/search' do
       @search_lists = Room.where("name like '%#{params[:search]}%'")
       @true_users = true
       @true_lists = false
-      erb :search
+      erb :search , :layout => :layout
     else 
       @search_lists = Room.where("name like '%#{params[:search]}%'")
       @true_users = false
       @true_lists = true
-      erb :search
+      erb :search , :layout => :layout
     end
   else
     @message = "ユーザーとルームが存在しません"
-    erb :message
+    erb :message , :layout => :layout
   end
 end
 
@@ -367,16 +363,16 @@ get '/delete/:id' do
     redirect 'my_room_list'
   else
     @messeage = "内部サーバーエラー"
-    erb :messeage
+    erb :messeage , :layout => :layout
   end
 end
 
 # ////////////////////////////////パブリックルーム////////////////////////////////
 get '/public_room' do
   if User.find_by id: session[:user]
-    erb :my_room_list
+    erb :my_room_list , :layout => :layout
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 # ////////////////////////////////フレンド機能設定////////////////////////////////
@@ -385,9 +381,9 @@ get '/friends' do
   if User.find_by id: session[:user]
     user = User.find_by_id(session[:user])
     @my_friends = user.friends
-    erb :friends
+    erb :friends , :layout => :layout
   else
-    erb :index
+    erb :index , :layout => :layout
   end
 end
 
@@ -401,7 +397,7 @@ get '/create_friend_room/:friend_id' do
     #if Room.where(name: name).exists?
     room = Room.new(admin: false, name: name, range: false)
     if room.save
-      @room = Room.find_by_name(name)
+      @room = Room.where(name: name)
       Userroom.create(room: @room, user_id: user.id)
       Userroom.create(room: @room, user_id: session[:user])
       redirect "/join_room/#{@room.id}"
@@ -411,7 +407,7 @@ get '/create_friend_room/:friend_id' do
   else
     friend_room = Userroom.where(user_id: [friend.user_id,friend.friend_id]).group(:room_id).having("count(*) = 2")
     friend_room.each do |room|
-      @room = Room.where(id: room.room_id)
+      @room = Room.where(id: room.room_id).page(params[:page])
         redirect "join_room/#{room.room_id}"
     end
   end
@@ -435,9 +431,9 @@ end
 # ////////////////////////////////サインイン////////////////////////////////
 get '/signin' do
   if session[:user]
-    erb :room 
+    erb :room  , :layout => :layout
   else
-    erb :index #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
+    erb :index , :layout => :layout #=> めんどくさいから、後でSigninを作ったら変更しよう。。。（＾ω＾ ≡ ＾ω＾）おっおっおっ
   end
 end
 
@@ -448,11 +444,11 @@ post '/signin' do
       session[:user] = user.id # セッションにユーザーデータを保存する
       session[:user_name] = user.user_name
       @user = user.user_name
-      @list_all = User.find(session[:user]).rooms
-      erb :room
+      @list_all = User.find(session[:user]).rooms.page(params[:page])
+      erb :room , :layout => :layout
     else # もし合っていなかったら以下実行
       @user_true = true
-      erb :index
+      erb :index , :layout => :layout
     end
     #普通のUser_name
   elsif user = User.find_by_user_name(params[:name])
@@ -460,11 +456,11 @@ post '/signin' do
       session[:user] = user.id # セッションにユーザーデータを保存する
       session[:user_name] = user.user_name
       @user = user.user_name
-      @list_all = User.find(session[:user]).rooms
-      erb :room
+      @list_all = User.find(session[:user]).rooms.page(params[:page])
+      erb :room , :layout => :layout
     else # もし合っていなかったら以下実行
       @user_true = true
-      erb :index
+      erb :index , :layout => :layout
     end
     #@のついたUser_name
   elsif cut = params[:name]
@@ -474,21 +470,21 @@ post '/signin' do
           session[:user] = user.id # セッションにユーザーデータを保存する
           session[:user_name] = user.user_name
           @user = user.user_name
-          @list_all = User.find(session[:user]).rooms
-          erb :room
+          @list_all = User.find(session[:user]).rooms.page(params[:page])
+          erb :room , :layout => :layout
         else # もし合っていなかったら以下実行
           @user_true = true
-          erb :index
+          erb :index , :layout => :layout
         end
       else
         @user_true = true
         @message = "不明なエラーが発生しました"
-        erb :message
+        erb :message , :layout => :layout
       end
     end
   else
     @message = "erraaaaaaaa"
-    erb :message
+    erb :message , :layout => :layout
   end
 end
 # ////////////////////////////////サインアウト////////////////////////////////
@@ -501,10 +497,10 @@ end
 get '/edit/:id' do 
   if "#{session[:user]}" == params[:id]
     @users = User.find(params[:id])
-    erb :edit
+    erb :edit , :layout => :layout
   else
     @message = 'このページは閲覧できません'
-    erb :message
+    erb :message , :layout => :layout
   end
 end
 
@@ -537,12 +533,12 @@ post '/renew/:id' do
         redirect '/room'
       else
         @message = 'このユーザー名は使用できません'
-        erb :message
+        erb :message , :layout => :layout
       end
     end
   else
     @message = 'パスワードが異なります'
-    erb :message
+    erb :message , :layout => :layout
   end
 end
 # ////////////////////////////////ここからメール本確認////////////////////////////////
@@ -555,7 +551,7 @@ post '/send_mail' do
   mail_check = User.where(mail: email).exists? # 入力したメールアドレスがあるか確認
   if mail_check # 入力したメールアドレスがあれば@messageを表示
     @user_name_true = "入力されたメールアドレスは登録済みです。"
-    erb :index
+    erb :index , :layout => :layout
   else # 入力したメールアドレスがなければ↓を実行
     random = SecureRandom.uuid # 乱数で暗号を作成
     token = Token.new( # 暗号とメールアドレスをDBに作成
@@ -591,7 +587,7 @@ post '/send_mail' do
       redirect '/account'
     else # 保存に失敗したら↓を実行
       @message = '不明なエラーが発生しました'
-      erb :message
+      erb :message , :layout => :layout
     end
   end
 end
@@ -607,7 +603,7 @@ get '/signup/:email_secret' do
     erb :sign_up # フォームを表示する
   else # DBが時間外なら↓を実行
     @message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
-    erb :message
+    erb :message , :layout => :layout
   end
 end
 # ////////////////////////////////アカウント作成////////////////////////////////
@@ -625,14 +621,14 @@ post '/signup' do
       redirect '/room'
     else
       @message = '不明なエラーが発生しました'
-      erb :message
+      erb :message , :layout => :layout
     end
   else
     @message = 'すでに使われているUserNameです'
-    erb :message
+    erb :message , :layout => :layout
   end
 end
 
 get '/account' do
-  erb :account
+  erb :account , :layout => :layout
 end

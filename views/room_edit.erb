@@ -1,3 +1,4 @@
+<% room = @room[0] %>
 <center>
   <div class="font" style="color: #7b7a65;">
     <h1>EDIT</h1>
@@ -8,14 +9,14 @@
   <div class="col-md-12">
     <div class="demo-content bg-alt">
 
-      <form id="form_1" action="/room_renew/<%= @room.id %>" method="post">
+      <form id="form_1" action="/room_renew/<%= room.id %>" method="post">
 
         <label>Room名:</label>
-        <input type="text" name="name" value="<%= @room.name %>" class="form-control validate[required,maxSize[20]]">
+        <input type="text" name="name" value="<%= room.name %>" class="form-control validate[required,maxSize[20]]">
         <br>
-        <% if @room.token %>
+        <% if room.token %>
           <label>Room_URL:</label>
-          <input type="text" value="http://localhost:4567/join_private_room/<%= @room.token %>" class="form-control" >
+          <input type="text" value="http://localhost:4567/join_private_room/<%= room.token %>" class="form-control" >
           <br>
         <% end %>
         <label>ユーザー一覧:</label>
@@ -33,7 +34,7 @@
             <th>
               状態
             </th>
-            <% @room.users.each do |user| %>
+            <% room.users.each do |user| %>
               <tr>
                 <td>
                   <%= user.name %>
@@ -45,7 +46,7 @@
                   <%= user.introduction %>
                 </td>
                 <td>
-                  <% @room.userrooms.each do |user| %>
+                  <% room.userrooms.each do |user| %>
                     <%= user.status %>
                   <% end %>
                 </td>
@@ -74,7 +75,7 @@
 
       <br>
 
-      <form id="form_1" action="/room_delete/<%= @room.id %>" method="post">
+      <form id="form_1" action="/room_delete/<%= room.id %>" method="post">
         <p><input type="submit" value="Room削除" class="btn btn-danger btn-sm btn-block"></p>
       </form>
 
@@ -83,10 +84,10 @@
 </div>
 </center>
 
-            <% @room.users.each do |user| %>
+            <% room.users.each do |user| %>
 <!-- 隠しフォーム  -->
-<form name="normal" action="/join_member_normal/<%= user.id %>/<%= @room.id %>" method="POST"> </form>
-<form name="admin" action="/join_member_admin/<%= user.id %>/<%= @room.id %>" method="POST"> </form>
-<form name="delete" action="/join_member_delete/<%= user.id %>/<%= @room.id %>" method="POST"> </form>
+<form name="normal" action="/join_member_normal/<%= user.id %>/<%= room.id %>" method="POST"> </form>
+<form name="admin" action="/join_member_admin/<%= user.id %>/<%= room.id %>" method="POST"> </form>
+<form name="delete" action="/join_member_delete/<%= user.id %>/<%= room.id %>" method="POST"> </form>
 <!-- 隠しフォーム  -->
 <% end %>

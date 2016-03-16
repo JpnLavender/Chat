@@ -19,6 +19,27 @@
       }
 
 </style>
+<script type="text/javascript">
+$(window).scroll( function() {
+  var pager = $("#read_more");
+  var scrollBottom = $(window).scrollTop() + $(window).height();
+  if( scrollBottom > pager.offset().top ) {
+    if(!$("#read_more").hasClass("displayed")){
+      $("#read_more").addClass("displayed");
+      $('#read_more').trigger("click");
+    }
+  }
+});
+
+
+
+// $(window).scroll(function () {
+//    if ($(window).scrollTop() >= $(document).height() - $(window).height() - 10) {
+//         $('#next_link').trigger("click");
+//            }
+// });
+
+</script>
 <!-- メニューボタン -->
 <div class="dropdown">
   <button aria-expanded="true" aria-haspopup="true" class="btn btn-default btn-lg" data-toggle="dropdown" id="dropdownMenu1" type="button">
@@ -42,7 +63,7 @@
 <!-- Bootstrapグリッド・システム -->
 <div class="container">
   <div class="row">
-    <% @list_all.each do |room| %>
+    <% @list_all.order("created_at DESC").each do |room| %>
       <div class="col-md-3">
         <div class="demo-content bg-alt">
           <!-- <img src="#" class="img-rounded"> -->
@@ -65,4 +86,5 @@
 </div>
 <!-- Bootstrapグリッド・システム end -->
 
-<% scope = Room.where(range: true).page(params[:page]) %>
+<%= link_to_next_page @list_all, 'もっと見る', id: 'read_mores', remote: true %>
+
