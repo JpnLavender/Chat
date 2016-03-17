@@ -96,11 +96,10 @@ end
 #////////////////////////////////お知らせ通知////////////////////////////////
 get '/alert' do
   if User.where(id: session[:user]).exists?
-    p"ユーザーに紐付いてる通知を全て持ってくる" 
-    p @alert_count = User.find(session[:user]).alerts#ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
-    if @alert_count.exists?
+    @alert_count = User.find(session[:user]).alerts#ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
+    if @alert_count.exists? || Alert.where(user_id: session[:user],reading: false).exists?
       @alert_count.each do |s|
-        p as = Alert.where(user_id: session[:user],reading: false)
+        as = Alert.where(user_id: session[:user],reading: false)
         as.each do |a|
           a.update(reading: true)
         end
@@ -115,7 +114,6 @@ end
 # ////////////////////////////////ルーム作成////////////////////////////////
 get '/create_room' do
   if User.where(id: session[:user]).exists?
-
     alert
     erb :create_room , :layout => :layout
   else
@@ -400,6 +398,7 @@ end
 post '/follow/:id' do
   friend = Friend.new(user_id: session[:user],friend_id: params[:id])
   if friend.save
+    Alert.create(title: "#{User.find(session[:user]).name}があなたを友達登録しました", user_id: params[:id])
     alert
     redirect '/room'
   else
@@ -620,8 +619,7 @@ end
 # ////////////////////////////////ここからメール本確認////////////////////////////////
 get '/send_mail' do
   erb :send_mail
-end
-
+end 
 post '/send_mail' do
   email = params[:email]
   mail_check = User.where(mail: email).exists? # 入力したメールアドレスがあるか確認
@@ -677,11 +675,9 @@ get '/signup/:email_secret' do
 
   if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
     token.update(expired_at: Time.now)# DBが時間内であれば時間外にして
-    alert
     erb :sign_up  , :layout => :layout# フォームを表示する
   else # DBが時間外なら↓を実行
     @message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
-    alert
     erb :message , :layout => :layout
   end
 end
@@ -712,6 +708,5 @@ post '/signup' do
 end
 
 get '/account' do
-  alert
   erb :account , :layout => :layout
 end
