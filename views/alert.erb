@@ -2,17 +2,35 @@
 <br>
 <br>
 <div class="container">
-  <table class="table table-striped">
-    <% @alert.each do |alert| %>
+  <table class="table table-striped" style="background:#fff;">
+    <% @alert.order("created_at DESC").each do |alert| %>
       <tr>
         <td>
           <%= alert.title %>
         </td>
-        <td>
-          <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <a href="/alert_delete/<%= alert.id %>">x</a>
-        </td>
-        </th>
-      <% end %>
+        <% @alert.order('created_at desc').each do |answer| %>
+          <td>
+            <% if "#{answer.expired_at}" == "#{Time.now}" %>
+              今日
+            <% elsif "#{answer.expired_at}" > "#{1.days.since}" %>
+              昨日
+            <% elsif "#{answer.expired_at}" > "#{7.days.since}" %>
+              今週
+            <% elsif "#{answer.expired_at}" > "#{2.weeks.since}" %>
+              先週
+            <% elsif "#{answer.expired_at}" > "#{3.weeks.since}" %>
+              先々週
+            <% else %>
+              １か月以上前
+            <% end %>
+          <% end %>
+
+          </td>
+          <td>
+            <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <a href="/alert_delete/<%= alert.id %>">x</a>
+          </td>
+          </th>
+        <% end %>
   </table>
 </div>

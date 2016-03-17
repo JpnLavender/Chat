@@ -68,14 +68,26 @@ $(function() {
                   <button class="btn btn-default" type="button" id="dropdownMenu1" style="margin-left:10;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     @<%= User.find(session[:user]).user_name %>
                   <!-- <span class="glyphicon glyphicon&#45;user"></span> -->
-                  <span class="badge"><%= @alert_count.to_s %></span>
+                  <span class="badge">
+                    <% if p @alert_count %>
+                      <% @alert_count.each do |alert_count| %>
+                        <% if alert_count.expired_at > Time.now %>
+                          <%= [alert_count.expired_at > Time.now].count %>
+                        <% else %>
+                          0 
+                        <% end %>
+                      <% end %>
+                    <%else %>
+                      nil 
+                    <% end %>
+                  </span>
                   </button>
                   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                     <li>
-                      <a href="/edit/<%= User.find(session[:user]).id %>">アカウント情報を変更</a>
+                      <a href="/edit">アカウント情報を変更</a>
                     </li>
                     <li>
-                      <a href="/alert/<%= User.find(session[:user]).id %>">お知らせ</a>
+                      <a href="/alert">お知らせ</a>
                     </li>
                     <li>
                       <a href="logout">Logout</a>

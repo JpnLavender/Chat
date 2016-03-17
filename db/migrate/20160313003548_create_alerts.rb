@@ -3,7 +3,8 @@ class CreateAlerts < ActiveRecord::Migration
     create_table :alerts do |t|
       t.string :title
       t.integer :user_id
-      t.timestamp null: false
+      t.string :expired_at
+      t.timestamps null: false
     end
   end
 end
