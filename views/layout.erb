@@ -69,13 +69,11 @@ $(function() {
                     @<%= User.find(session[:user]).user_name %>
                   <!-- <span class="glyphicon glyphicon&#45;user"></span> -->
                   <span class="badge">
-                    <% if p @alert_count %>
-                      <% @alert_count.each do |alert_count| %>
-                        <% if alert_count.expired_at > Time.now %>
-                          <%= [alert_count.expired_at > Time.now].count %>
+                    <% if @alert_count %>
+                      <% if Alert.where(reading: false).exists? %>
+                          <%= Alert.where(reading: false).count %> 
                         <% else %>
                           0 
-                        <% end %>
                       <% end %>
                     <%else %>
                       nil 

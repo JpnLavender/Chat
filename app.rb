@@ -58,9 +58,7 @@ end
 
 def alert
   if User.find(session[:user]).alerts.exists?
-    #打開策：LayoutでカウントさせるDBを時間を超えていないものにすればいい
-     user = User.find(session[:user]).alerts
-     @alert_count = Alert.where(expired_at: user[0].expired_at > Time.now)
+    @alert_count = User.find(session[:user]).alerts#ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
   end
 end
 
@@ -98,11 +96,15 @@ end
 #////////////////////////////////お知らせ通知////////////////////////////////
 get '/alert' do
   if User.where(id: session[:user]).exists?
-    @alert = User.find(session[:user]).alerts#ユーザーに紐付いてる通知を全て持ってくる(alert.erb用)
-    @alert_count = User.find(session[:user]).alerts#ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
-    as = Alert.where(user_id: session[:user])
-    as.each do |a|
-      a.update(expired_at: Time.now)
+    p"ユーザーに紐付いてる通知を全て持ってくる" 
+    p @alert_count = User.find(session[:user]).alerts#ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
+    if @alert_count.exists?
+      @alert_count.each do |s|
+        p as = Alert.where(user_id: session[:user],reading: false)
+        as.each do |a|
+          a.update(reading: true)
+        end
+      end
     end
     erb :alert , :layout => :layout
   else 
@@ -215,7 +217,7 @@ get '/join_room/:id' do
       if Room.where(id: params[:id], admin: true, range: true).exists?#AdminがONになってるRoom
         @room = Room.where(id: params[:id]).page(params[:page])
         rooms[0].users.each do |user|
-          Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました" , expired_at: 1.years.since, user_id: user.id)
+          Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました" , reading: false, user_id: user.id)
         end
         Userroom.create(room_id: @room[0].id, user_id: session[:user])
         alert
@@ -223,7 +225,7 @@ get '/join_room/:id' do
       elsif Room.where(id: params[:id], admin: false, range: true).exists?#AdminがOFFになってるRoom
         @room = Room.where(id: params[:id]).page(params[:page])
         rooms[0].users.each do |user|
-          Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました" , expired_at: 1.years.since , user_id: user.id)
+          Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました" , reading: false , user_id: user.id)
         end
         Userroom.create(room: @room, user_id: session[:user], status: 1)
         alert
