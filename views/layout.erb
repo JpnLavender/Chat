@@ -70,8 +70,8 @@ $(function() {
                   <!-- <span class="glyphicon glyphicon&#45;user"></span> -->
                   <span class="badge">
                     <% if @alert_count %>
-                      <% if Alert.where(reading: false).exists? %>
-                          <%= Alert.where(reading: false).count %> 
+                      <% if Alert.where(user_id: sessin[:user], reading: false).exists? %>
+                          <%= Alert.where(user_id: session[:user],reading: false).count %> 
                         <% else %>
                           0 
                       <% end %>
