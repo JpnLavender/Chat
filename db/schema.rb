@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20160313003548) do
 
   create_table "alerts", force: :cascade do |t|
     t.string   "title"
+    t.string   "url"
     t.integer  "user_id"
     t.boolean  "reading",    default: false, null: false
     t.datetime "created_at",                 null: false

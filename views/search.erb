@@ -22,16 +22,13 @@
                       </p>
                     </td>
                     <td>
-                      <% user.friends.each do |friend| %>
-                        <% unless Friend.where(user_id: session[:user],friend_id: user.id).exists? %>
-                          <form action="/follow/<%= user.id %>" method="POST">
-                            <button type="submit" style="margin-left:13;"class="btn btn-primary btn-sm glyphicon">
-                              Friend
-                            </button>
-                          </form>
-                        <% end %>
+                      <% unless Friend.where(user_id: session[:user],friend_id: user.id).exists? %>
+                        <form action="/follow/<%= user.id %>" method="POST">
+                          <button type="submit" style="margin-left:13;"class="btn btn-primary btn-sm glyphicon">
+                            Friend
+                          </button>
+                        </form>
                       <% end %>
-
                     </td>
                   </tr>
                   <tr>

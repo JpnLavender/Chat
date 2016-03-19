@@ -96,9 +96,9 @@ end
 #////////////////////////////////お知らせ通知////////////////////////////////
 get '/alert' do
   if User.where(id: session[:user]).exists?
-    @alert_count = User.find(session[:user]).alerts#ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
-    if @alert_count.exists? || Alert.where(user_id: session[:user],reading: false).exists?
-      @alert_count.each do |s|
+    @alert_count = User.find(session[:user])#ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
+    if @alert_count.alerts.exists? || Alert.where(user_id: session[:user],reading: false).exists?
+      @alert_count.alerts.each do |s|
         as = Alert.where(user_id: session[:user],reading: false)
         as.each do |a|
           a.update(reading: true)
@@ -215,7 +215,7 @@ get '/join_room/:id' do
       if Room.where(id: params[:id], admin: true, range: true).exists?#AdminがONになってるRoom
         @room = Room.where(id: params[:id]).page(params[:page])
         rooms[0].users.each do |user|
-          Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました" , reading: false, user_id: user.id)
+          Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました" , reading: false, user_id: user.id, url: "join_room/#{params[:id]}")
         end
         Userroom.create(room_id: @room[0].id, user_id: session[:user])
         alert
@@ -223,7 +223,7 @@ get '/join_room/:id' do
       elsif Room.where(id: params[:id], admin: false, range: true).exists?#AdminがOFFになってるRoom
         @room = Room.where(id: params[:id]).page(params[:page])
         rooms[0].users.each do |user|
-          Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました" , reading: false , user_id: user.id)
+          Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました" , reading: false , user_id: user.id ,url: "join_room/#{params[:id]}")
         end
         Userroom.create(room: @room, user_id: session[:user], status: 1)
         alert
@@ -444,7 +444,6 @@ end
 get '/create_friend_room/:friend_id' do
   #:friend_idはテーブルid
   friend = Friend.find(params[:friend_id])
-  p "フレンド機能テスト"
   unless p Userroom.where(user_id: [friend.user_id,friend.friend_id]).group(:room_id).having("count(*) = 2").exists?
     friend = Friend.find(params[:friend_id])#Friendのテーブルを探す
     user = User.find(friend.friend_id)#フレンドのテーブルの中に入っている友達のIDを持ってくる

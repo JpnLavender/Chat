@@ -3,10 +3,14 @@
 <br>
 <div class="container">
   <table class="table table-striped" style="background:#fff;">
-    <% @alert_count.order("created_at DESC").each do |alert| %>
+    <% @alert_count.alerts.order("created_at DESC").each do |alert| %>
       <tr>
         <td>
+          <% if alert.url %>
+          <a href="<%= alert.url %>"><%= alert.title %></a>
+        <% else %>
           <%= alert.title %>
+        <% end %>
         </td>
           <td>
             <% if "#{alert.created_at.strftime("%Y-%m-%d")}" == "#{Time.now.strftime("%Y-%m-%d")}" %>
@@ -17,6 +21,8 @@
               <%= alert.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
             <% end %>
 
+          </td>
+          <td>
           </td>
           <td>
             <form action="/alert_delete/<%= alert.id %>" method="post">

@@ -3,22 +3,24 @@
   <div class="row">
 
     <% @my_friends.each do |friend| %>
-      <% user = friend.friend_id %>
-      <div class="col-md-4">
-        <div class="demo-content bg-alt">
-          <!-- <img src="#" class="img-rounded"> -->
-          <ul>
-            <a href="/create_friend_room/<%= friend.id %>">
-              <%= User.find(user).name %> 
-              @<%= User.find(user).user_name %>
-          </a>
-          </ul>
-          <ul>
-            <%= User.find(user).introduction %>
-          </ul>
+      <% if friend.friend? %>
+        <% user = friend.friend_id %>
+        <div class="col-md-4">
+          <div class="demo-content bg-alt">
+            <!-- <img src="#" class="img-rounded"> -->
+            <ul>
+              <a href="/create_friend_room/<%= friend.id %>">
+                <%= User.find(user).name %> 
+                @<%= User.find(user).user_name %>
+            </a>
+            </ul>
+            <ul>
+              <%= User.find(user).introduction %>
+            </ul>
 
+          </div>
         </div>
-      </div>
+      <% end %>
     <% end %>
   </div>
 </div>
