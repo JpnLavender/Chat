@@ -1,5 +1,6 @@
 <html>
   <head>
+
     <link href="../base.css" rel="stylesheet" type="text/css">
     <link rel="shortcut icon" href="./img/favicon.ico">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -37,6 +38,11 @@ $(function() {
 
 
     <% if current_user %>
+    <% if Alert.where(user_id: session[:user], reading: false).exists? %>
+      <title>(<%= Alert.where(user_id: session[:user],reading: false).count %>)LifeChat</title>
+    <% else %>
+      <title>LifeChat</title> 
+    <% end %>
       <body class="main">
         <!-- Header -->
         <header class="navbar navbar-default" style="margin-bottom:0;">
@@ -70,7 +76,7 @@ $(function() {
                   <!-- <span class="glyphicon glyphicon&#45;user"></span> -->
                   <span class="badge">
                     <% if @alert_count %>
-                      <% if Alert.where(user_id: sessin[:user], reading: false).exists? %>
+                      <% if Alert.where(user_id: session[:user], reading: false).exists? %>
                           <%= Alert.where(user_id: session[:user],reading: false).count %> 
                         <% else %>
                           0 
@@ -100,6 +106,7 @@ $(function() {
         </header>
 
       <% else %>
+        <title>LifeChat</title>
         <header class="navbar navbar-default">
           <div class="container">
             <div class="navbar-header">

@@ -50,7 +50,7 @@ class Token < ActiveRecord::Base
 end
 
 class Friend < ActiveRecord::Base
-  enum status: {friend: 0, intimate: 1, block: 2}
+  enum status: {not_friend: 0, friend: 1, intimate: 2, block: 3}
   belongs_to :user
   belongs_to :userroom
 end

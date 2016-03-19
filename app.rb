@@ -471,7 +471,7 @@ get '/create_friend_room/:friend_id' do
   end
 end
 
-get '/alert_delete/:id' do
+post '/alert_delete/:id' do
   alert
   alert = Alert.find(params[:id])
   alert.delete

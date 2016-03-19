@@ -14,19 +14,14 @@
             <% elsif "#{alert.created_at}" < "#{1.days.since}" %>
               昨日
             <% elsif "#{alert.created_at}" < "#{7.days.since}" %>
-              今週
-            <% elsif "#{alert.created_at}" < "#{2.weeks.since}" %>
-              先週
-            <% elsif "#{alert.created_al}" < "#{3.weeks.since}" %>
-              先々週
-            <% else %>
-              １か月以上前
+              <%= alert.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
             <% end %>
 
           </td>
           <td>
-            <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <a href="/alert_delete/<%= alert.id %>">x</a>
+            <form action="/alert_delete/<%= alert.id %>" method="post">
+              <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </form>
           </td>
           </th>
         <% end %>
