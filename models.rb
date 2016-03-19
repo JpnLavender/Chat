@@ -56,6 +56,7 @@ class Friend < ActiveRecord::Base
 end
 
 class Alert < ActiveRecord::Base
+  enum status: {room: 0, friend: 1}
   belongs_to :user
 end
 

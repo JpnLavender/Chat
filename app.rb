@@ -395,14 +395,40 @@ get '/search' do
   end
 end
 
+# ////////////////////////////////////////////////////////////////
+# Friend
+# ////////////////////////////////////////////////////////////////
 post '/follow/:id' do
   friend = Friend.new(user_id: session[:user],friend_id: params[:id])
   if friend.save
-    Alert.create(title: "#{User.find(session[:user]).name}があなたを友達登録しました", user_id: params[:id])
+    Alert.create(title: "#{User.find(session[:user]).name}があなたを友達登録しました", user_id: params[:id], status: 1)
     alert
     redirect '/room'
   else
     error
+  end
+end
+
+post '/add_friend/:id' do
+  if Friend.where(user_id: session[:user],friend_id: params[:id], status: 0).exists?
+    friend = Friend.where(user_id: session[:user],friend_id: params[:id] ,status: 0)
+    friend.each do |friend|
+      if friend.friend!
+        redirect '/alert'
+      else 
+        redirect '/alert'
+      end
+    end
+  end
+end
+post '/delete_friend/:id' do
+  if Friend.where(user_id: session[:user],friend_id: params[:id], status: 0).exists?
+    friend = Friend.where(user_id: session[:user],friend_id: params[:id], status: 0)
+    if friend.block!
+      redirect '/alert'
+    else 
+      redirect '/alert'
+    end
   end
 end
 # ////////////////////////////////ルームの削除////////////////////////////////

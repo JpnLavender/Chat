@@ -3,33 +3,52 @@
 <br>
 <div class="container">
   <table class="table table-striped" style="background:#fff;">
-    <% @alert_count.alerts.order("created_at DESC").each do |alert| %>
+    <% @alert_count.alerts.order("created_at DESC").each do |user_alert| %>
       <tr>
         <td>
-          <% if alert.url %>
-          <a href="<%= alert.url %>"><%= alert.title %></a>
-        <% else %>
-          <%= alert.title %>
-        <% end %>
+          <% if user_alert.url %>
+            <a href="<%= user_alert.url %>"><%= user_alert.title %></a>
+          <% else %>
+            <%= user_alert.title %>
+          <% end %>
         </td>
-          <td>
-            <% if "#{alert.created_at.strftime("%Y-%m-%d")}" == "#{Time.now.strftime("%Y-%m-%d")}" %>
-              今日
-            <% elsif "#{alert.created_at}" < "#{1.days.since}" %>
-              昨日
-            <% elsif "#{alert.created_at}" < "#{7.days.since}" %>
-              <%= alert.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
-            <% end %>
+        <td>
+          <% if "#{user_alert.created_at.strftime("%Y-%m-%d")}" == "#{Time.now.strftime("%Y-%m-%d")}" %>
+            今日
+          <% elsif "#{user_alert.created_at}" < "#{1.days.since}" %>
+            昨日
+          <% elsif "#{user_alert.created_at}" < "#{7.days.since}" %>
+            <%= alert.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
+          <% end %>
 
-          </td>
-          <td>
-          </td>
-          <td>
-            <form action="/alert_delete/<%= alert.id %>" method="post">
-              <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            </form>
-          </td>
-          </th>
-        <% end %>
+        </td>
+        <td>
+          <% if user_alert.friend? %> 
+              <% if Friend.where(user_id: user_alert.user_id, friend_id: session[:user], status: 0).exists? %>
+                <table>
+                  <tr>
+                    <td>
+                      <form action="/add_friend/<%= user_alert.user_id %>" method="post">
+                        <button type="submit" class="close" aria-label="Close"><span class="glyphicon glyphicon-plus"></span></button>
+                      </form>
+                    </td>
+                    <td>
+                      <form action="/delete_friend/<%= user_alert.user_id %>" method="post">
+                        <button type="submit" class="close" aria-label="Close"><span class="glyphicon glyphicon-trash"></span></button>
+                      </form>
+                    </td>
+                </table>
+              <% else %>
+                すでに友達です 
+              <% end %>
+            <% end %>
+        </td>
+        <td>
+          <form action="/alert_delete/<%= user_alert.id %>" method="post">
+            <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </form>
+        </td>
+        </th>
+      <% end %>
   </table>
 </div>

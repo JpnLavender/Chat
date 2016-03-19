@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 20160313003548) do
     t.string   "url"
     t.integer  "user_id"
     t.boolean  "reading",    default: false, null: false
+    t.integer  "status",     default: 0,     null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
   end
