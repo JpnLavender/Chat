@@ -462,18 +462,15 @@ get '/@/:user_name/:select' do
    @user = User.where(user_name: params[:user_name])
    if params[:select] == "joinroom"
      @joinroom = true
-     @friend = false
-     @timeline = false
+     @friend,@timeline = false, false
      erb :select_user , :layout => :layout
    elsif params[:select] == "friend"
      @friend = true
-     @joinroom = false
-     @timeline = false
+     @joinroom,@timeline = false, false
      erb :select_user , :layout => :layout
    elsif params[:select] == "timeline"
      @timeline = true
-     @joinroom = false
-     @friend = false
+     @joinroom,@friend =  false, false
      erb :select_user , :layout => :layout
    end
   else
@@ -496,7 +493,7 @@ get '/friends' do
 end
 
 get '/create_friend_room/:friend_id' do
-  #:friend_idはテーブルid
+  #friend_idはテーブルid
   friend = Friend.find(params[:friend_id])
   unless p Userroom.where(user_id: [friend.user_id,friend.friend_id]).group(:room_id).having("count(*) = 2").exists?
     friend = Friend.find(params[:friend_id])#Friendのテーブルを探す

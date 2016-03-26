@@ -88,22 +88,23 @@
 <% end %>
 
 <% if @friend %>
-  <% if friend.friend? %>
-    <% user = friend.friend_id %>
-    <div class="col-md-4">
-      <div class="demo-content bg-alt">
-        <!-- <img src="#" class="img-rounded"> -->
+  <% User.find(session[:user]).friends.each do |friend| %>
+    <% if friend.friend? %>
+      <% user = friend.friend_id %>
+      <div class="col-md-4">
+        <div class="demo-content bg-alt">
+          <ul>
+            <a href="/create_friend_room/<%= friend.id %>">
+              <%= User.find(user).name %> 
+              @<%= User.find(user).user_name %>
+          </a>
+        </ul>
         <ul>
-          <a href="/create_friend_room/<%= friend.id %>">
-            <%= User.find(user).name %> 
-            @<%= User.find(user).user_name %>
-        </a>
-      </ul>
-      <ul>
-        <%= User.find(user).introduction %>
-      </ul>
+          <%= User.find(user).introduction %>
+        </ul>
+      </div>
     </div>
-  </div>
+  <% end %>
 <% end %>
 
   <% end %>
@@ -114,7 +115,6 @@
         <% @user[0].timeline.each do |timeline| %>
           <div class="col-md-4">
             <div class="demo-content bg-alt">
-              <!-- <img src="#" class="img-rounded"> -->
               <ul>
               </ul>
               <ul>

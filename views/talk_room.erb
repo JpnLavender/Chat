@@ -57,7 +57,7 @@
         </td>
       <% else %>
         <td title="<%= chat.created_at %>">
-          <a href="/@/<%= chat.user.user_name %>"><font color="black"><%= chat.user.name %>→</font></a>
+          <a href="/@/<%= chat.user.user_name %>/joinroom"><font color="black"><%= chat.user.name %>→</font></a>
           <%= chat.text %>
         </td>
       <% end %>
