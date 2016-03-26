@@ -65,6 +65,9 @@ end
 def logout 
   session[:user] = nil
 end
+def pagegeneration
+  @room = Room.where(id: params[:id]).page(params[:page])
+end
 # ////////////////////////////////デフォルト参照////////////////////////////////
 
 get '/tl' do
@@ -138,7 +141,7 @@ post '/create_room' do
     if range == "true"#公開範囲がパブリックだったら以下を実行
       room = Room.new( admin: admin, name: params[:title], range: range)
       if room.save
-        @room = Room.where(name: params[:title]).page(params[:page])
+        pagegeneration
         Userroom.create(room_id: @room[0].id, user_id: session[:user], status: 1)
         alert
         redirect "/join_room/#{@room[0].id}"
@@ -155,7 +158,7 @@ post '/create_room' do
         token: url
       )
       if room.save#保存が成功したら以下を実行
-        @room = Room.find_by_name(params[:title]).id.page(params[:page])#Roomの名前からRoomIDを持ってくる
+        pagegeneration
         Userroom.create(room_id: @room, user_id: session[:user], status: 1)
         redirect "/join_private_room/#{url}"#作成したRoomに飛ばす
       else#Room作成が失敗した場合
@@ -194,11 +197,11 @@ get '/join_room/:id' do
     if Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists?##選択したRoomに以前入ったことがあれば以下を実行
       unless user.block?#選択したRoomからBlockされいなければ以下を実行
         if Room.where(id: params[:id], range: true).exists?#選択したRoomがパブリックルームだったら以下を実行
-          @room = Room.where(id: params[:id]).page(params[:page])#idからRoomを探す
+          pagegeneration
           alert
           erb :talk_room , :layout => :layout
         elsif Userroom.where(user_id: session[:user],room_id: params[:id]).exists?#一度は行ったルームにuuidなしで入れるようにする
-          @room = Room.where(id: params[:id]).page(params[:page])
+          pagegeneration
           alert
           erb :talk_room , :layout => :layout
         else
@@ -221,7 +224,7 @@ get '/join_room/:id' do
         alert
         erb :talk_room , :layout => :layout
       elsif Room.where(id: params[:id], admin: false, range: true).exists?#AdminがOFFになってるRoom
-        @room = Room.where(id: params[:id]).page(params[:page])
+        pagegeneration
         rooms[0].users.each do |user|
           Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました" , reading: false , user_id: user.id ,url: "join_room/#{params[:id]}")
         end
@@ -242,7 +245,7 @@ end
 get '/join_private_room/:id' do
   if User.where(id: session[:user]).exists?
     if Room.where(token: params[:id]).exists?
-      @room = Room.where(token: params[:id])
+      pagegeneration
       Userroom.create(room: @room, user_id: session[:user])
       alert
       erb :talk_room , :layout => :layout
@@ -272,14 +275,12 @@ get '/room_edit/:id' do
   if User.where(id:session[:user]).exists?
     userroom = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
 
-    userroom = userroom[0]
-
-    if userroom.admin?
-      @room = Room.where(id: params[:id]).page(params[:page])
+    if userroom[0].admin?
+      pagegeneration
       alert
       erb :room_edit , :layout => :layout
     elsif Room.where(id: params[:id],admin: false).exists?
-      @room = Room.where(id: params[:id]).page(params[:page])
+      pagegeneration
       alert
       erb :room_edit , :layout => :layout
     else
@@ -502,7 +503,7 @@ get '/create_friend_room/:friend_id' do
     #if Room.where(name: name).exists?
     room = Room.new(admin: false, name: name, range: false)
     if room.save
-      @room = Room.where(name: name)
+      pagegeneration
       Userroom.create(room: @room, user_id: user.id)
       Userroom.create(room: @room, user_id: session[:user])
       alert
@@ -514,7 +515,7 @@ get '/create_friend_room/:friend_id' do
     friend_room = Userroom.where(user_id: [friend.user_id,friend.friend_id]).group(:room_id).having("count(*) = 2")
     alert
     friend_room.each do |room|
-      @room = Room.where(id: room.room_id).page(params[:page])
+      pagegeneration
       alert
       redirect "join_room/#{room.room_id}"
     end
