@@ -412,6 +412,7 @@ end
 post '/add_friend/:id' do
   if Friend.where(user_id: session[:user],friend_id: params[:id], status: 0).exists?
     friend = Friend.where(user_id: session[:user],friend_id: params[:id] ,status: 0)
+    p "テスト！"
     friend.each do |friend|
       if friend.friend!
         redirect '/alert'
@@ -454,6 +455,33 @@ get '/public_room' do
     erb :index , :layout => :layout
   end
 end
+
+# ////////////////////////////////UserAccount////////////////////////////////
+get '/@/:user_name/:select' do
+  if User.where(user_name: params[:user_name]).exists?
+   @user = User.where(user_name: params[:user_name])
+   if params[:select] == "joinroom"
+     @joinroom = true
+     @friend = false
+     @timeline = false
+     erb :select_user , :layout => :layout
+   elsif params[:select] == "friend"
+     @friend = true
+     @joinroom = false
+     @timeline = false
+     erb :select_user , :layout => :layout
+   elsif params[:select] == "timeline"
+     @timeline = true
+     @joinroom = false
+     @friend = false
+     erb :select_user , :layout => :layout
+   end
+  else
+    @message = "選択されたユーザーが存在しません"
+    erb :messeage , :layout => :layout
+  end
+end
+
 # ////////////////////////////////フレンド機能設定////////////////////////////////
 
 get '/friends' do
@@ -495,7 +523,7 @@ get '/create_friend_room/:friend_id' do
     end
   end
 end
-
+ 
 post '/alert_delete/:id' do
   alert
   alert = Alert.find(params[:id])

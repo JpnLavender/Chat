@@ -1,0 +1,127 @@
+<style type="text/css" >
+  .demo-content2 {
+    padding: 15px;
+    font-size: 18px;
+    min-height: 200px;
+    main-width: 200px;
+    margin-bottom: 10px;
+    background:#abb1b8;
+  }
+</style>
+<div class="row">
+  <% @user.each do |user| %>
+    <div class="col-md-12">
+      <div class="demo-content2 bg-alt" style="width:100%;">
+        <div class="container">
+          <ul>
+            <li>
+              <table>
+                <tr>
+                  <td>
+                    <p>
+                      <%= user.name %>
+                    </p>
+                  </td>
+                  <td>
+                    <% unless Friend.where(user_id: session[:user],friend_id: user.id).exists? %>
+                      <form action="/follow/<%= user.id %>" method="POST">
+                        <button type="submit" style="margin-left:13;"class="btn btn-primary btn-sm glyphicon">
+                          Friend
+                        </button>
+                      </form>
+                    <% end %>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    @<%= user.user_name %>
+                </td>
+              </tr>
+            </table>
+          </li>
+          <li><%= user.introduction %></li>
+        </ul>
+        <div class="row">
+          <ul class="nav nav-pills nav-justified">
+            <% if @joinroom %>
+              <li class="col-md-2 active"><a href="/@/<%= user.user_name %>/joinroom">JoinRoom</a></li>
+              <li class="col-md-2"><a href="/@/<%= user.user_name %>/friend">Friend</a></li>
+              <li class="col-md-2"><a href="/@/<%= user.user_name %>/timeline">TimeLine</a></li>
+            <% end %>
+            <% if @friend%>
+              <li class="col-md-2"><a href="/@/<%= user.user_name %>/joinroom">JoinRoom</a></li>
+              <li class="col-md-2 active"><a href="/@/<%= user.user_name %>/friend">Friend</a></li>
+              <li class="col-md-2"><a href="/@/<%= user.user_name %>/timeline">TimeLine</a></li>
+            <% end %>
+            <% if @timeline %>
+              <li class="col-md-2"><a href="/@/<%= user.user_name %>/joinroom">JoinRoom</a></li>
+              <li class="col-md-2"><a href="/@/<%= user.user_name %>/friend">Friend</a></li>
+              <li class="col-md-2 active"><a href="/@/<%= user.user_name %>/timeline">TimeLine</a></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if @joinroom %>
+  <div class="container">
+    <div class="row">
+      <% @user[0].rooms.each do |room| %>
+        <div class="col-md-4">
+          <div class="demo-content bg-alt">
+            <!-- <img src="#" class="img-rounded"> -->
+            <ul>
+              <a href="join_room/<%= room.id %>" title="RoomID=><%= room.id %>"> <li><%= room.name %></li> </a>
+            </ul>
+            <% room.users.each do |user| %>
+              <ul>
+                <%= user.name %>
+              </ul>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if @friend %>
+  <% if friend.friend? %>
+    <% user = friend.friend_id %>
+    <div class="col-md-4">
+      <div class="demo-content bg-alt">
+        <!-- <img src="#" class="img-rounded"> -->
+        <ul>
+          <a href="/create_friend_room/<%= friend.id %>">
+            <%= User.find(user).name %> 
+            @<%= User.find(user).user_name %>
+        </a>
+      </ul>
+      <ul>
+        <%= User.find(user).introduction %>
+      </ul>
+    </div>
+  </div>
+<% end %>
+
+  <% end %>
+
+  <% if @timeline %>
+    <div class="container">
+      <div class="row">
+        <% @user[0].timeline.each do |timeline| %>
+          <div class="col-md-4">
+            <div class="demo-content bg-alt">
+              <!-- <img src="#" class="img-rounded"> -->
+              <ul>
+              </ul>
+              <ul>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+      </div>
+  </div>
+<% end %>
