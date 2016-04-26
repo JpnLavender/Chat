@@ -1,4 +1,4 @@
-/Users/Nagisafairu/.rbenv/versions/2.2.3/bin/ruby -r ./siteconf20160301-25614-1ihf81b.rb extconf.rb
+/Users/Nagisafairu/.rbenv/versions/2.2.3/bin/ruby -r ./siteconf20160331-6672-rhzyi1.rb extconf.rb
 checking for sqlite3.h... yes
 checking for sqlite3_libversion_number() in -lsqlite3... yes
 checking for rb_proc_arity()... yes
@@ -25,4 +25,4 @@ compiling statement.c
 linking shared-object sqlite3/sqlite3_native.bundle
 
 make "DESTDIR=" install
-/usr/bin/install -c -m 0755 sqlite3_native.bundle ./.gem.20160301-25614-15un0xr/sqlite3
+/usr/bin/install -c -m 0755 sqlite3_native.bundle ./.gem.20160331-6672-1tiwo4k/sqlite3

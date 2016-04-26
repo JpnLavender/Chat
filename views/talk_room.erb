@@ -1,75 +1,111 @@
+<!-- websocket -->
+<script type="text/javascript" src="../application.js"></script>
+<!-- websocket -->
 
 <% room = @room[0] %>
+
 <!-- ユーザー名のポップアップ -->
 <div class="dropdown">
-  <button aria-expanded="true" aria-haspopup="true" class="btn btn-default btn-lg" data-toggle="dropdown" id="dropdownMenu1" type="button">
-    <span class="glyphicon glyphicon-align-justify"></span>
-  </button>
-  <ul aria-labelledby="dropdownMenu1" class="dropdown-menu">
-    <li>
-      <a href="/room">TopRoom</a>
-    </li>
-    <li>
-      <a href="/create_room">RoomCreate</a>
-    </li>
-    <li>
-      <a href="/my_room_list">RoomLists</a>
-    </li>
-    <li role="separator" class="divider"></li>
-    <li>
-      <a href="/room_edit/<%= room.id %>">RoomEdit</a>
-    </li>
-    <li>
-      <a href="/room_logout/<%= room.id %>">LogoutRoom</a>
-    </li>
+    <button aria-expanded="true" aria-haspopup="true" class="btn btn-default btn-lg" data-toggle="dropdown" id="dropdownMenu1" type="button">
+        <span class="glyphicon glyphicon-align-justify"></span>
+    </button>
+    <ul aria-labelledby="dropdownMenu1" class="dropdown-menu">
+        <li>
+            <a href="/room">
+                TopRoom
+            </a>
+        </li>
+        <li>
+            <a href="/create_room">
+                RoomCreate
+            </a>
+        </li>
+        <li>
+            <a href="/my_room_list">
+                RoomLists
+            </a>
+        </li>
+        <li role="separator" class="divider"></li>
+        <li>
+            <a href="/room_edit/<%= room.id %>">
+                RoomEdit
+            </a>
+        </li>
+        <li>
+            <a href="/room_logout/<%= room.id %>">
+                LogoutRoom
+            </a>
+        </li>
+    </ul>
 </div>
-  </ul>
-  </div>
 
-
-  <center>
-    <form action="/chat" method="POST" onsubmit= "if(this.chat.value==''){return false}">
-      <class="row">
-      <div class="col-lg-6">
-        <div class="input-group">
-          <input type="text" name="chat" class="form-control" aria-label="..." >
-          <input type="hidden" name="room_id" value="<%= room.id %>">
-          <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Send<span class="caret"></span></button>
-            <ul class="dropdown-menu dropdown-menu-right">
-              <li><a href="#">Send</a></li>
-              <li><a href="javascript:document.ramdom_send.submit()">RandomSend</a></li>
-              <li><a href="#">Something else here</a></li>
-            </ul>
-          </div><!-- /btn-group -->
-        </div><!-- /input-group -->
-      </div><!-- /.col-lg-6 -->
-      </div><!-- /.row -->
+<center>
+    <form id="form" action="/chat" method="POST" onsubmit= "if(this.chat.value==''){return false}">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="input-group">
+                    <input type="text" id="input" name="chat" class="form-control" aria-label="..." placeholder="<%= room.name %>" >
+                    <input type="hidden" name="room_id" value="<%= room.id %>">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Send<span class="caret"></span></button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a href="#">Send</a></li>
+                            <li><a href="javascript:document.ramdom_send.submit()">RandomSend</a></li>
+                            <li><a href="#">Something else here</a></li>
+                        </ul>
+                    </div><!-- /btn-group -->
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+        </div><!-- /.row -->
     </form>
-  </center>
-  <table>
+</center>
+<table id="msgs">
     <% room.chats.order("created_at DESC").each do |chat| %>
-      <tr>
-        <% if session[:user] == chat.user.id %>
-        <td title="<%= chat.created_at.strftime("%Y-%m-%d %H:%M:%S") %>">
-          <a href="/@/<%= chat.user.user_name %>/joinroom"><font color="<%= chat.user.color %>"><%= chat.user.name %>→</font></a>
-          <%= chat.text %>
-        </td>
-      <% else %>
-        <td title="<%= chat.created_at %>">
-          <a href="/@/<%= chat.user.user_name %>/joinroom"><font color="black"><%= chat.user.name %>→</font></a>
-          <%= chat.text %>
-        </td>
-      <% end %>
-      </tr>
+        <tr>
+            <% if session[:user] == chat.user.id %>
+                <td title="<%= chat.created_at.strftime("%Y-%m-%d %H:%M:%S") %>">
+                    <a href="/@/<%= chat.user.user_name %>/joinroom">
+                        <font color='<%= chat.user.color %>'>
+                            <%= chat.user.name %>→
+                        </font>
+                    </a>
+                    <%= chat.text %>
+                </td>
+            <% else %>
+                <td title="<%= chat.created_at %>">
+                    <a href="/@/<%= chat.user.user_name %>/joinroom">
+                        <font color="black">
+                            <%= chat.user.name %>→
+                        </font>
+                    </a>
+                    <%= chat.text %>
+                </td>
+            <% end %>
+        </tr>
     <% end %>
-  </table>
+</table>
+
 <!-- Ramdom_sendの隠しフォーム  -->
-    <form name="random_send" action="/random_send" method="POST">
-      <input type="hidden" name="chat" value="1">
-      <input type="hidden" name="room_id" value="<%= room.id %>">
-    </form>
+<form name="random_send" action="/random_send" method="POST">
+    <input type="hidden" name="chat" value="1">
+    <input type="hidden" name="room_id" value="<%= room.id %>">
+</form>
 <!-- Ramdom_sendの隠しフォーム  -->
 
 <%= link_to_next_page @room, 'もっと見る', id: 'read_mores', remote: true %>
 <%= paginate @room %>
+
+<script type="text/javascript">
+//xさんがタイピングし始めたら表示
+var ws = new WebSocket('ws://' + window.location.host + window.location.pathname);
+$("#input").focus(function(){
+    console.log("typing now"),
+    ws.send("typing now")
+});
+//xさんがタイピングをやめたら表示を消す
+$("#input").focusout(function(){
+    console.log("stop typing"),
+    ws.send("stop typing ")
+});
+</script>
+

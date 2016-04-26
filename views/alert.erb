@@ -13,15 +13,16 @@
         </td>
         <td>
           <% if "#{user_alert.created_at.strftime("%Y-%m-%d")}" == "#{Time.now.strftime("%Y-%m-%d")}" %>
-            今日
-          <% elsif "#{user_alert.created_at}" < "#{1.days.since}" %>
-            昨日
+              今日
+
           <% elsif "#{user_alert.created_at}" < "#{2.days.since}" %>
-            <%= alert.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
+              <%= user_alert.created_at.strftime("%m月%d日") %>
+          <% elsif "#{user_alert.created_at}" < "#{1.days.since}" %>
+              昨日
           <% end %>
         </td>
         <td>
-          <% if user_alert.friend? %> 
+          <% if p user_alert.friend? %> 
             <% Friend.all.each do |friend| %>
               <% if Friend.where(user_id: friend.user_id, friend_id: session[:user], status: 0).exists? %>
                 <table>

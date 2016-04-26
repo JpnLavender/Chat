@@ -1,6 +1,8 @@
-
 require 'faye/websocket'
+require 'thread'
+require 'redis'
 require 'json'
+require 'erb'
 
 module Websockettest2
   class Backend
@@ -14,24 +16,24 @@ module Websockettest2
 
     def call(env)
       if Faye::WebSocket.websocket?(env)
-        ws = Faye::WebSocket.new(env,  nil,  ping: KEEPALIVE_TIME)
+        ws = Faye::WebSocket.new(env, nil, ping: KEEPALIVE_TIME)
 
         ws.on :open do |event|
-          p [:open,  ws.object_id]
+          p [:open, ws.object_id]
           @clients << ws
           @clients.each do |client|
             client.send({ count: @clients.size }.to_json)
           end
           @logs.each do |log|
-            p [:logs,  log]
+            p [:logs, log]
             ws.send(log)
           end
 
         end
 
         ws.on :message do |event|
-          p [:message,  event.data]
-          @clients.each { |client|
+          p [:message, event.data]
+          @clients.each { |client| 
             client.send event.data
           }
           @logs.push event.data
@@ -39,7 +41,7 @@ module Websockettest2
         end
 
         ws.on :close do |event|
-          p [:close,  ws.object_id,  event.code]
+          p [:close, ws.object_id, event.code]
           @clients.delete(ws)
           @clients.each do |client|
             client.send({ count: @clients.size }.to_json)

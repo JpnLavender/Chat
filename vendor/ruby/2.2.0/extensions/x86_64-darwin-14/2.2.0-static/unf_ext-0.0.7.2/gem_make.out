@@ -1,4 +1,4 @@
-/Users/Nagisafairu/.rbenv/versions/2.2.3/bin/ruby -r ./siteconf20160313-28802-mltpam.rb extconf.rb
+/Users/Nagisafairu/.rbenv/versions/2.2.3/bin/ruby -r ./siteconf20160331-6672-1yujtbr.rb extconf.rb
 checking for main() in -lstdc++... yes
 creating Makefile
 
@@ -9,4 +9,4 @@ compiling unf.cc
 linking shared-object unf_ext.bundle
 
 make "DESTDIR=" install
-/usr/bin/install -c -m 0755 unf_ext.bundle ./.gem.20160313-28802-1wmuxpi
+/usr/bin/install -c -m 0755 unf_ext.bundle ./.gem.20160331-6672-wnlr6c

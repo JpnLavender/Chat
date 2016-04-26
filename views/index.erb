@@ -1,88 +1,77 @@
 
-    <style type="text/css">
+<style type="text/css">
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Poiret One', cursive;
-  color: black;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poiret One', cursive;
+    color: black;
 }
     .scroll-area {
-      height: 100vh;
-      overflow: auto;
-      -webkit-scroll-behavior: smooth;
-      scroll-behavior: smooth;
-      -webkit-scroll-snap-type: mandatory;
-      scroll-snap-type: mandatory;
-      -webkit-scroll-snap-points-y: repeat(100vh);
-      scroll-snap-points-y: repeat(100vh);
+        height: 100vh;
+        overflow: auto;
+        -webkit-scroll-behavior: smooth;
+        scroll-behavior: smooth;
+        -webkit-scroll-snap-type: mandatory;
+        scroll-snap-type: mandatory;
+        -webkit-scroll-snap-points-y: repeat(100vh);
+        scroll-snap-points-y: repeat(100vh);
     }
     .box {
-      width: 100vw;
-      height: 100vh;
-      color: black;
-      font-size: 50px;
-      display: flex;
-      align-items: center;
-      /* 縦方向中央揃え */
-      justify-content: center;
-      /* 横方向中央揃え */
-      flex-direction: column;
+        width: 100vw;
+        height: 100vh;
+        color: black;
+        font-size: 50px;
+        display: flex;
+        align-items: center;
+        /* 縦方向中央揃え */
+        justify-content: center;
+        /* 横方向中央揃え */
+        flex-direction: column;
     }
     .box__bg_black {
-      background-color: #333;
+        background-color: #333;
     }
     .box__bg_gray {
-      background-color: #ccc;
+        background-color: #ccc;
     }
     .box__bg_photo {
-      background-image: url(./img/backimg.jpg);
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+        background-image: url(./img/backimg.jpg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
     }
     p {
-      margin: 0;
-      padding: 0;
-      line-height: 1;
+        margin: 0;
+        padding: 0;
+        line-height: 1;
     }
     .navbar{
-      margin:0;
+        margin:0;
     }
 
-    </style>
+</style>
 <div class="box__area">
-<div class="box box__bg_photo">
-  <table>
-    <tr>
-      <td>
-        <h1 style="font-size:180px;color:#fff;">LifeC</h1>
-      </td>
-      <td>
-        <h1 style="font-size:180px;color:black;">hat</h1>
-      </td>
-    </tr>
-  </table>
+    <div class="box box__bg_photo">
+        <table>
+            <tr>
+                <td>
+                    <h1 style="font-size:180px;color:#fff;">LifeC</h1>
+                </td>
+                <td>
+                    <h1 style="font-size:180px;color:black;">hat</h1>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="box">
+        <p>みんなで作る</p>
+        <br>
+        <p>SocialNetWorkService</p>
+    </div>
+    <div class="box">
+        <p>まずはアカウント作成から！</p>
+        <a class="lightbox2" href="#content">
+            Let's!LifeChat!</a>
+    </div>
 </div>
-<div class="box">
-  <p>みんなで作る</p>
-  <br>
-  <p>SocialNetWorkService</p>
-</div>
-<div class="box">
-  <p>まずはアカウント作成から！</p>
-  <a class="lightbox2" href="#content">
-    Let's!LifeChat!</a>
-</div>
-</div>
-
-<script>
-$(function () {
-  $(".inline").colorbox({inline: true, opacity: 0.7});
-});
-$(function () {
-  $('.lightbox').colorbox();
-  $('.lightbox2').colorbox({inline: true, opacity: 0.7});
-  $('.lightbox3').colorbox();
-});
-</script>
 

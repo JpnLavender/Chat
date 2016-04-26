@@ -1,5 +1,8 @@
 require 'bundler/setup'
 Bundler.require
+after do
+  ActiveRecord::Base.connection.close
+end
 
 if development?
   ActiveRecord::Base.establish_connection("sqlite3:db/development.db")
@@ -8,7 +11,7 @@ end
 #unless ENV['RACK_ENV'] == 'production'
 #    ActiveRecord::Base.establish_connection("sqlite3:db/development.db")
 #end
-#
+
 class User < ActiveRecord::Base
   has_many :tokens
   has_many :chats
@@ -34,7 +37,7 @@ class Room < ActiveRecord::Base
   has_many :users,  through: :userrooms
   has_many :chats
   has_many :userrooms
-  paginates_per 24 
+  paginates_per 40
 end
 
 class Userroom < ActiveRecord::Base
@@ -58,5 +61,7 @@ end
 class Alert < ActiveRecord::Base
   enum status: {room: 0, friend: 1}
   belongs_to :user
+  paginates_per 20
 end
+
 

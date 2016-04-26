@@ -1,4 +1,4 @@
-/Users/Nagisafairu/.rbenv/versions/2.2.3/bin/ruby -r ./siteconf20160301-25614-4tcpcj.rb extconf.rb
+/Users/Nagisafairu/.rbenv/versions/2.2.3/bin/ruby -r ./siteconf20160331-6672-4fo2ti.rb extconf.rb
 checking if the C compiler accepts ... yes
 checking if the C compiler accepts -Wno-error=unused-command-line-argument-hard-error-in-future... no
 Building nokogiri using packaged libraries.
@@ -197,7 +197,7 @@ xslt_stylesheet.c:217:21: warning: incompatible pointer to integer conversion pa
                     ^~~~~~~~~~~~~~~~~~~~~
 /Users/Nagisafairu/.rbenv/versions/2.2.3/include/ruby-2.2.0/ruby/ruby.h:1044:41: note: expanded from macro 'Data_Get_Struct'
     ((sval) = (type*)rb_data_object_get(obj))
-                                        ^
+                                        ^~~
 /Users/Nagisafairu/.rbenv/versions/2.2.3/include/ruby-2.2.0/ruby/ruby.h:1189:26: note: passing argument to parameter 'obj' here
 rb_data_object_get(VALUE obj)
                          ^
@@ -206,7 +206,7 @@ xslt_stylesheet.c:230:21: warning: incompatible pointer to integer conversion pa
                     ^~~~~~~~~~~~~~~~~~~~~
 /Users/Nagisafairu/.rbenv/versions/2.2.3/include/ruby-2.2.0/ruby/ruby.h:1044:41: note: expanded from macro 'Data_Get_Struct'
     ((sval) = (type*)rb_data_object_get(obj))
-                                        ^
+                                        ^~~
 /Users/Nagisafairu/.rbenv/versions/2.2.3/include/ruby-2.2.0/ruby/ruby.h:1189:26: note: passing argument to parameter 'obj' here
 rb_data_object_get(VALUE obj)
                          ^
@@ -218,4 +218,4 @@ rmdir -p /Users/Nagisafairu/Desktop/Programming/Ruby/Ruby-SNS/vendor/ruby/2.2.0/
 rm -rf /Users/Nagisafairu/Desktop/Programming/Ruby/Ruby-SNS/vendor/ruby/2.2.0/gems/nokogiri-1.6.7.2/ports
 
 make "DESTDIR=" install
-/usr/bin/install -c -m 0755 nokogiri.bundle ./.gem.20160301-25614-1pmf4tr/nokogiri
+/usr/bin/install -c -m 0755 nokogiri.bundle ./.gem.20160331-6672-26ihe5/nokogiri
