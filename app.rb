@@ -94,7 +94,6 @@ get '/alert' do
     @alert_count = User.find(session[:user]) # ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
     if @alert_count.alerts.exists? || Alert.where(user: @alert_count, reading: false).exists?
       @alert_count.alerts.each do |s|
-				p"アラートテスト"
         p as = Alert.where(user: @alert_count, reading: false)
         as.each do |a|
 					a.update(reading: true)

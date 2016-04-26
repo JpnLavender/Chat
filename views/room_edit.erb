@@ -46,7 +46,7 @@
                   <%= user.introduction %>
                 </td>
                 <td>
-                  <% room.userrooms.each do |user| %>
+                  <% room.userrooms.where(user_id: user.id).each do |user| %>
                     <%= user.status %>
                   <% end %>
                 </td>
@@ -58,9 +58,9 @@
                     </button>
                     <ul class="dropdown-menu">
 
-                      <li><a href="javascript:document.admin.submit()">管理者にする</a></li>
-                      <li><a href="javascript:document.normal.submit()">権限を無しにする</a></li>
-                      <li><a href="javascript:document.delete.submit()">ブロックする</a></li>
+											<li><a href="javascript:document.admin<%= user.id %>.submit()">管理者にする</a></li>
+											<li><a href="javascript:document.normal<%= user.id %>.submit()">権限を無しにする</a></li>
+											<li><a href="javascript:document.delete<%= user.id %>.submit()">ブロックする</a></li>
                     </ul>
                   </div>
                 </td>
@@ -86,8 +86,8 @@
 
             <% room.users.each do |user| %>
 <!-- 隠しフォーム  -->
-<form name="normal" action="/join_member_normal/<%= user.id %>/<%= room.id %>" method="POST"> </form>
-<form name="admin" action="/join_member_admin/<%= user.id %>/<%= room.id %>" method="POST"> </form>
-<form name="delete" action="/join_member_delete/<%= user.id %>/<%= room.id %>" method="POST"> </form>
+<form name="normal<%= user.id %>" action="/join_member_normal/<%= user.id %>/<%= room.id %>" method="POST"> </form>
+<form name="admin<%= user.id %>" action="/join_member_admin/<%= user.id %>/<%= room.id %>" method="POST"> </form>
+<form name="delete<%= user.id %>" action="/join_member_delete/<%= user.id %>/<%= room.id %>" method="POST"> </form>
 <!-- 隠しフォーム  -->
 <% end %>

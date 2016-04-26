@@ -1,5 +1,22 @@
 <!-- websocket -->
 <script type="text/javascript" src="../application.js"></script>
+
+<script type="text/javascript">
+//xさんがタイピングし始めたら表示
+$(function(){
+	var ws = new WebSocket('ws://' + window.location.host + window.location.pathname);
+	$("#input").focus(function(){
+		console.log("typing now"),
+		ws.send("typing now")
+	});
+	//xさんがタイピングをやめたら表示を消す
+	$("#input").focusout(function(){
+		console.log("stop typing"),
+		ws.send("stop typing ")
+	});
+});
+</script>
+
 <!-- websocket -->
 
 <% room = @room[0] %>
@@ -94,18 +111,4 @@
 
 <%= link_to_next_page @room, 'もっと見る', id: 'read_mores', remote: true %>
 <%= paginate @room %>
-
-<script type="text/javascript">
-//xさんがタイピングし始めたら表示
-var ws = new WebSocket('ws://' + window.location.host + window.location.pathname);
-$("#input").focus(function(){
-    console.log("typing now"),
-    ws.send("typing now")
-});
-//xさんがタイピングをやめたら表示を消す
-$("#input").focusout(function(){
-    console.log("stop typing"),
-    ws.send("stop typing ")
-});
-</script>
 

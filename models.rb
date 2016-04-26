@@ -19,6 +19,7 @@ class User < ActiveRecord::Base
   has_many :userrooms
   has_many :friends
   has_many :alerts
+	has_many :favorooms
   has_secure_password
   validates :mail,
     presence: true,
@@ -37,6 +38,7 @@ class Room < ActiveRecord::Base
   has_many :users,  through: :userrooms
   has_many :chats
   has_many :userrooms
+	has_many :favorooms
   paginates_per 40
 end
 
@@ -64,4 +66,7 @@ class Alert < ActiveRecord::Base
   paginates_per 20
 end
 
-
+class Favoroom < ActiveRecord::Base
+	belongs_to :room
+	belongs_to :user
+end

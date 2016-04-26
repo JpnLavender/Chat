@@ -1,217 +1,217 @@
 <html>
-  <head>
-    <link href="../../base.css" rel="stylesheet" type="text/css">
-    <link rel="shortcut icon" href="../../img/favicon.ico">
-    <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
-    <script src="http://code.jquery.com/jquery-2.0.3.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
-    <!-- Latest compiled and minified CSS -->
-    <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" rel="stylesheet">
+	<head>
+		<link href="../../base.css" rel="stylesheet" type="text/css">
+		<link rel="shortcut icon" href="../../img/favicon.ico">
+		<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+		<script src="http://code.jquery.com/jquery-2.0.3.js"></script>
+		<link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+		<!-- Latest compiled and minified CSS -->
+		<link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" rel="stylesheet">
 
-    <!-- Optional theme -->
-    <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" rel="stylesheet">
+		<!-- Optional theme -->
+		<link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" rel="stylesheet">
 
-    <!-- Latest compiled and minified JavaScript -->
-    <script crossorigin="anonymous" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<!-- Latest compiled and minified JavaScript -->
+		<script crossorigin="anonymous" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-    <!-- colorbox -->
-    <link href="../../colorbox/example4/colorbox.css" rel="stylesheet"/>
-    <script src="../../colorbox/jquery.colorbox-min.js"></script>
-    </script>
-    <script type="text/javascript">
+		<!-- colorbox -->
+		<link href="../../colorbox/example4/colorbox.css" rel="stylesheet"/>
+		<script src="../../colorbox/jquery.colorbox-min.js"></script>
+		</script>
+		<script type="text/javascript">
 function DisableButton(pObj) {
-  　pObj.disabled = true;
-  　pObj.value = '送信中';
-  　pObj.form.submit();
+	　pObj.disabled = true;
+	　pObj.value = '送信中';
+	　pObj.form.submit();
 }
 // validate[required]
-    </script>
-    <!-- ▼バリデーション -->
-    <script src="../../form/jquery.validationEngine.js"></script>
-    <script src="../../form/jquery.validationEngine-ja.js"></script>
-    <link rel="stylesheet" href="../../form/validationEngine.jquery.css">
-    <script>
+		</script>
+		<!-- ▼バリデーション -->
+		<script src="../../form/jquery.validationEngine.js"></script>
+		<script src="../../form/jquery.validationEngine-ja.js"></script>
+		<link rel="stylesheet" href="../../form/validationEngine.jquery.css">
+		<script>
 $(function() {
-  jQuery("#form_1").validationEngine();
+	jQuery("#form_1").validationEngine();
 });
-    </script>
+		</script>
 
-    <% if current_user %>
-      <% if Alert.where(user_id: session[:user], reading: false).exists? %>
-        <title>(<%= Alert.where(user_id: session[:user],reading: false).count %>)LifeChat</title>
-      <% else %>
-        <title>LifeChat</title> 
-      <% end %>
-      <body class="main">
-        <!-- Header -->
-        <header class="navbar navbar-default" style="margin-bottom:0;">
-          <div class="container">
-            <div class="navbar-header">
-              <img class="navbar-brand" src="/img/LifeChatIcon.gif">
-              <a href="/friends" class="navbar-brand">Friends・</a>
-              <a href="/room" class="navbar-brand">Room・</a>
-              <a href="/tl" class="navbar-brand">TimeLine</a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-              <!-- 検索バー -->
-              <form class="navbar-form navbar-left" role="search" action="/search" method="get" onsubmit = "if(this.search.value==''){return false}">
-                <div class="form-group">
-                  <table>
-                    <tr>
-                      <td>
-                        <input type="text" name="search" class="form-control" placeholder="Search">
-                      </td>
-                      <td>
-                        <button type="submit" class="glyphicon glyphicon-search btn btn-default"></button>
-                      </td>
-                </div>
-              </form>
-              <!-- 検索バーend -->
-              <td>
-                <!-- ユーザー名のポップアップ -->
-                <div class="dropdown">
-                  <button class="btn btn-default" type="button" id="dropdownMenu1" style="margin-left:10;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    @<%= User.find(session[:user]).user_name %>
-                  <!-- <span class="glyphicon glyphicon&#45;user"></span> -->
-                  <span class="badge">
-                    <% if @alert_count %>
-                      <% if Alert.where(user_id: session[:user], reading: false).exists? %>
-                        <%= Alert.where(user_id: session[:user],reading: false).count %> 
-                      <% else %>
-                        0 
-                      <% end %>
-                    <%else %>
-                      0 
-                    <% end %>
-                  </span>
-                  </button>
-                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li>
-                      <a href="/edit">アカウント情報を変更</a>
-                    </li>
-                    <li>
-                      <a href="/alert">お知らせ</a>
-                    </li>
-                    <li>
-                      <a href="/logout">Logout</a>
-                    </li>
-                </div>
-              </td>
-                    </tr>
-                  </table>
+		<% if current_user %>
+			<% if Alert.where(user_id: session[:user], reading: false).exists? %>
+				<title>(<%= Alert.where(user_id: session[:user],reading: false).count %>)LifeChat</title>
+			<% else %>
+				<title>LifeChat</title> 
+			<% end %>
+			<body class="main">
+				<!-- Header -->
+				<header class="navbar navbar-default" style="margin-bottom:0;">
+					<div class="container">
+						<div class="navbar-header">
+							<img class="navbar-brand" src="/img/LifeChatIcon.gif">
+							<a href="/friends" class="navbar-brand">Friends・</a>
+							<a href="/room" class="navbar-brand">Room・</a>
+							<a href="/tl" class="navbar-brand">TimeLine</a>
+						</div>
+						<ul class="nav navbar-nav navbar-right">
+							<!-- 検索バー -->
+							<form class="navbar-form navbar-left" role="search" action="/search" method="get" onsubmit = "if(this.search.value==''){return false}">
+								<div class="form-group">
+									<table>
+										<tr>
+											<td>
+												<input type="text" name="search" class="form-control" placeholder="Search">
+											</td>
+											<td>
+												<button type="submit" class="glyphicon glyphicon-search btn btn-default"></button>
+											</td>
+								</div>
+							</form>
+							<!-- 検索バーend -->
+							<td>
+								<!-- ユーザー名のポップアップ -->
+								<div class="dropdown">
+									<button class="btn btn-default" type="button" id="dropdownMenu1" style="margin-left:10;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+										@<%= User.find(session[:user]).user_name %>
+									<!-- <span class="glyphicon glyphicon&#45;user"></span> -->
+									<span class="badge">
+										<% if @alert_count %>
+											<% if Alert.where(user_id: session[:user], reading: false).exists? %>
+												<%= Alert.where(user_id: session[:user],reading: false).count %> 
+											<% else %>
+												0 
+											<% end %>
+										<%else %>
+											0 
+										<% end %>
+									</span>
+									</button>
+									<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+										<li>
+											<a href="/edit">アカウント情報を変更</a>
+										</li>
+										<li>
+											<a href="/alert">お知らせ</a>
+										</li>
+										<li>
+											<a href="/logout">Logout</a>
+										</li>
+								</div>
+							</td>
+										</tr>
+									</table>
 
-                  <!-- ユーザー名のポップアップend -->
-                  </nav>
-        </header>
+									<!-- ユーザー名のポップアップend -->
+									</nav>
+				</header>
 
-      <% else %>
-        <title>LifeChat</title>
-        <header class="navbar navbar-default">
-          <div class="container" >
-            <div class="navbar-header">
-                <div style="background:linear-gradiont(-45deg,rgba(229,93,135, .7),rgba(95,195,228,.7));">
-              <img class="navbar-brand" src="/img/LifeChatIcon.gif" >
-                </div>
-              <a class="navbar-brand" href="/">
-                LifeChat
-              </a>
-            </div>
+			<% else %>
+				<title>LifeChat</title>
+				<header class="navbar navbar-default">
+					<div class="container" >
+						<div class="navbar-header">
+							<div style="background:linear-gradiont(-45deg,rgba(229,93,135, .7),rgba(95,195,228,.7));">
+								<img class="navbar-brand" src="/img/LifeChatIcon.gif" >
+								<a class="navbar-brand" href="/">
+									LifeChat
+								</a>
+							</div>
+						</div>
 
-            <nav class="collapse navbar-collapse">
-              <ul class="nav navbar-nav navbar-right">
-                </li>
+						<nav class="collapse navbar-collapse">
+							<ul class="nav navbar-nav navbar-right">
+								</li>
 
-                <li>
-                  <a class="inline" href="#inline-content">
-                    <span class="glyphicon glyphicon-log-in"></span>
-                    Sign_in
-                  </a>
-                  <div style="display: none;">
-                    <section id="inline-content">
+								<li>
+									<a class="inline" href="#inline-content">
+										<span class="glyphicon glyphicon-log-in"></span>
+										Sign_in
+									</a>
+									<div style="display: none;">
+										<section id="inline-content">
 
-                      <div class="box1">
-                        <div class="input">
-                          <% if @user_true %>
-                              <span class="list-group-item list-group-item-danger">パスワードまたはユーザー名が違います</span>
-                          <% end %>
-                          <form action="/signin" id="form_1" method="POST">
-                            <div class="form-title font">E-MailAddress or UserName</div>
-                            <input aria-describedby="sizing-addon2" class="form-control validate[required]" name="name" placeholder="@lifechat" type="text">
-                            <br>
-                            <div class="form-title font">Password</div>
-                            <input class="form-control validate[required]" name="password" placeholder="パスワード" style="background:#fff;" type="password">
-                            <br>
-                            <br>
-                            <div class="submit-container">
-                              <input class="form-control submit-button" type="submit" value="ログイン">
-                            </div>
-                          </form>
-                          <form action="password_change_send" method="get">
-                            <input style="text-align:right;background:transparent;text-decoration:underline;margin:0px;padding: 0px;" type="submit" value="パスワードを忘れた方">
-                          </form>
-                          <hr>
-                          <p style="font-size:1px;text-align: left;">LifeChatを始めませんか？</p>
-                          <div class="submit-container">
-                            <form action="/send_mail" method="get">
-                              <input class="form-control submit-button validate[required]" onclick="DisableButton(this);" type="submit" value="新規登録">
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li>
-                  <a class="lightbox2" href="#content">
-                    <span class="glyphicon glyphicon-new-window"></span>
-                    Sign_up
-                  </a>
-          </div>
-          <div style="display:none">
-            <div id="content">
-              <div class="form-title">
-                <div class="box1">
-                  <center>
-                    <h1 stule="border-top:1px solid;padding:auto;margin:auto;">SIGNUP</h1>
-                    <span id="red">
-                      <% if @user_name_true %>
-                        <span class="list-group-item list-group-item-danger">このメールアドレスはすでに使われています</span>
-                      <% end %>
-                    </span>
-                  </center>
-                </div>
-                <form action="/send_mail" id="form_1" method="POST">
-                  <form class="form-container">
-                    <div class="form-title">E-MailAddress</div>
-                    <input class="form-control validate[required,custom[email]]" name="email" placeholder="例)LifeChat@sample.com" style="background:#f5f5f5;" type="text"><br>
-                    <br>
-                    <div class="submit-container">
-                      <input class="form-control submit-button" onclick="DisableButton(this);" type="submit" value="仮登録をする"><br>
-                    </div>
-                  </form>
-              </div>
-            </div>
-          </div>
-          </div>
-          </div>
-                </li>
-              </ul>
-            </nav>
-          <% end %>
-        </header>
-        <!-- メニューボタン終了 -->
+											<div class="box1">
+												<div class="input">
+													<% if @user_true %>
+														<span class="list-group-item list-group-item-danger">パスワードまたはユーザー名が違います</span>
+													<% end %>
+													<form action="/signin" id="form_1" method="POST">
+														<div class="form-title font">E-MailAddress or UserName</div>
+														<input aria-describedby="sizing-addon2" class="form-control validate[required]" name="name" placeholder="@lifechat" type="text">
+														<br>
+														<div class="form-title font">Password</div>
+														<input class="form-control validate[required]" name="password" placeholder="パスワード" style="background:#fff;" type="password">
+														<br>
+														<br>
+														<div class="submit-container">
+															<input class="form-control submit-button" type="submit" value="ログイン">
+														</div>
+													</form>
+													<form action="password_change_send" method="get">
+														<input style="text-align:right;background:transparent;text-decoration:underline;margin:0px;padding: 0px;" type="submit" value="パスワードを忘れた方">
+													</form>
+													<hr>
+													<p style="font-size:1px;text-align: left;">LifeChatを始めませんか？</p>
+													<div class="submit-container">
+														<form action="/send_mail" method="get">
+															<input class="form-control submit-button validate[required]" onclick="DisableButton(this);" type="submit" value="新規登録">
+														</form>
+													</div>
+												</div>
+											</div>
+										</section>
+									</div>
+								</li>
+								<li>
+									<a class="lightbox2" href="#content">
+										<span class="glyphicon glyphicon-new-window"></span>
+										Sign_up
+									</a>
+					</div>
+					<div style="display:none">
+						<div id="content">
+							<div class="form-title">
+								<div class="box1">
+									<center>
+										<h1 stule="border-top:1px solid;padding:auto;margin:auto;">SIGNUP</h1>
+										<span id="red">
+											<% if @user_name_true %>
+												<span class="list-group-item list-group-item-danger">このメールアドレスはすでに使われています</span>
+											<% end %>
+										</span>
+									</center>
+								</div>
+								<form action="/send_mail" id="form_1" method="POST">
+									<form class="form-container">
+										<div class="form-title">E-MailAddress</div>
+										<input class="form-control validate[required,custom[email]]" name="email" placeholder="例)LifeChat@sample.com" style="background:#f5f5f5;" type="text"><br>
+										<br>
+										<div class="submit-container">
+											<input class="form-control submit-button" onclick="DisableButton(this);" type="submit" value="仮登録をする"><br>
+										</div>
+									</form>
+							</div>
+						</div>
+					</div>
+					</div>
+					</div>
+								</li>
+							</ul>
+						</nav>
+					<% end %>
+				</header>
+				<!-- メニューボタン終了 -->
 
-        <%= yield %>
+				<%= yield %>
 
-        <script>
+				<script>
 $(function () {
-  $(".inline").colorbox({inline: true, opacity: 0.7});
+	$(".inline").colorbox({inline: true, opacity: 0.7});
 });
 $(function () {
-  $('.lightbox').colorbox();
-  $('.lightbox2').colorbox({inline: true, opacity: 0.7});
-  $('.lightbox3').colorbox();
+	$('.lightbox').colorbox();
+	$('.lightbox2').colorbox({inline: true, opacity: 0.7});
+	$('.lightbox3').colorbox();
 });
-        </script>
-      </body>
+				</script>
+			</body>
 </html>
