@@ -60,19 +60,26 @@ $(document).on('scroll', function(){
 		<% @list_all.order("created_at DESC").each do |room| %>
 			<div class="col-md-3">
 				<div class="demo-content bg-alt">
-					<!-- <img src="#" class="img-rounded"> -->
-					<ul>
-						<a href="join_room/<%= room.id %>" title="RoomID=><%= room.id %>"> <li><%= room.name %></li> </a>
-						<% room.users.last(8).each do |user| %>
-							<table>
-								<tr>
-									<td>
-										<%= user.name %>
-									</td>
-								</tr>
-							</table>
+				<!-- <img src="#" class="img-rounded"> -->
+				<ul> 
+					<li>
+						<a href="join_room/<%= room.id %>" title="RoomID=><%= room.id %>"><%= room.name %></a>
+						<% unless Friendroom.where(room_id: room.id , user_id: session[:user]).exists? %>
+							☆
+						<% else %>
+							★
 						<% end %>
-					</ul>
+					</li> 
+					<% room.users.last(8).each do |user| %>
+						<table>
+							<tr>
+								<td>
+									<%= user.name %>
+								</td>
+							</tr>
+						</table>
+					<% end %>
+				</ul>
 				</div>
 			</div>
 		<% end %>

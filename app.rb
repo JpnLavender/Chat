@@ -754,44 +754,43 @@ post '/send_mail' do
   end
 end
 
-get '/signup/:email_secret' do
-  secret = params[:email_secret] # URLの暗号の暗号を取得
-  secret_mail = Base64.decode64(secret) # 暗号の暗号を解読
-  @mail = Token.find_by_token(secret_mail).address # 暗号からメールアドレスを取得
-  token = Token.find_by_token(secret_mail) # 暗号がDBにあるか確認
-
-  if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
-    token[:expired_at] = Time.now # DBが時間内であれば時間外にして
-    erb :sign_up, layout: :layout # フォームを表示する
-  else # DBが時間外なら↓を実行
-    @message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
-    erb :message, layout: :layout
-  end
+get '/signup/:secret_mail' do
+	@secret_mail_id = params[:secret_mail]
+	erb :sign_up, layout: :layout # フォームを表示する
 end
 # ////////////////////////////////アカウント作成////////////////////////////////
-post '/signup' do
-  unless User.where(user_name: params[:user_name]).exists?
-    @user = User.new(
-      name: params[:name],
-      user_name: params[:user_name],
-      mail: params[:mail],
-      password: params[:password],
-      password_confirmation: params[:password_confirmation]
-    )
-    if @user.save
-      session[:user] = @user.id unless @user.nil?
-      alert
-      redirect '/room'
-    else
-      @message = '不明なエラーが発生しました'
-      alert
-      erb :message, layout: :layout
-    end
-  else
-    @message = 'すでに使われているUserNameです'
-    alert
-    erb :message, layout: :layout
-  end
+post '/signup/:secret_mail' do
+	unless User.where(user_name: params[:user_name]).exists?
+		@user = User.new(
+			name: params[:name],
+			user_name: params[:user_name],
+			mail: params[:mail],
+			password: params[:password],
+			password_confirmation: params[:password_confirmation]
+		)
+		if @user.save
+			number = Base64.decode64(params[:secret_mail]) # 暗号の暗号を解読
+			token =  Token.find_by_token(number)
+			@mail = token.address 
+			if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
+				token.update(expired_at: Time.now) # DBが時間内であれば時間外にして
+				session[:user] = @user.id unless @user.nil?
+				alert
+				redirect '/room'
+			else # DBが時間外なら↓を実行
+				@message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
+				erb :message, layout: :layout
+			end
+		else
+			@message = '不明なエラーが発生しました'
+			alert
+			erb :message, layout: :layout
+		end
+	else
+		@message = 'すでに使われているUserNameです'
+		alert
+		erb :message, layout: :layout
+	end
 end
 
 get '/account' do
