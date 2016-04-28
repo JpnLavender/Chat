@@ -1,24 +1,3 @@
-<style type="text/css">
-/* グリッドを分かり易くするためのカラム背景色等レイアウト */
-.demo-content {
-	padding: 15px;
-	font-size: 18px;
-	min-height: 200px;
-	main-width: 200px;
-	background: #dbdfe5;
-	margin-bottom: 10px;
-}
-			.demo-content.bg-alt {
-				background: #abb1b8;
-			}
-			li {
-				list-style-type: none;
-			}
-			ul {
-				list-style-type: none;
-			}
-
-</style>
 
 <script type="text/javascript">
 var current_height = 0;
@@ -49,6 +28,9 @@ $(document).on('scroll', function(){
 		<li>
 			<a href="/my_room_list">RoomLists</a>
 		</li>
+		<li>
+			<a href="/favoroom">FavoRoomList</a>
+		</li>
 	</ul>
 </div>
 <!-- メニューボタン終了 -->
@@ -60,38 +42,47 @@ $(document).on('scroll', function(){
 		<% @list_all.order("created_at DESC").each do |room| %>
 			<div class="col-md-3">
 				<div class="demo-content bg-alt">
-				<!-- <img src="#" class="img-rounded"> -->
-				<ul> 
-					<li>
-						<a href="join_room/<%= room.id %>" title="RoomID=><%= room.id %>"><%= room.name %></a>
-						<% unless Favoroom.where(room_id: room.id , user_id: session[:user]).exists? %>
-							<form action="/favoroom" method="post" style="display:inline;">
-								<input type="hidden" name="room_id" value="<%= room.id %>" >
-								<input type="hidden" name="user_id" value="<%= session[:user] %>" >
-								<button type="submit" style="background:transparent;border-style:none;display:inline;color:#aab8c2;">
-									★ <%= Favoroom.where(room_id: room.id).count %>
+					<!-- <img src="#" class="img-rounded"> -->
+					<ul> 
+						<li>
+							<a href="join_room/<%= room.id %>" title="RoomID=><%= room.id %>"><%= room.name %></a>
+							<% unless Favoroom.where(room_id: room.id , user_id: session[:user]).exists? %>
+								<form action="/favoroom" method="post" style="display:inline;">
+									<input type="hidden" name="room_id" value="<%= room.id %>" >
+									<input type="hidden" name="user_id" value="<%= session[:user] %>" >
+									<script> 
+// $(function(){
+// 	$("#hover").mouseover(function(){
+// 		$("style").css("color","e81c4f"); 
+// 	}).mouseout(function(){
+// 		$("p").css("color","aab8c2"); 
+// 	});
+// });
+									</script>
+									<button class="button4" type="submit" style="color: rgb(170, 184, 194); border-style: none; background: transparent none repeat scroll 0% 0%;">
+										★ <%= Favoroom.where(room_id: room.id).count %>
 								</button>
-							</form>
-						<% else %>
-							<form action="/unfavoroom" method="post" style="display:inline;">
-								<input type="hidden" name="room_id" value="<%= room.id %>" >
-								<input type="hidden" name="user_id" value="<%= session[:user] %>" >
-								<button type="submit" style="background:transparent;border-style:none;color:#e81c4f;">
-								★	<%= Favoroom.where(room_id: room.id).count %>
+								</form>
+							<% else %>
+								<form action="/unfavoroom" method="post" style="display:inline;">
+									<input type="hidden" name="room_id" value="<%= room.id %>" >
+									<input type="hidden" name="user_id" value="<%= session[:user] %>" >
+									<button type="submit" style="color: #e81c4f; border-style: none; background: transparent none repeat scroll 0% 0%;">
+										★	<%= Favoroom.where(room_id: room.id).count %>
 								</button>
-							</form>
+								</form>
+							<% end %>
+						</li> 
+						<% room.users.last(8).each do |user| %>
+							<table>
+								<tr>
+									<td>
+										<%= user.name %><% if user.favorooms.where(room_id: room.id).exists? %><font color="#e81c4f">★ </font><% end %>
+									</td>
+								</tr>
+							</table>
 						<% end %>
-					</li> 
-					<% room.users.last(8).each do |user| %>
-						<table>
-							<tr>
-								<td>
-									<%= user.name %><% if user.favorooms.where(room_id: room.id).exists? %><font color="#e81c4f">★ </font><% end %>
-								</td>
-							</tr>
-						</table>
-					<% end %>
-				</ul>
+					</ul>
 				</div>
 			</div>
 		<% end %>

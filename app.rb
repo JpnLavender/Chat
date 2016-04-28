@@ -166,7 +166,7 @@ post '/create_room' do
 end
 
 # ////////////////////////////////favoroom///////////////////////////////
-get '/favo_room_list' do 
+get '/favoroom' do 
 	@list_all = User.find(session[:user]).favorooms
 	erb :favo_room_list, layout: :layout 
 end
