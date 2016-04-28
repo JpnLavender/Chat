@@ -6,11 +6,12 @@
   <center>
     <h1>SIGNUP</h1>
     <h2>LIFECHATを始めよう</h2>
+		<p><%= @secret_mail_id %></p>
   </center>
 </div>
 
 <div class="box1">
-	<form id="form_1" action="/signup/<%= @secret_mail_id %>" method="POST">
+	<form id="form_1" action="/signup" method="POST">
     <form class="form-container">
       <div class="form-title">氏名</div>
       <input type="text" name="name" class="form-control validate[required]" placeholder="山田太郎" aria-describedby="sizing-addon2">
@@ -22,6 +23,7 @@
       </div>
       <br>
       <input type="hidden" name="mail" value="<%= @mail.to_s %>">
+      <input type="hidden" name="secret_mail_id" value="<%= @secret_mail_id %>">
       <input type="hidden" name="color" value="#ff0000">
       <br>
       <div class="form-title">PassWord※</div>

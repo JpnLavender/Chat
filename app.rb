@@ -130,7 +130,7 @@ post '/create_room' do
             end
 
     if range == 'true' # 公開範囲がパブリックだったら以下を実行
-      room = Room.new(admin: admin, name: params[:title], range: range ,tag: params[:tags])
+      room = Room.new(admin: admin, name: params[:title], range: range )
       if room.save
         @room = Room.where(name: params[:title]).page(params[:page])
         Userroom.create(room_id: @room[0].id, user_id: session[:user], status: 1)
@@ -755,26 +755,35 @@ post '/send_mail' do
 end
 
 get '/signup/:secret_mail' do
-	@secret_mail_id = params[:secret_mail]
-	erb :sign_up, layout: :layout # フォームを表示する
+	number = Base64.decode64(params[:secret_mail]) # 暗号の暗号を解読
+	token =  Token.find_by_token(number)
+	if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
+		@secret_mail_id = params[:secret_mail]
+		number = Base64.decode64(params[:secret_mail]) # 暗号の暗号を解読
+		@mail = Token.find_by_token(number).address
+		erb :sign_up, layout: :layout # フォームを表示する
+	else # DBが時間外なら↓を実行
+		@message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
+		erb :message, layout: :layout
+	end
 end
 # ////////////////////////////////アカウント作成////////////////////////////////
-post '/signup/:secret_mail' do
+post '/signup' do
 	unless User.where(user_name: params[:user_name]).exists?
-		@user = User.new(
+		user = User.new(
 			name: params[:name],
 			user_name: params[:user_name],
 			mail: params[:mail],
+			color: params[:color],
 			password: params[:password],
 			password_confirmation: params[:password_confirmation]
 		)
-		if @user.save
-			number = Base64.decode64(params[:secret_mail]) # 暗号の暗号を解読
+		if user.save
+			number = Base64.decode64(params[:secret_mail_id]) # 暗号の暗号を解読
 			token =  Token.find_by_token(number)
-			@mail = token.address 
 			if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
 				token.update(expired_at: Time.now) # DBが時間内であれば時間外にして
-				session[:user] = @user.id unless @user.nil?
+				session[:user] = user.id unless user.nil?
 				alert
 				redirect '/room'
 			else # DBが時間外なら↓を実行
