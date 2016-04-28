@@ -64,17 +64,29 @@ $(document).on('scroll', function(){
 				<ul> 
 					<li>
 						<a href="join_room/<%= room.id %>" title="RoomID=><%= room.id %>"><%= room.name %></a>
-						<% unless Friendroom.where(room_id: room.id , user_id: session[:user]).exists? %>
-							☆
+						<% unless Favoroom.where(room_id: room.id , user_id: session[:user]).exists? %>
+							<form action="/favoroom" method="post">
+								<input type="hidden" name="room_id" value="<%= room.id %>" >
+								<input type="hidden" name="user_id" value="<%= session[:user] %>" >
+								<button type="submit" style="background:transparent;border-style:none;display:inline;color:#aab8c2;">
+									★ <%= Favoroom.where(room_id: room.id).count %>
+								</button>
+							</form>
 						<% else %>
-							★
+							<form action="/unfavoroom" method="post">
+								<input type="hidden" name="room_id" value="<%= room.id %>" >
+								<input type="hidden" name="user_id" value="<%= session[:user] %>" >
+								<button type="submit" style="background:transparent;border-style:none;display:inline;color:#e81c4f;">
+								★	<%= Favoroom.where(room_id: room.id).count %>
+								</button>
+							</form>
 						<% end %>
 					</li> 
 					<% room.users.last(8).each do |user| %>
 						<table>
 							<tr>
 								<td>
-									<%= user.name %>
+									<%= user.name %><% if user.favorooms.where(room_id: room.id).exists? %><font color="#e81c4f">★ </font><% end %>
 								</td>
 							</tr>
 						</table>
