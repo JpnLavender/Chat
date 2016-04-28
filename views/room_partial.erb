@@ -65,7 +65,7 @@ $(document).on('scroll', function(){
 					<li>
 						<a href="join_room/<%= room.id %>" title="RoomID=><%= room.id %>"><%= room.name %></a>
 						<% unless Favoroom.where(room_id: room.id , user_id: session[:user]).exists? %>
-							<form action="/favoroom" method="post">
+							<form action="/favoroom" method="post" style="display:inline;">
 								<input type="hidden" name="room_id" value="<%= room.id %>" >
 								<input type="hidden" name="user_id" value="<%= session[:user] %>" >
 								<button type="submit" style="background:transparent;border-style:none;display:inline;color:#aab8c2;">
@@ -73,10 +73,10 @@ $(document).on('scroll', function(){
 								</button>
 							</form>
 						<% else %>
-							<form action="/unfavoroom" method="post">
+							<form action="/unfavoroom" method="post" style="display:inline;">
 								<input type="hidden" name="room_id" value="<%= room.id %>" >
 								<input type="hidden" name="user_id" value="<%= session[:user] %>" >
-								<button type="submit" style="background:transparent;border-style:none;display:inline;color:#e81c4f;">
+								<button type="submit" style="background:transparent;border-style:none;color:#e81c4f;">
 								★	<%= Favoroom.where(room_id: room.id).count %>
 								</button>
 							</form>
