@@ -1,0 +1,86 @@
+
+<script type="text/javascript">
+var current_height = 0;
+$(document).on('scroll', function(){
+	var trigger_pos = 0; 
+	var pos = $(window).scrollTop();
+	if((pos + $(window).height()) >= ($(document).height() * trigger_pos)
+			&& pos > current_height){
+		$('#read_mores').trigger("click");
+		console.log("HelloWorld")
+	}
+	current_height = pos;
+})
+</script>
+
+<!-- メニューボタン -->
+<div class="dropdown">
+	<button aria-expanded="true" aria-haspopup="true" class="btn btn-default btn-lg" data-toggle="dropdown" id="dropdownMenu1" type="button">
+		<span class="glyphicon glyphicon-align-justify"></span>
+	</button>
+	<ul aria-labelledby="dropdownMenu1" class="dropdown-menu">
+		<li>
+			<a href="/room">TopRoom</a>
+		</li>
+		<li>
+			<a href="/create_room">RoomCreate</a>
+		</li>
+		<li>
+			<a href="/my_room_list">RoomLists</a>
+		</li>
+		<li>
+			<a href="/favoroom">FavoRoomList</a>
+		</li>
+	</ul>
+</div>
+<!-- メニューボタン終了 -->
+
+
+<!-- Bootstrapグリッド・システム -->
+<div class="container">
+	<div class="row">
+		<% Room.all.each do |room| %>
+			<% @list = Favoroom.where(user_id: session[:user],room_id: room.id).page(params[:page]) %>
+			<% @list.each do |fr| %>
+				<div class="col-md-3">
+					<div class="demo-content bg-alt">
+						<!-- <img src="#" class="img-rounded"> -->
+						<ul> 
+							<li>
+								<a href="join_room/<%= room.id %>" title="RoomID=><%= room.id %>"><%= room.name %></a>
+								<% unless Favoroom.where(room_id: room.id , user_id: session[:user]).exists? %>
+									<form action="/favoroom" method="post" style="display:inline;">
+										<input type="hidden" name="room_id" value="<%= room.id %>" >
+										<input type="hidden" name="user_id" value="<%= session[:user] %>" >
+										<button class="button4" type="submit" style="color: rgb(170, 184, 194); border-style: none; background: transparent none repeat scroll 0% 0%;">
+											★ <%= Favoroom.where(room_id: room.id).count %>
+									</button>
+									</form>
+								<% else %>
+									<form action="/unfavoroom" method="post" style="display:inline;">
+										<input type="hidden" name="room_id" value="<%= room.id %>" >
+										<input type="hidden" name="user_id" value="<%= session[:user] %>" >
+										<button type="submit" style="color: #e81c4f; border-style: none; background: transparent none repeat scroll 0% 0%;">
+											★	<%= Favoroom.where(room_id: room.id).count %>
+									</button>
+									</form>
+								<% end %>
+							</li> 
+							<% room.users.last(8).each do |user| %>
+								<table>
+									<tr>
+										<td>
+											<%= user.name %><% if user.favorooms.where(room_id: room.id).exists? %><font color="#e81c4f">★ </font><% end %>
+										</td>
+									</tr>
+								</table>
+							<% end %>
+						</ul>
+					</div>
+				</div>
+			<% end %>
+		<% end %>
+	</div>
+</div>
+<!-- Bootstrapグリッド・システム end -->
+<%= link_to_next_page @list, 'もっと見る', id: 'read_mores', remote: true %>

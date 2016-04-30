@@ -167,7 +167,6 @@ end
 
 # ////////////////////////////////favoroom///////////////////////////////
 get '/favoroom' do 
-	@list_all = User.find(session[:user]).favorooms
 	erb :favo_room_list, layout: :layout 
 end
 post '/favoroom' do

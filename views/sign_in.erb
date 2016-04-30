@@ -1,44 +1,59 @@
 <br>
 <br>
 <!-- ログインフォーム -->
-
-<div class="form-title">
-  <center>
-    <h1>SIGNUP</h1>
-    <h2>LIFECHATを始めよう</h2>
-  </center>
-</div>
-<div class="box1">
-  <div class="input">
-    <% if @user_true %>
-      <span class="list-group-item list-group-item-danger">パスワードまたはユーザー名が違うます</span>
-    <% end %>
-    <form action="/signin" id="form_1" method="POST">
-        <div class="form-title font">
-            E-MailAddress or UserName
-        </div>
-      <input aria-describedby="sizing-addon2" class="form-control validate[required]" name="name" placeholder="@lifechat" type="text">
-      <br>
-      <div class="form-title font">
-          Password
-      </div>
-      <input class="form-control validate[required]" name="password" placeholder="パスワード" style="background:#fff;" type="password">
-      <br>
-      <br>
-      <div class="submit-container">
-        <input class="form-control submit-button" type="submit" value="ログイン">
-      </div>
-    </form>
-    <form action="password_change_send" method="get">
-      <input style="text-align:right;background:transparent;text-decoration:underline;margin:0px;padding: 0px;" type="submit" value="パスワードを忘れた方">
-    </form>
-    <hr>
-    <p style="font-size:1px;text-align: left;">LifeChatを始めませんか？</p>
-    <div class="submit-container">
-      <form action="/send_mail" method="get">
-        <input class="form-control submit-button validate[required]" onclick="DisableButton(this);" type="submit" value="新規登録">
-      </form>
-    </div>
-  </div>
+<style>
+body{
+	color:#7b7a65;
+}	
+h1{
+	font-size: 5vw;
+}
+.width{
+	width: 50%;
+	margin: 0 auto;
+}
+</style>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="demo-content bg-alt">
+				<div class="form-title">
+					<center>
+						<h1 style="font-size:8vw;">SIGNUP</h1>
+				</div>
+				<div class="input">
+					<% if @user_true %>
+						<span id="test" class="list-group-item list-group-item-danger">パスワードまたはユーザー名が違います</span>
+					<% end %>
+					<form action="/signin" id="form_1" method="POST">
+						<div class="width form-title font">
+							E-Mail or UserName
+						</div>
+						<input aria-describedby="sizing-addon2" class="width form-control validate[required]" name="name" placeholder="@lifechat" type="text">
+						<br>
+						<div class="width form-title font">
+							Password
+						</div>
+						<input id="test" class="width form-control validate[required]" name="password" placeholder="パスワード" style="background:#fff;" type="password">
+						<br>
+						<br>
+						<div class="submit-container">
+							<input id="test" class="width form-control submit-button" type="submit" value="ログイン">
+						</div>
+					</form>
+					<!-- <form action="password_change_send" method="get"> -->
+					<!-- 	<input id="test" style="border&#45;style:none;background:transparent;" type="submit" value="パスワードを忘れた方"> -->
+					<!-- </form> -->
+					<hr>
+					<p style="font-size:1px;text-align: left;">LifeChatを始めませんか？</p>
+					<div class="submit-container">
+						<form action="/send_mail" method="get">
+							<input id="test" class="width form-control submit-button validate[required]" onclick="DisableButton(this);" type="submit" value="新規登録">
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 

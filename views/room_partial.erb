@@ -51,15 +51,15 @@ $(document).on('scroll', function(){
 									<input type="hidden" name="room_id" value="<%= room.id %>" >
 									<input type="hidden" name="user_id" value="<%= session[:user] %>" >
 									<script> 
-// $(function(){
-// 	$("#hover").mouseover(function(){
-// 		$("style").css("color","e81c4f"); 
-// 	}).mouseout(function(){
-// 		$("p").css("color","aab8c2"); 
-// 	});
-// });
+										$(function(){
+											$("#hover<%= room.id %>").mouseover(function(){
+												$("#hover<%= room.id %>").css({"color":"e81c4f"}); 
+											}).mouseout(function(){
+												$("#hover<%= room.id %>").css({"color":"aab8c2"}); 
+											});
+										});
 									</script>
-									<button class="button4" type="submit" style="color: rgb(170, 184, 194); border-style: none; background: transparent none repeat scroll 0% 0%;">
+									<button id="hover<%= room.id %>" class="button4" type="submit" style="color: rgb(170, 184, 194); border-style: none; background: transparent none repeat scroll 0% 0%;">
 										★ <%= Favoroom.where(room_id: room.id).count %>
 								</button>
 								</form>
@@ -67,7 +67,7 @@ $(document).on('scroll', function(){
 								<form action="/unfavoroom" method="post" style="display:inline;">
 									<input type="hidden" name="room_id" value="<%= room.id %>" >
 									<input type="hidden" name="user_id" value="<%= session[:user] %>" >
-									<button type="submit" style="color: #e81c4f; border-style: none; background: transparent none repeat scroll 0% 0%;">
+									<button id="hover" type="submit" style="color: #e81c4f; border-style: none; background: transparent none repeat scroll 0% 0%;">
 										★	<%= Favoroom.where(room_id: room.id).count %>
 								</button>
 								</form>
