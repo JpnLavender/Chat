@@ -15,6 +15,15 @@ $(function(){
 		ws.send("stop typing ")
 	});
 });
+
+$(function(){
+	$("a#delete").click(function(){
+		var res = confirm("本当にこのルームから退会しますか?")
+			if(res == true){
+				$("form#delete").submit();
+			}
+	});
+});
 </script>
 
 <!-- websocket -->
@@ -49,7 +58,8 @@ $(function(){
             </a>
         </li>
         <li>
-            <a href="/room_logout/<%= room.id %>">
+            <!-- <a href="/room_logout/<%%= room.id %>"> -->
+						<a id="delete">
                 LogoutRoom
             </a>
         </li>
@@ -107,6 +117,7 @@ $(function(){
     <input type="hidden" name="chat" value="1">
     <input type="hidden" name="room_id" value="<%= room.id %>">
 </form>
+<form id="delete" action="/room_logout/<%= room.id %>" method="get"></form>
 <!-- Ramdom_sendの隠しフォーム  -->
 
 

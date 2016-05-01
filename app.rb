@@ -302,8 +302,9 @@ end
 # ////////////////////////////////Logout_Room////////////////////////////////
 get '/room_logout/:id' do
   if User.where(id: session[:user]).exists?
-    room = Userroom.find(params[:id])
-    room[:user_id] = nil
+    Userroom.where(room_id: params[:id], user_id: session[:user]).each do |room|
+			room.block!
+		end
     # @list_all = Room.where(range: true).page(params[:page])
     alert
     redirect'/my_room_list'
