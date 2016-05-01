@@ -166,7 +166,8 @@ post '/create_room' do
 end
 
 # ////////////////////////////////favoroom///////////////////////////////
-get '/favoroom' do 
+get '/favo_room_list' do 
+	@list_all = User.find(session[:user]).favorooms
 	erb :favo_room_list, layout: :layout 
 end
 post '/favoroom' do
@@ -345,15 +346,19 @@ post '/room_renew/:id' do
 end
 
 post '/room_delete/:id' do
-  Room.destroy(params[:id])
+  Room.delete(params[:id])
 
-  chat = Chat.where(room_id: params[:id])
-  chat = chat[0]
-  chat.delete
+  Chat.where(room_id: params[:id]).each do |chat|
+		chat.delete
+	end
 
-  room = Userroom.where(room_id: params[:id])
-  room = room[0]
-  room.delete
+  Userroom.where(room_id: params[:id]).each do |room|
+		room.delete
+	end
+
+	Favoroom.where(room_id: params[:id]).each do |favo|
+		favo.delete
+	end
 
   alert
   redirect'/room'

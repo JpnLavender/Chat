@@ -1,3 +1,13 @@
+<script>
+$(function(){
+	$('button#delete').click(function(){
+			var res = confirm("本当にルームを削除しますか?")
+			if(res == true){
+				$("form#room_delete").submit();
+			}
+	});
+});
+</script>
 <% room = @room[0] %>
 <center>
   <div class="font" style="color: #7b7a65;">
@@ -75,9 +85,7 @@
 
       <br>
 
-      <form id="form_1" action="/room_delete/<%= room.id %>" method="post">
-        <p><input type="submit" value="Room削除" class="btn btn-danger btn-sm btn-block"></p>
-      </form>
+			<button id="delete" class="btn btn-danger btn-sm btn-block">Room削除</button>
 
     </div>
   </div>
@@ -89,5 +97,6 @@
 <form name="normal<%= user.id %>" action="/join_member_normal/<%= user.id %>/<%= room.id %>" method="POST"> </form>
 <form name="admin<%= user.id %>" action="/join_member_admin/<%= user.id %>/<%= room.id %>" method="POST"> </form>
 <form name="delete<%= user.id %>" action="/join_member_delete/<%= user.id %>/<%= room.id %>" method="POST"> </form>
+<form id="room_delete" action="/room_delete/<%= room.id %>" method="post"> </form>
 <!-- 隠しフォーム  -->
 <% end %>
