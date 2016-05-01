@@ -12,7 +12,7 @@ $(function(){
 	//xさんがタイピングをやめたら表示を消す
 	$("#input").focusout(function(){
 		console.log("stop typing"),
-		ws.send("stop typing ")
+		ws.send("stop typing")
 	});
 });
 
