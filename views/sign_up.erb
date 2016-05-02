@@ -3,41 +3,43 @@
 <!-- ログインフォーム -->
 
 <div class="form-title">
-  <center>
-    <h1>SIGNUP</h1>
-    <h2>LIFECHATを始めよう</h2>
-		<p><%= @secret_mail_id %></p>
-  </center>
+	<center>
+		<h1>SIGNUP</h1>
+		<h2>LIFECHATを始めよう</h2>
+	</center>
 </div>
-
-<div class="box1">
-	<form id="form_2" action="/signup" method="POST">
-    <form class="form-container">
-      <div class="form-title">氏名</div>
-      <input type="text" name="name" class="form-control validate[required]" placeholder="山田太郎" aria-describedby="sizing-addon2">
-      <br>
-      <div class="form-title">ユーザー名※</div>
-      <div class="input-group">
-        <span class="input-group-addon" id="sizing-addon2">@</span>
-        <input type="text" name="user_name" class="form-control validate[required,custom[onlyLetterNumber]]" placeholder="lifechat" aria-describedby="sizing-addon2">
-      </div>
-      <br>
-      <input type="hidden" name="mail" value="<%= @mail.to_s %>">
-      <input type="hidden" name="secret_mail_id" value="<%= @secret_mail_id %>">
-      <input type="hidden" name="color" value="#ff0000">
-      <br>
-      <div class="form-title">PassWord※</div>
-      <input class="form-control validate[required,minSize[8]] text-input" type="password" aria-describedby="sizing-addon2" name="password" id="password" placeholder="パスワード" style="background:#fff;">
-      <br>
-      <br>
-      <div class="form-title">PassWord※</div>
-      <input type="password" name="password_confirmation" placeholder="パスワード(再確認)" class="form-control validate[required,equals[password]]" aria-describedby="sizing-addon2" >
-      <br>
-      <br>
-      <div class="submit-container">
-        <input type="submit" value="Make a Account!" class="btn btn-default btn-sm">
-        <!--<font size="1px"><a href="/signin">既にアカウントをお持ちの方はこちらから</a></font>-->
-      </div>
-    </form>
-    </form>
+<div class="container">
+	<div class="row"> 
+		<div class="col-md-6">
+			<div class="demo-content bg-alt">
+				<form id="form_2" action="/signup" method="POST" class="form-container">
+					<div class="form-title">氏名</div>
+					<input type="text" name="name" class="form-control validate[required]" placeholder="山田太郎" aria-describedby="sizing-addon2">
+					<br>
+					<div class="form-title">ユーザー名※</div>
+					<div class="input-group">
+						<span class="input-group-addon" id="sizing-addon2">@</span>
+						<input type="text" name="user_name" class="form-control validate[required,custom[onlyLetterNumber]]" placeholder="lifechat" aria-describedby="sizing-addon2">
+					</div>
+					<br>
+					<input type="hidden" name="mail" value="<%= @mail.to_s %>">
+					<input type="hidden" name="secret_mail_id" value="<%= @secret_mail_id %>">
+					<input type="hidden" name="color" value="#ff0000">
+					<br>
+					<div class="form-title">PassWord※</div>
+					<input class="form-control validate[required,minSize[8]] text-input" type="password" aria-describedby="sizing-addon2" name="password" id="password" placeholder="パスワード" style="background:#fff;">
+					<br>
+					<br>
+					<div class="form-title">PassWord※</div>
+					<input type="password" name="password_confirmation" placeholder="パスワード(再確認)" class="form-control validate[required,equals[password]]" aria-describedby="sizing-addon2" >
+					<br>
+					<br>
+					<div class="submit-container">
+						<input type="submit" value="Make a Account!" class="btn btn-default btn-sm">
+						<!--<font size="1px"><a href="/signin">既にアカウントをお持ちの方はこちらから</a></font>-->
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>

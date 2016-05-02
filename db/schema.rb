@@ -51,7 +51,7 @@ ActiveRecord::Schema.define(version: 20160428061341) do
     t.string   "name"
     t.string   "token"
     t.boolean  "admin",      default: true
-    t.boolean  "range",      default: false, null: false
+    t.boolean  "public",     default: false, null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
   end

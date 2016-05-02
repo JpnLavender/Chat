@@ -42,7 +42,7 @@ end
 
 not_found do
   @message = "404 not found ページが見つかりませんでした"
-  erb :message
+  erb :message ,layout: :layout 
 end
 
 error do
@@ -94,9 +94,8 @@ get '/alert' do
     @alert_count = User.find(session[:user]) # ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
     if @alert_count.alerts.exists? || Alert.where(user: @alert_count, reading: false).exists?
       @alert_count.alerts.each do |s|
-        p as = Alert.where(user: @alert_count, reading: false)
-        as.each do |a|
-					a.update(reading: true)
+        Alert.where(user: @alert_count, reading: false).each do |alert|
+					alert.update(reading: true)
         end
       end
     end
@@ -118,10 +117,12 @@ get '/create_room' do
 end
 
 post '/create_room' do
-  unless Room.where(name: params[:title]).exists? # 作ろうとしたRoom_Nameがすでに存在するか？
-    if range = params[:range]
-      range = range[0]
-    end
+	unless Room.where(name: params[:title]).exists? # 作ろうとしたRoom_Nameがすでに存在するか？
+		public = if "true" == params[:boolean]
+							true
+						else 
+							false
+						end
 
     admin = if params[:admin] # FormのAdminチェックボックスにチェックが付いていたら以下を実行
               true
@@ -129,8 +130,8 @@ post '/create_room' do
               false
             end
 
-    if range == 'true' # 公開範囲がパブリックだったら以下を実行
-      room = Room.new(admin: admin, name: params[:title], range: range )
+    if public == 'true' # 公開範囲がパブリックだったら以下を実行
+      room = Room.new(admin: admin, name: params[:title], public: public )
       if room.save
         @room = Room.where(name: params[:title]).page(params[:page])
         Userroom.create(room_id: @room[0].id, user_id: session[:user], status: 1)
@@ -145,7 +146,7 @@ post '/create_room' do
        room = Room.new(
         admin: admin,
         name: params[:title],
-        range: range,
+        public: public,
         token: url
       )
       if room.save # 保存が成功したら以下を実行
@@ -184,7 +185,7 @@ end
 # ////////////////////////////////ルームリスト表示////////////////////////////////
 get '/my_room_list' do
   if User.where(id: session[:user]).exists?
-    @list_all = Room.where(range: true).page(params[:page])
+    @list_all = Room.where(public: true).page(params[:page])
     alert
     erb :my_room_list, layout: :layout
   else
@@ -207,7 +208,7 @@ get '/join_room/:id' do
 					room = rooms[0].userrooms # RoomからUserRoomを探す
 					if Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists? # #選択したRoomに以前入ったことがあれば以下を実行
 						unless user.block? # 選択したRoomからBlockされいなければ以下を実行
-							if Room.where(id: params[:id], range: true).exists? # 選択したRoomがパブリックルームだったら以下を実行
+							if Room.where(id: params[:id], public: true).exists? # 選択したRoomがパブリックルームだったら以下を実行
 								@room = Room.where(id: params[:id]).page(params[:page]) # idからRoomを探す
 								alert
 								erb :talk_room, layout: :layout
@@ -226,7 +227,7 @@ get '/join_room/:id' do
 							erb :message, layout: :layout
 						end
 					else # 選択したRoomに以前入ったことがなければ以下を実行
-						if Room.where(id: params[:id], admin: true, range: true).exists? # AdminがONになってるRoom
+						if Room.where(id: params[:id], admin: true, public: true).exists? # AdminがONになってるRoom
 							@room = Room.where(id: params[:id]).page(params[:page])
 							rooms[0].users.each do |user|
 								Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました", reading: false, user_id: user.id, url: "join_room/#{params[:id]}")
@@ -234,7 +235,7 @@ get '/join_room/:id' do
 							Userroom.create(room_id: @room[0].id, user_id: session[:user])
 							alert
 							erb :talk_room, layout: :layout
-						elsif Room.where(id: params[:id], admin: false, range: true).exists? # AdminがOFFになってるRoom
+						elsif Room.where(id: params[:id], admin: false, public: true).exists? # AdminがOFFになってるRoom
 							@room = Room.where(id: params[:id]).page(params[:page])
 							rooms[0].users.each do |user|
 								Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました", reading: false, user_id: user.id, url: "join_room/#{params[:id]}")
@@ -305,7 +306,7 @@ get '/room_logout/:id' do
     Userroom.where(room_id: params[:id], user_id: session[:user]).each do |room|
 			room.block!
 		end
-    # @list_all = Room.where(range: true).page(params[:page])
+    # @list_all = Room.where(public: true).page(params[:page])
     alert
     redirect'/my_room_list'
   else
@@ -415,9 +416,9 @@ get '/search' do
     room = Room.where("name like '%#{params[:search]}%'")
     # UserNameが発見できてなおかつRoomNameも発見できた場合
     if User.where("user_name like '%#{params[:search]}%'").exists?
-      if room.where(range: true).exists?
+      if room.where(public: true).exists?
         @search_users = User.where("user_name like '%#{params[:search]}%'")
-        @search_lists = room.where(range: true)
+        @search_lists = room.where(public: true)
         @true_lists , @true_users = true ,true
         alert
         erb :search, layout: :layout
@@ -428,15 +429,15 @@ get '/search' do
         erb :search, layout: :layout
       end
       # RoonNameが発見できたけどUserNameが発見できなかった場合
-    elsif room.where(range: true).exists?
+    elsif room.where(public: true).exists?
       if User.where("user_name like '%#{params[:search]}%'").exists?
         @search_users = User.where("user_name like '%#{params[:search]}%'")
-        @search_lists = room.where(range: true)
+        @search_lists = room.where(public: true)
         @true_users, @true_lists = true, false
         alert
         erb :search, layout: :layout
       else
-        @search_lists = room.where(range: true)
+        @search_lists = room.where(public: true)
         @true_users, @true_lists = false, true
         alert
         erb :search, layout: :layout
@@ -552,7 +553,7 @@ get '/create_friend_room/:friend_id' do
     user = User.find(friend.friend_id) # フレンドのテーブルの中に入っている友達のIDを持ってくる
     name = user.name.to_s + '&' + friend.user.name.to_s # RoomNameを作る
     # if Room.where(name: name).exists?
-    room = Room.new(admin: false, name: name, range: false)
+    room = Room.new(admin: false, name: name, public: false)
     if room.save
       @room = Room.where(name: name)
       Userroom.create(room: @room, user_id: user.id)
