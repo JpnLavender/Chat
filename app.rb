@@ -573,60 +573,43 @@ get '/signin' do
 end
 
 post '/signin' do
-  if user = User.find_by_mail(params[:name]) # メールアドレスが存在するか確認する
-    # MailAddress
+  if user = User.find_by_mail(params[:name]) #入力された値がmailか確認する
     if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
       session[:user_name] = user.user_name
-      @user = user.user_name
-      @list_all = User.find(session[:user]).rooms.page(params[:page])
-      alert
-      erb :room, layout: :layout
+			redirect '/room'
     else # もし合っていなかったら以下実行
       @user_true = true
-      alert
       erb :index, layout: :layout
     end
-    # 普通のUser_name
-  elsif user = User.find_by_user_name(params[:name])
-    if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
+  elsif user = User.find_by_user_name(params[:name])#入力された値がUserNameか確認する
+    if user && user.authenticate(params[:password]) # UserNameが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
       session[:user_name] = user.user_name
-      @user = user.user_name
-      @list_all = User.find(session[:user]).rooms.page(params[:page])
-      alert
-      erb :room, layout: :layout
+			redirect '/room'
     else # もし合っていなかったら以下実行
       @user_true = true
-      alert
       erb :index, layout: :layout
     end
-    # @のついたUser_name
-  elsif cut = params[:name]
+  elsif cut = params[:name]#入力された値が@付きのUserNameか確認する
     if cut.slice!('@')
       if user = User.find_by_user_name(cut)
         if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
           session[:user] = user.id # セッションにユーザーデータを保存する
           session[:user_name] = user.user_name
-          @user = user.user_name
-          @list_all = User.find(session[:user]).rooms.page(params[:page])
-          alert
-          erb :room, layout: :layout
+					redirect '/room'
         else # もし合っていなかったら以下実行
           @user_true = true
-          alert
           erb :index, layout: :layout
         end
       else
         @user_true = true
         @message = "不明なエラーが発生しました"
-        alert
         erb :message, layout: :layout
       end
     end
   else
     @message = 'erraaaaaaaa'
-    alert
     erb :message, layout: :layout
   end
 end
