@@ -476,8 +476,7 @@ post '/delete_friend/:id' do
 end
 # ////////////////////////////////ルームの削除////////////////////////////////
 get '/delete/:id' do
-  room = Room.delete(params[:id])
-  if room
+  if Room.delete(params[:id])
     alert
     redirect 'my_room_list'
   else
@@ -522,8 +521,7 @@ end
 
 get '/friends' do
   if User.find_by id: session[:user]
-    user = User.find_by_id(session[:user])
-    @my_friends = user.friends # ユーザーと友達になってるユーザー一覧を持ってくる
+    @my_friends = User.find_by_id(session[:user]).friends
     alert
     erb :friends, layout: :layout
   else
@@ -534,8 +532,7 @@ end
 get '/create_friend_room/:friend_id' do
   # friend_idはテーブルid
   friend = Friend.find(params[:friend_id])
-  unless p Userroom.where(user_id: [friend.user_id, friend.friend_id]).group(:room_id).having('count(*) = 2').exists?
-    friend = Friend.find(params[:friend_id]) # Friendのテーブルを探す
+  unless Userroom.where(user_id: [friend.user_id, friend.friend_id]).group(:room_id).having('count(*) = 2').exists?
     user = User.find(friend.friend_id) # フレンドのテーブルの中に入っている友達のIDを持ってくる
     name = user.name.to_s + '&' + friend.user.name.to_s # RoomNameを作る
     # if Room.where(name: name).exists?
@@ -550,9 +547,8 @@ get '/create_friend_room/:friend_id' do
       error
     end
   else
-    friend_room = Userroom.where(user_id: [friend.user_id, friend.friend_id]).group(:room_id).having('count(*) = 2')
     alert
-    friend_room.each do |room|
+    Userroom.where(user_id: [friend.user_id, friend.friend_id]).group(:room_id).having('count(*) = 2').each do |room|
       @room = Room.where(id: room.room_id).page(params[:page])
       alert
       redirect "join_room/#{room.room_id}"
