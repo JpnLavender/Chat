@@ -118,20 +118,11 @@ end
 
 post '/create_room' do
 	unless Room.where(name: params[:title]).exists? # 作ろうとしたRoom_Nameがすでに存在するか？
-		public = if "true" == params[:boolean]
-							true
-						else 
-							false
-						end
+    admin = params[:admin] ?  true : false
 
-    admin = if params[:admin] # FormのAdminチェックボックスにチェックが付いていたら以下を実行
-              true
-            else # FormのAdminチェックボックスにチェックが付いていなかったら以下を実行
-              false
-            end
-
-    if public == 'true' # 公開範囲がパブリックだったら以下を実行
-      room = Room.new(admin: admin, name: params[:title], public: public )
+		p "公開範囲テスト"
+    if p "true" == params[:boolean] ? true : false
+      room = Room.new(admin: admin, name: params[:title], public: true )
       if room.save
         @room = Room.where(name: params[:title]).page(params[:page])
         Userroom.create(room_id: @room[0].id, user_id: session[:user], status: 1)
@@ -143,12 +134,7 @@ post '/create_room' do
       end
     else # 公開範囲がプライベートだったら以下を実行
       url = SecureRandom.uuid # URLがRoomIDではない乱数URLを作成
-       room = Room.new(
-        admin: admin,
-        name: params[:title],
-        public: public,
-        token: url
-      )
+       room = Room.new( admin: admin, name: params[:title], public: false, token: url)
       if room.save # 保存が成功したら以下を実行
         @room = Room.find_by_name(params[:title])
         Userroom.create(room_id: @room.id, user_id: session[:user], status: 1)
