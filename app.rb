@@ -293,7 +293,6 @@ get '/room_logout/:id' do
 			room.block!
 		end
     # @list_all = Room.where(public: true).page(params[:page])
-    alert
     redirect'/my_room_list'
   else
     erb :index, layout: :layout
@@ -329,7 +328,6 @@ end
 post '/room_renew/:id' do
   room = Room.find(params[:id])
   room[:name] = params[:name]
-  alert
   redirect"/room_edit/#{params[:id]}"
 end
 
@@ -347,27 +345,22 @@ post '/room_delete/:id' do
 	Favoroom.where(room_id: params[:id]).each do |favo|
 		favo.delete
 	end
-
-  alert
   redirect'/room'
 end
 post '/join_member_delete/:user_id/:room_id' do
   userroom = Userroom.where(user_id: params[:user_id], room_id: params[:room_id])
   userroom[0].block!
-  alert
   redirect "room_edit/#{params[:room_id]}"
 end
 
 post '/join_member_admin/:user_id/:room_id' do
   userroom = Userroom.where(user_id: params[:user_id], room_id: params[:room_id])
   userroom[0].admin!
-  alert
   redirect "room_edit/#{params[:room_id]}"
 end
 post '/join_member_normal/:user_id/:room_id' do
   userroom = Userroom.where(user_id: params[:user_id], room_id: params[:room_id])
   userroom[0].normal!
-  alert
   redirect "room_edit/#{params[:room_id]}"
 end
 
@@ -376,7 +369,6 @@ post '/chat' do
   user = User.find(session[:user])
   id = params[:room_id]
   Room.find(id).chats.create(user: user, text: params[:chat])
-  alert
   redirect "/join_room/#{id}"
 end
 
@@ -392,7 +384,6 @@ post '/random_send' do
   p "Randomテスト"
   p random = room_id.users.sample.id
   Room.find(room_id.id).chats.create(user: user, text: params[:chat], form_user: random)
-  alert
   redirect "/join_room/#{room_id.id}"
 end
 
@@ -445,7 +436,6 @@ post '/follow/:id' do
   friend = Friend.new(user_id: session[:user], friend_id: params[:id])
   if friend.save
     Alert.create(title: "#{User.find(session[:user]).name}があなたを友達登録しました", user_id: params[:id], status: 1)
-    alert
     redirect '/room'
   else
     error
@@ -477,7 +467,6 @@ end
 # ////////////////////////////////ルームの削除////////////////////////////////
 get '/delete/:id' do
   if Room.delete(params[:id])
-    alert
     redirect 'my_room_list'
   else
     @messeage = "内部サーバーエラー"
@@ -541,23 +530,19 @@ get '/create_friend_room/:friend_id' do
       @room = Room.where(name: name)
       Userroom.create(room: @room, user_id: user.id)
       Userroom.create(room: @room, user_id: session[:user])
-      alert
       redirect "/join_room/#{@room.id}"
     else
       error
     end
   else
-    alert
     Userroom.where(user_id: [friend.user_id, friend.friend_id]).group(:room_id).having('count(*) = 2').each do |room|
       @room = Room.where(id: room.room_id).page(params[:page])
-      alert
       redirect "join_room/#{room.room_id}"
     end
   end
 end
 
 post '/alert_delete/:id' do
-  alert
   alert = Alert.find(params[:id])
   alert.delete
   redirect '/alert'
@@ -646,7 +631,6 @@ post '/renew/:id' do
         age: params[:age],
         introduction: params[:introduction]
       )
-      alert
       redirect '/room'
     else # 入力されたUser_Nameが以前と違うものなら以下を実行
       unless User.where(user_name: params[:user_name]).exists? # 入力されたUser＿Nameがすでに存在していなければ以下を実行
@@ -755,7 +739,6 @@ post '/signup' do
 			if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
 				token.update(expired_at: Time.now) # DBが時間内であれば時間外にして
 				session[:user] = user.id unless user.nil?
-				alert
 				redirect '/room'
 			else # DBが時間外なら↓を実行
 				@message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
