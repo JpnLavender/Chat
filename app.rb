@@ -57,7 +57,7 @@ end
 
 def alert
   if User.where(session[:user])[0].alerts.exists?
-    @alert_count = User.find(session[:user]).alerts # ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
+    @alert_count = User.find(session[:user])  # ユーザーに紐付いてる通知を全て持ってくる(layout.erbのHeader用)
   end
 end
 
@@ -120,13 +120,11 @@ post '/create_room' do
 	unless Room.where(name: params[:title]).exists? # 作ろうとしたRoom_Nameがすでに存在するか？
     admin = params[:admin] ?  true : false
 
-		p "公開範囲テスト"
-    if p "true" == params[:boolean] ? true : false
+    if "true" == params[:boolean] ? true : false
       room = Room.new(admin: admin, name: params[:title], public: true )
       if room.save
         @room = Room.where(name: params[:title]).page(params[:page])
         Userroom.create(room_id: @room[0].id, user_id: session[:user], status: 1)
-        alert
         redirect "/join_room/#{@room[0].id}"
       else
         @message = "ルーム作成に失敗しました"
@@ -433,20 +431,17 @@ end
 # Friend
 # ////////////////////////////////////////////////////////////////
 post '/follow/:id' do
-  friend = Friend.new(user_id: session[:user], friend_id: params[:id])
-  if friend.save
-    Alert.create(title: "#{User.find(session[:user]).name}があなたを友達登録しました", user_id: params[:id], status: 1)
-    redirect '/room'
-  else
-    error
-  end
+	alert = Alert.create(title: "#{User.find(session[:user]).name}があなたを友達登録しました", user_id: params[:id], status: 1)
+	Friend.create(user_id: session[:user], friend_id: params[:id], alert_id: alert.id)
+	redirect '/room'
+	error
 end
 
 post '/add_friend/:id' do
-  if Friend.where(user_id: session[:user], friend_id: params[:id], status: 0).exists?
-    friend = Friend.where(user_id: session[:user], friend_id: params[:id], status: 0)
-    friend.each do |friend|
+  if Friend.where(user_id: params[:id], friend_id: session[:user], status: 0).exists?
+    Friend.where(user_id: params[:id], friend_id: session[:user], status: 0).each do |friend|
       if friend.friend!
+				Friend.create(user_id: session[:user], friend_id: params[:id], status: 1)
         redirect '/alert'
       else
         redirect '/alert'
@@ -455,10 +450,11 @@ post '/add_friend/:id' do
   end
 end
 post '/delete_friend/:id' do
-  if Friend.where(user_id: session[:user], friend_id: params[:id], status: 0).exists?
-    friend = Friend.where(user_id: session[:user], friend_id: params[:id], status: 0)
+  if Friend.where(user_id: params[:id], friend_id: session[:user], status: 0).exists?
+    friend = Friend.where(user_id: params[:id], friend_id: session[:user], status: 0)
     if friend.block!
       redirect '/alert'
+				Friend.create(user_id: session[:user], friend_id: params[:id], status: 3)
     else
       redirect '/alert'
     end
@@ -510,7 +506,7 @@ end
 
 get '/friends' do
   if User.find_by id: session[:user]
-    @my_friends = User.find_by_id(session[:user]).friends
+    @my_friends = User.find(session[:user]).friends
     alert
     erb :friends, layout: :layout
   else
@@ -589,8 +585,7 @@ post '/signin' do
         end
       else
         @user_true = true
-        @message = "不明なエラーが発生しました"
-        erb :message, layout: :layout
+				erb :index, layout: :layout
       end
     end
   else

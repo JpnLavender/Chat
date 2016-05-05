@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160428061341) do
+ActiveRecord::Schema.define(version: 20160505021857) do
 
   create_table "alerts", force: :cascade do |t|
     t.string   "title"
@@ -45,6 +45,13 @@ ActiveRecord::Schema.define(version: 20160428061341) do
     t.integer  "status",     default: 0, null: false
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+    t.string   "alert_id"
+  end
+
+  create_table "readchats", force: :cascade do |t|
+    t.integer "room_id"
+    t.integer "chat_id"
+    t.integer "userroom_id"
   end
 
   create_table "rooms", force: :cascade do |t|

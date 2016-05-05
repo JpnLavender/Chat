@@ -36,7 +36,7 @@ end
 
 class Room < ActiveRecord::Base
   has_many :users,  through: :userrooms
-  has_many :chats
+  has_many :chats#, through: :readrooms
   has_many :userrooms
 	has_many :favorooms
   paginates_per 40
@@ -58,11 +58,13 @@ class Friend < ActiveRecord::Base
   enum status: {not_friend: 0, friend: 1, intimate: 2, block: 3}
   belongs_to :user
   belongs_to :userroom
+	belongs_to :alert
 end
 
 class Alert < ActiveRecord::Base
   enum status: {room: 0, friend: 1}
   belongs_to :user
+	belongs_to :friend
   paginates_per 20
 end
 
@@ -70,3 +72,8 @@ class Favoroom < ActiveRecord::Base
 	belongs_to :room
 	belongs_to :user
 end
+ 
+# class Readchat < ActiveRecord::Base 
+# 	belongs_to :room
+# 	belongs_to :chat
+# end
