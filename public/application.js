@@ -13,15 +13,16 @@ window.onload = function(){
     // ws.onopen    = function()  { show('JoinRoom'); };
     ws.onclose   = function()  { show('websocket closed'); }
     ws.onmessage = function(m) { 
-      if (m.type === "message") {  
-        data = JSON.parse(m.data);
+			var data = JSON.parse(m.data);
+			console.log(data)
+      if (data.status === "message") {  
         appendMessage(data.user.name, data.user.color, data.body)
         console.log(data.user.name + "send messge")
       }
-      else if (m.type === "typing now") {
+      else if (data.status === "start") {
         console.log("ws send typing")
             }
-      else if(m.type === "stop typing"){
+      else if(data.status === "stop"){
         console.log("ws send stop typing")
         //xさんがタイピングをやめたら表示を消す
       }
@@ -55,7 +56,8 @@ window.onload = function(){
       var input     = document.getElementById('input');
       input.onclick = function(){ input.value = "" };
       f.onsubmit    = function(){
-        ws.send(input.value);
+				var mes = JSON.stringify({ type: "message", body: input.value, status: "message" });
+        ws.send(mes);
         input.value = "";
         return false;
       }

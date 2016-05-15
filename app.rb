@@ -245,10 +245,21 @@ get '/join_room/:id' do
 					end
 					ws.onmessage do |msg|
 						EM.next_tick  do
-							settings.sockets[@id].each do |s|
-								s.send({ user: { id: us.id, name: us.name, color: us.color }, body: msg }.to_json)
+							message = JSON.parse(msg)
+							if message['type'] == "message"
+								settings.sockets[@id].each do |s|
+									s.send({ user: { id: us.id, name: us.name, color: us.color }, body: message['body'] }.to_json)
+								end
+							elsif message['type'] == "start"
+								settings.sockets[@id].each do |s|
+									s.send({ user: { id: us.id, name: us.name}, status: "start" }.to_json)
+								end
+							elsif message['type'] == "stop"
+								settings.sockets[@id].each do |s|
+									s.send({ user: { id: us.id, name: us.name}, status: "stop" }.to_json)
+								end
 							end
-							# s.send({ body }.to_json)
+							#jsonでif分岐
 							Room.find(@id).chats.create(user: us, text: msg)
 						end
 					end
