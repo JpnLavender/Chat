@@ -8,14 +8,12 @@ $(function(){
 	$("#input").focus(function(){
 		var type = JSON.stringify({ type: "start" });
 		ws.send(type);
-		console.log(type)
 	});
 
 	//xさんがタイピングをやめたら表示を消す
 	$("#input").focusout(function(){
 		var type = JSON.stringify({ type: "stop" });
 		ws.send(type);
-		console.log(type)
 	});
 });
 

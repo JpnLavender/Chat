@@ -14,15 +14,16 @@ window.onload = function(){
     ws.onclose   = function()  { show('websocket closed'); }
     ws.onmessage = function(m) { 
 			var data = JSON.parse(m.data);
-			console.log(data)
       if (data.status === "message") {  
         appendMessage(data.user.name, data.user.color, data.body)
         console.log(data.user.name + "send messge")
       }
       else if (data.status === "start") {
+				$("#typing").html("<font color='" + data.user.color +"'></font>" + data.user.name + " がタイピング中です ");
         console.log("ws send typing")
             }
       else if(data.status === "stop"){
+				$("#typing").text("");
         console.log("ws send stop typing")
         //xさんがタイピングをやめたら表示を消す
       }
@@ -56,7 +57,7 @@ window.onload = function(){
       var input     = document.getElementById('input');
       input.onclick = function(){ input.value = "" };
       f.onsubmit    = function(){
-				var mes = JSON.stringify({ type: "message", body: input.value, status: "message" });
+				var mes = JSON.stringify({ type: "message", body: input.value,});
         ws.send(mes);
         input.value = "";
         return false;

@@ -247,8 +247,9 @@ get '/join_room/:id' do
 						EM.next_tick  do
 							message = JSON.parse(msg)
 							if message['type'] == "message"
+								Room.find(@id).chats.create(user: us, text: message['body'])
 								settings.sockets[@id].each do |s|
-									s.send({ user: { id: us.id, name: us.name, color: us.color }, body: message['body'] }.to_json)
+									s.send({ user: { id: us.id, name: us.name, color: us.color }, body: message['body'] ,  status: "message" }.to_json)
 								end
 							elsif message['type'] == "start"
 								settings.sockets[@id].each do |s|
@@ -259,8 +260,7 @@ get '/join_room/:id' do
 									s.send({ user: { id: us.id, name: us.name}, status: "stop" }.to_json)
 								end
 							end
-							#jsonでif分岐
-							Room.find(@id).chats.create(user: us, text: msg)
+							#json持ちだしてでif分岐
 						end
 					end
 					ws.onclose do
