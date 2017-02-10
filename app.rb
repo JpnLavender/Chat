@@ -120,7 +120,7 @@ post '/create_room' do
   unless Room.where(name: params[:title]).exists? # 作ろうとしたRoom_Nameがすでに存在するか？
     admin = params[:admin] ?  true : false
 
-    if "true" == params[:boolean] ? true : false
+    if "true" == params[:boolean]
       room = Room.new(admin: admin, name: params[:title], public: true )
       if room.save
         @room = Room.where(name: params[:title]).page(params[:page])
@@ -390,8 +390,7 @@ end
 post '/random_send' do
   room_id = Room.find(params[:room_id])
   user = User.find(session[:user])
-  p "Randomテスト"
-  p random = room_id.users.sample.id
+  random = room_id.users.sample.id
   Room.find(room_id.id).chats.create(user: user, text: params[:chat], form_user: random)
   redirect "/join_room/#{room_id.id}"
 end
@@ -628,7 +627,7 @@ end
 post '/renew/:id' do
   user = User.find(params[:id])
   if user && user.authenticate(params[:password]) # 入力されたパスワードが合っていれば以下を実行
-    if p user.user_name == params[:user_name] # 入力されたUsesr_nameが以前と同じものなら以下を実行
+    if user.user_name == params[:user_name] # 入力されたUsesr_nameが以前と同じものなら以下を実行
       session[:user] = user.id
       user.update( # ↓User_Nameを変更しないアップデート
                   name:   params[:name],
@@ -676,13 +675,9 @@ post '/send_mail' do
     erb :index, layout: :layout
   else # 入力したメールアドレスがなければ↓を実行
     random = SecureRandom.uuid # 乱数で暗号を作成
-    token = Token.new( # 暗号とメールアドレスをDBに作成
-                      token: random,
-                      address: params[:email],
-                      expired_at: 24.hours.since
-                     )
+    token = Token.new( token: random, address: params[:email], expired_at: 24.hours.since)# 暗号とメールアドレスをDBに作成
     if token.save # 暗号とメールアドレスをDBに作成できれば↓を実行
-      p email_secret = Base64.encode64(random) # 暗号を暗号化する
+      email_secret = Base64.encode64(random) # 暗号を暗号化する
 
       xyz = 'localhost:4567'
 
