@@ -95,7 +95,7 @@ get '/alert' do
     if @alert_count.alerts.exists? || Alert.where(user: @alert_count, reading: false).exists?
       @alert_count.alerts.each do |s|
         Alert.where(user: @alert_count, reading: false).each do |alert|
-					alert.update(reading: true)
+          alert.update(reading: true)
         end
       end
     end
@@ -117,7 +117,7 @@ get '/create_room' do
 end
 
 post '/create_room' do
-	unless Room.where(name: params[:title]).exists? # 作ろうとしたRoom_Nameがすでに存在するか？
+  unless Room.where(name: params[:title]).exists? # 作ろうとしたRoom_Nameがすでに存在するか？
     admin = params[:admin] ?  true : false
 
     if "true" == params[:boolean] ? true : false
@@ -132,7 +132,7 @@ post '/create_room' do
       end
     else # 公開範囲がプライベートだったら以下を実行
       url = SecureRandom.uuid # URLがRoomIDではない乱数URLを作成
-       room = Room.new( admin: admin, name: params[:title], public: false, token: url)
+      room = Room.new( admin: admin, name: params[:title], public: false, token: url)
       if room.save # 保存が成功したら以下を実行
         @room = Room.find_by_name(params[:title])
         Userroom.create(room_id: @room.id, user_id: session[:user], status: 1)
@@ -152,18 +152,18 @@ end
 
 # ////////////////////////////////favoroom///////////////////////////////
 get '/favo_room_list' do 
-	@list_all = User.find(session[:user]).favorooms
-	erb :favo_room_list, layout: :layout 
+  @list_all = User.find(session[:user]).favorooms
+  erb :favo_room_list, layout: :layout 
 end
 post '/favoroom' do
-	Favoroom.create(room_id: params[:room_id],user_id: params[:user_id])
-	redirect 'my_room_list'
+  Favoroom.create(room_id: params[:room_id],user_id: params[:user_id])
+  redirect 'my_room_list'
 end
 post '/unfavoroom' do
-	Favoroom.where(room_id: params[:room_id],user_id: params[:user_id]).each do |favo|
-		favo.delete
-	end
-	redirect 'my_room_list'
+  Favoroom.where(room_id: params[:room_id],user_id: params[:user_id]).each do |favo|
+    favo.delete
+  end
+  redirect 'my_room_list'
 end
 
 # ////////////////////////////////ルームリスト表示////////////////////////////////
@@ -180,102 +180,102 @@ end
 
 # ////////////////////////////////Join_Room////////////////////////////////
 get '/join_room/:id' do
-	if Room.where(id: params[:id]).exists?
-		if User.where(id: session[:user]).exists?
-			@id = params[:id]
-			users = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
-			user = users[0]
-			if !request.websocket?
-				if User.where(id: session[:user]).exists? # Userが存在するか
-					name = User.find(session[:user]).name # セッションからRoomに入ろうとしてるUser_nameを取得する
-					rooms = Room.where(id: params[:id]) # URLからRoomを探す
-					room = rooms[0].userrooms # RoomからUserRoomを探す
-					if Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists? # #選択したRoomに以前入ったことがあれば以下を実行
-						unless user.block? # 選択したRoomからBlockされいなければ以下を実行
-							if Room.where(id: params[:id], public: true).exists? # 選択したRoomがパブリックルームだったら以下を実行
-								@room = Room.where(id: params[:id]).page(params[:page]) # idからRoomを探す
-								alert
-								erb :talk_room, layout: :layout
-							elsif Userroom.where(user_id: session[:user], room_id: params[:id]).exists? # 一度は行ったルームにuuidなしで入れるようにする
-								@room = Room.where(id: params[:id]).page(params[:page])
-								alert
-								erb :talk_room, layout: :layout
-							else
-								@message = "このルームはプライベートルームなため閲覧できません"
-								alert
-								erb :message, layout: :layout
-							end
-						else
-							@message = "このルームからはブロックされています"
-							alert
-							erb :message, layout: :layout
-						end
-					else # 選択したRoomに以前入ったことがなければ以下を実行
-						if Room.where(id: params[:id], admin: true, public: true).exists? # AdminがONになってるRoom
-							@room = Room.where(id: params[:id]).page(params[:page])
-							rooms[0].users.each do |user|
-								Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました", reading: false, user_id: user.id, url: "join_room/#{params[:id]}")
-							end
-							Userroom.create(room_id: @room[0].id, user_id: session[:user])
-							alert
-							erb :talk_room, layout: :layout
-						elsif Room.where(id: params[:id], admin: false, public: true).exists? # AdminがOFFになってるRoom
-							@room = Room.where(id: params[:id]).page(params[:page])
-							rooms[0].users.each do |user|
-								Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました", reading: false, user_id: user.id, url: "join_room/#{params[:id]}")
-							end
-							Userroom.create(room: @room, user_id: session[:user], status: 1)
-							alert
-							erb :talk_room, layout: :layout
-						else
-							@message = "このルームはプライベートルームなため閲覧できません"
-							alert
-							erb :message, layout: :layout
-						end
-					end
-				else
-					erb :index, layout: :layout
-				end
-			else
-				us = User.find(session[:user])
-				request.websocket do |ws|
-					ws.onopen do
-						# ws.send("Hello World!")
-						settings.sockets[@id] << ws
-					end
-					ws.onmessage do |msg|
-						EM.next_tick  do
-							message = JSON.parse(msg)
-							if message['type'] == "message"
-								Room.find(@id).chats.create(user: us, text: message['body'])
-								settings.sockets[@id].each do |s|
-									s.send({ user: { id: us.id, name: us.name, color: us.color }, body: message['body'] ,  status: "message" }.to_json)
-								end
-							elsif message['type'] == "start"
-								settings.sockets[@id].each do |s|
-									s.send({ user: { id: us.id, name: us.name}, status: "start" }.to_json)
-								end
-							elsif message['type'] == "stop"
-								settings.sockets[@id].each do |s|
-									s.send({ user: { id: us.id, name: us.name}, status: "stop" }.to_json)
-								end
-							end
-							#json持ちだしてでif分岐
-						end
-					end
-					ws.onclose do
-						warn('websocket closed')
-						settings.sockets[@id].delete(ws)
-					end
-				end
-			end
-		else
-			redirect '/'
-		end
-	else
-		@message = 'ルームが存在しません'
-		erb :message , layout: :layout 
-	end
+  if Room.where(id: params[:id]).exists?
+    if User.where(id: session[:user]).exists?
+      @id = params[:id]
+      users = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
+      user = users[0]
+      if !request.websocket?
+        if User.where(id: session[:user]).exists? # Userが存在するか
+          name = User.find(session[:user]).name # セッションからRoomに入ろうとしてるUser_nameを取得する
+          rooms = Room.where(id: params[:id]) # URLからRoomを探す
+          room = rooms[0].userrooms # RoomからUserRoomを探す
+          if Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id])).exists? # #選択したRoomに以前入ったことがあれば以下を実行
+            unless user.block? # 選択したRoomからBlockされいなければ以下を実行
+              if Room.where(id: params[:id], public: true).exists? # 選択したRoomがパブリックルームだったら以下を実行
+                @room = Room.where(id: params[:id]).page(params[:page]) # idからRoomを探す
+                alert
+                erb :talk_room, layout: :layout
+              elsif Userroom.where(user_id: session[:user], room_id: params[:id]).exists? # 一度は行ったルームにuuidなしで入れるようにする
+                @room = Room.where(id: params[:id]).page(params[:page])
+                alert
+                erb :talk_room, layout: :layout
+              else
+                @message = "このルームはプライベートルームなため閲覧できません"
+                alert
+                erb :message, layout: :layout
+              end
+            else
+              @message = "このルームからはブロックされています"
+              alert
+              erb :message, layout: :layout
+            end
+          else # 選択したRoomに以前入ったことがなければ以下を実行
+            if Room.where(id: params[:id], admin: true, public: true).exists? # AdminがONになってるRoom
+              @room = Room.where(id: params[:id]).page(params[:page])
+              rooms[0].users.each do |user|
+                Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました", reading: false, user_id: user.id, url: "join_room/#{params[:id]}")
+              end
+              Userroom.create(room_id: @room[0].id, user_id: session[:user])
+              alert
+              erb :talk_room, layout: :layout
+            elsif Room.where(id: params[:id], admin: false, public: true).exists? # AdminがOFFになってるRoom
+              @room = Room.where(id: params[:id]).page(params[:page])
+              rooms[0].users.each do |user|
+                Alert.create(title: "#{name}が『#{rooms[0].name}』に入室しました", reading: false, user_id: user.id, url: "join_room/#{params[:id]}")
+              end
+              Userroom.create(room: @room, user_id: session[:user], status: 1)
+              alert
+              erb :talk_room, layout: :layout
+            else
+              @message = "このルームはプライベートルームなため閲覧できません"
+              alert
+              erb :message, layout: :layout
+            end
+          end
+        else
+          erb :index, layout: :layout
+        end
+      else
+        us = User.find(session[:user])
+        request.websocket do |ws|
+          ws.onopen do
+            # ws.send("Hello World!")
+            settings.sockets[@id] << ws
+          end
+          ws.onmessage do |msg|
+            EM.next_tick  do
+              message = JSON.parse(msg)
+              if message['type'] == "message"
+                Room.find(@id).chats.create(user: us, text: message['body'])
+                settings.sockets[@id].each do |s|
+                  s.send({ user: { id: us.id, name: us.name, color: us.color }, body: message['body'] ,  status: "message" }.to_json)
+                end
+              elsif message['type'] == "start"
+                settings.sockets[@id].each do |s|
+                  s.send({ user: { id: us.id, name: us.name}, status: "start" }.to_json)
+                end
+              elsif message['type'] == "stop"
+                settings.sockets[@id].each do |s|
+                  s.send({ user: { id: us.id, name: us.name}, status: "stop" }.to_json)
+                end
+              end
+              #json持ちだしてでif分岐
+            end
+          end
+          ws.onclose do
+            warn('websocket closed')
+            settings.sockets[@id].delete(ws)
+          end
+        end
+      end
+    else
+      redirect '/'
+    end
+  else
+    @message = 'ルームが存在しません'
+    erb :message , layout: :layout 
+  end
 end
 
 get '/join_private_room/:id' do
@@ -299,8 +299,8 @@ end
 get '/room_logout/:id' do
   if User.where(id: session[:user]).exists?
     Userroom.where(room_id: params[:id], user_id: session[:user]).each do |room|
-			room.block!
-		end
+      room.block!
+    end
     # @list_all = Room.where(public: true).page(params[:page])
     redirect'/my_room_list'
   else
@@ -309,29 +309,29 @@ get '/room_logout/:id' do
 end
 # ////////////////////////////////edit_Room////////////////////////////////
 get '/room_edit/:id' do
-	if Room.where(id: params[:id]).exists?
-		if User.where(id: session[:user]).exists?
-    userroom = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
-    p userroom
-    if userroom[0].admin?
-      @room = Room.where(id: params[:id]).page(params[:page])
-      alert
-      erb :room_edit, layout: :layout
-    elsif Room.where(id: params[:id], admin: false).exists?
-      @room = Room.where(id: params[:id]).page(params[:page])
-      alert
+  if Room.where(id: params[:id]).exists?
+    if User.where(id: session[:user]).exists?
+      userroom = Userroom.where(user: User.find(session[:user]), room: Room.find(params[:id]))
+      p userroom
+      if userroom[0].admin?
+        @room = Room.where(id: params[:id]).page(params[:page])
+        alert
+        erb :room_edit, layout: :layout
+      elsif Room.where(id: params[:id], admin: false).exists?
+        @room = Room.where(id: params[:id]).page(params[:page])
+        alert
+      else
+        @message = "設定をいじる権限がありません"
+        alert
+        erb :message, layout: :layout
+      end
     else
-      @message = "設定をいじる権限がありません"
-      alert
-      erb :message, layout: :layout
+      erb :index, layout: :layout
     end
   else
+    @message = 'ルームが存在しません'
     erb :index, layout: :layout
   end
-	else
-		@message = 'ルームが存在しません'
-    erb :index, layout: :layout
-	end
 end
 
 post '/room_renew/:id' do
@@ -344,16 +344,16 @@ post '/room_delete/:id' do
   Room.delete(params[:id])
 
   Chat.where(room_id: params[:id]).each do |chat|
-		chat.delete
-	end
+    chat.delete
+  end
 
   Userroom.where(room_id: params[:id]).each do |room|
-		room.delete
-	end
+    room.delete
+  end
 
-	Favoroom.where(room_id: params[:id]).each do |favo|
-		favo.delete
-	end
+  Favoroom.where(room_id: params[:id]).each do |favo|
+    favo.delete
+  end
   redirect'/room'
 end
 post '/join_member_delete/:user_id/:room_id' do
@@ -442,17 +442,17 @@ end
 # Friend
 # ////////////////////////////////////////////////////////////////
 post '/follow/:id' do
-	alert = Alert.create(title: "#{User.find(session[:user]).name}があなたを友達登録しました", user_id: params[:id], status: 1)
-	Friend.create(user_id: session[:user], friend_id: params[:id], alert_id: alert.id)
-	redirect '/room'
-	error
+  alert = Alert.create(title: "#{User.find(session[:user]).name}があなたを友達登録しました", user_id: params[:id], status: 1)
+  Friend.create(user_id: session[:user], friend_id: params[:id], alert_id: alert.id)
+  redirect '/room'
+  error
 end
 
 post '/add_friend/:id' do
   if Friend.where(user_id: params[:id], friend_id: session[:user], status: 0).exists?
     Friend.where(user_id: params[:id], friend_id: session[:user], status: 0).each do |friend|
       if friend.friend!
-				Friend.create(user_id: session[:user], friend_id: params[:id], status: 1)
+        Friend.create(user_id: session[:user], friend_id: params[:id], status: 1)
         redirect '/alert'
       else
         redirect '/alert'
@@ -465,7 +465,7 @@ post '/delete_friend/:id' do
     friend = Friend.where(user_id: params[:id], friend_id: session[:user], status: 0)
     if friend.block!
       redirect '/alert'
-				Friend.create(user_id: session[:user], friend_id: params[:id], status: 3)
+      Friend.create(user_id: session[:user], friend_id: params[:id], status: 3)
     else
       redirect '/alert'
     end
@@ -569,7 +569,7 @@ post '/signin' do
     if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
       session[:user_name] = user.user_name
-			redirect '/room'
+      redirect '/room'
     else # もし合っていなかったら以下実行
       @user_true = true
       erb :index, layout: :layout
@@ -578,7 +578,7 @@ post '/signin' do
     if user && user.authenticate(params[:password]) # UserNameが有りなおかつ入力されたパスワードがあっているか確認する
       session[:user] = user.id # セッションにユーザーデータを保存する
       session[:user_name] = user.user_name
-			redirect '/room'
+      redirect '/room'
     else # もし合っていなかったら以下実行
       @user_true = true
       erb :index, layout: :layout
@@ -589,14 +589,14 @@ post '/signin' do
         if user && user.authenticate(params[:password]) # メールアドレスが有りなおかつ入力されたパスワードがあっているか確認する
           session[:user] = user.id # セッションにユーザーデータを保存する
           session[:user_name] = user.user_name
-					redirect '/room'
+          redirect '/room'
         else # もし合っていなかったら以下実行
           @user_true = true
           erb :index, layout: :layout
         end
       else
         @user_true = true
-				erb :index, layout: :layout
+        erb :index, layout: :layout
       end
     end
   else
@@ -631,24 +631,24 @@ post '/renew/:id' do
     if p user.user_name == params[:user_name] # 入力されたUsesr_nameが以前と同じものなら以下を実行
       session[:user] = user.id
       user.update( # ↓User_Nameを変更しないアップデート
-        name:   params[:name],
-        mail:    params[:mail],
-        color: params[:color],
-        age: params[:age],
-        introduction: params[:introduction]
-      )
+                  name:   params[:name],
+                  mail:    params[:mail],
+                  color: params[:color],
+                  age: params[:age],
+                  introduction: params[:introduction]
+                 )
       redirect '/room'
     else # 入力されたUser_Nameが以前と違うものなら以下を実行
       unless User.where(user_name: params[:user_name]).exists? # 入力されたUser＿Nameがすでに存在していなければ以下を実行
         session[:user] = user.id
         user.update( # ↓User_Nameを変更するアップデート
-          name:   params[:name],
-          user_name:    params[:user_name],
-          mail:    params[:mail],
-          age: params[:age],
-          color: params[:color],
-          introduction: params[:introduction]
-        )
+                    name:   params[:name],
+                    user_name:    params[:user_name],
+                    mail:    params[:mail],
+                    age: params[:age],
+                    color: params[:color],
+                    introduction: params[:introduction]
+                   )
         redirect '/room'
       else
         @message = 'このユーザー名は使用できません'
@@ -677,10 +677,10 @@ post '/send_mail' do
   else # 入力したメールアドレスがなければ↓を実行
     random = SecureRandom.uuid # 乱数で暗号を作成
     token = Token.new( # 暗号とメールアドレスをDBに作成
-      token: random,
-      address: params[:email],
-      expired_at: 24.hours.since
-    )
+                      token: random,
+                      address: params[:email],
+                      expired_at: 24.hours.since
+                     )
     if token.save # 暗号とメールアドレスをDBに作成できれば↓を実行
       p email_secret = Base64.encode64(random) # 暗号を暗号化する
 
@@ -693,17 +693,17 @@ post '/send_mail' do
                アカウント登録は完了していませんので、
                http://#{xyz}/signup/#{email_secret}
                にアクセスして、本登録を行って下さい",
-        subject: "仮登録が完了しました",
-        via: :smtp,
-        via_options: {
-          enable_starttls_auto: true,
-          address: 'smtp.gmail.com',
-          port: '587',
-          user_name: 'nagisa20000014',
-          password: 'yriqalcacichqxir',
-          authentication: :plain,
-          domain: 'gmail.com'
-        }
+                 subject: "仮登録が完了しました",
+                 via: :smtp,
+                 via_options: {
+                   enable_starttls_auto: true,
+                   address: 'smtp.gmail.com',
+                   port: '587',
+                   user_name: 'nagisa20000014',
+                   password: 'yriqalcacichqxir',
+                   authentication: :plain,
+                   domain: 'gmail.com'
+                 }
       )
 
       redirect '/account'
@@ -716,53 +716,53 @@ post '/send_mail' do
 end
 
 get '/signup/:secret_mail' do
-	number = Base64.decode64(params[:secret_mail]) # 暗号の暗号を解読
-	token =  Token.find_by_token(number)
-	if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
-		@secret_mail_id = params[:secret_mail]
-		number = Base64.decode64(params[:secret_mail]) # 暗号の暗号を解読
-		@mail = Token.find_by_token(number).address
-		erb :sign_up, layout: :layout # フォームを表示する
-	else # DBが時間外なら↓を実行
-		@message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
-		erb :message, layout: :layout
-	end
+  number = Base64.decode64(params[:secret_mail]) # 暗号の暗号を解読
+  token =  Token.find_by_token(number)
+  if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
+    @secret_mail_id = params[:secret_mail]
+    number = Base64.decode64(params[:secret_mail]) # 暗号の暗号を解読
+    @mail = Token.find_by_token(number).address
+    erb :sign_up, layout: :layout # フォームを表示する
+  else # DBが時間外なら↓を実行
+    @message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
+    erb :message, layout: :layout
+  end
 end
 # ////////////////////////////////アカウント作成////////////////////////////////
 post '/signup' do
-	unless User.where(user_name: params[:user_name]).exists?
-		user = User.new(
-			name: params[:name],
-			user_name: params[:user_name],
-			mail: params[:mail],
-			color: params[:color],
-			password: params[:password],
-			password_confirmation: params[:password_confirmation]
-		)
-		if user.save
-			number = Base64.decode64(params[:secret_mail_id]) # 暗号の暗号を解読
-			token =  Token.find_by_token(number)
-			if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
-				token.update(expired_at: Time.now) # DBが時間内であれば時間外にして
-				session[:user] = user.id unless user.nil?
-				redirect '/room'
-			else # DBが時間外なら↓を実行
-				@message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
-				erb :message, layout: :layout
-			end
-		else
-			@message = '不明なエラーが発生しました'
-			alert
-			erb :message, layout: :layout
-		end
-	else
-		@message = 'すでに使われているUserNameです'
-		alert
-		erb :message, layout: :layout
-	end
+  unless User.where(user_name: params[:user_name]).exists?
+    user = User.new(
+      name: params[:name],
+      user_name: params[:user_name],
+      mail: params[:mail],
+      color: params[:color],
+      password: params[:password],
+      password_confirmation: params[:password_confirmation]
+    )
+    if user.save
+      number = Base64.decode64(params[:secret_mail_id]) # 暗号の暗号を解読
+      token =  Token.find_by_token(number)
+      if token && token.expired_at > Time.now # 暗号がDBにあれば時間外か確認
+        token.update(expired_at: Time.now) # DBが時間内であれば時間外にして
+        session[:user] = user.id unless user.nil?
+        redirect '/room'
+      else # DBが時間外なら↓を実行
+        @message = "入力されたメールアドレスは本登録が完了していいるかURLの有効期限が切れています"
+        erb :message, layout: :layout
+      end
+    else
+      @message = '不明なエラーが発生しました'
+      alert
+      erb :message, layout: :layout
+    end
+  else
+    @message = 'すでに使われているUserNameです'
+    alert
+    erb :message, layout: :layout
+  end
 end
 
 get '/account' do
-	@message = '仮登録が完了しました。先ほど入力いただいたメールアドレスに、確認メールのメールを送信いたしましたので、そちらの方から、本登録をお願いいたします'
+  @message = '仮登録が完了しました。先ほど入力いただいたメールアドレスに、確認メールのメールを送信いたしましたので、そちらの方から、本登録をお願いいたします'
   erb :message, layout: :layout
 end
